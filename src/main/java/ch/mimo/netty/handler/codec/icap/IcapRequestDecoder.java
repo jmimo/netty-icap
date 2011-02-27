@@ -17,7 +17,6 @@ public class IcapRequestDecoder extends IcapMessageDecoder {
 
 	@Override
 	public IcapMessage createMessage() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DefaultIcapMessage(IcapVersion.ICAP_1_0);
 	}
 }
