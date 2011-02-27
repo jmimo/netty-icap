@@ -14,7 +14,7 @@ public class IcapMessageDecoderTest {
 	
 	@Before
 	public void setUp() {
-		embedder = new DecoderEmbedder<ChannelBuffer>(new IcapMessageDecoder());
+		embedder = new DecoderEmbedder<ChannelBuffer>(new IcapRequestDecoder());
 	}
 	
 	@Test
