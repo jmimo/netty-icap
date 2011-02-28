@@ -17,6 +17,7 @@ public class IcapRequestDecoder extends IcapMessageDecoder {
 
 	@Override
 	public IcapMessage createMessage() {
-		return new DefaultIcapMessage(IcapVersion.ICAP_1_0);
+//		return new DefaultIcapMessage(IcapVersion.ICAP_1_0);
+		return null;
 	}
 }
