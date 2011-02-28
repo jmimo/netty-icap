@@ -13,7 +13,8 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	private IcapMessage message;
 	
 	protected static enum State {
-		SKIP_CONTROL_CHARS
+		SKIP_CONTROL_CHARS,
+		READ_INITIAL
 	}
 	
     /**
@@ -46,12 +47,43 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state) throws Exception {
+		switch (state) {
+		case SKIP_CONTROL_CHARS: {
+            try {
+                skipControlCharacters(buffer);
+                checkpoint(State.READ_INITIAL);
+            } finally {
+                checkpoint();
+            }
+		}
+		default:
+			break;
+		}
 		
-		// TODO Auto-generated method stub
+		
+		// TODO parse and store icap headers with the HttpHeaders class.
+		// The IcapHeaders class will provide the missing headers "Preview" and "Encapsulation"
+		// plus the parsing functionality for the Encapsulation header!
 		return null;
 	}
 	
 	public abstract boolean isDecodingRequest();
 	
 	public abstract IcapMessage createMessage();
+	
+	/**
+	 * finds the true beginning of the request 
+	 * by skipping all prepended control and whitespace characters.
+	 * @param buffer
+	 */
+    private void skipControlCharacters(ChannelBuffer buffer) {
+        for (;;) {
+            char c = (char) buffer.readUnsignedByte();
+            if (!Character.isISOControl(c) &&
+                !Character.isWhitespace(c)) {
+                buffer.readerIndex(buffer.readerIndex() - 1);
+                break;
+            }
+        }
+    }
 }

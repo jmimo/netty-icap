@@ -2,15 +2,30 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-public class IcapVersion extends HttpVersion {
+public final class IcapVersion {
 
-	public static final IcapVersion ICAP_1_0 = new IcapVersion("ICAP", 1, 0, true);
+	public static final HttpVersion ICAP_1_0 = new HttpVersion("ICAP", 1, 0, true);
 
-	public IcapVersion(String text, boolean keepAliveDefault) {
-		super(text, keepAliveDefault);
-	}
+    private IcapVersion() {
+        super();
+    }
 	
-	public IcapVersion(String protocolName, int majorVersion, int minorVersion, boolean keepAliveDefault) {
-		super(protocolName, majorVersion, minorVersion, keepAliveDefault);
-	}
+    /**
+     * Returns an existing or new {@link HttpVersion} instance which matches to
+     * the specified RTSP version string.  If the specified {@code text} is
+     * equal to {@code "ICAP/1.0"}, {@link #ICAP_1_0} will be returned.
+     * Otherwise, a new {@link HttpVersion} instance will be returned.
+     */
+    public static HttpVersion valueOf(String text) {
+        if (text == null) {
+            throw new NullPointerException("text");
+        }
+
+        text = text.trim().toUpperCase();
+        if (text.equals("ICAP/1.0")) {
+            return ICAP_1_0;
+        }
+
+        return new HttpVersion(text, true);
+    }
 }

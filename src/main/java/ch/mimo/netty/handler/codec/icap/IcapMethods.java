@@ -2,6 +2,8 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
 
+// TODO this wrapper introduced the icap specific request methods as httpmethod
+// instances.
 public class IcapMethods {
 
 	/**
