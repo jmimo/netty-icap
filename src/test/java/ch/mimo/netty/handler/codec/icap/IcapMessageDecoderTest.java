@@ -16,6 +16,13 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
+	public void stripPrefixingWhitespacesFromMessage() {
+		embedder.offer(DataMockery.createWhiteSpacePrefixedOPTIONSRequest());
+		IcapMessage result = embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+	}
+	
+	@Test
 	public void decodeREQMODRequestWithNullBody() {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());
 		IcapMessage result = embedder.poll();

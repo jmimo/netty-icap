@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 
 public interface IcapMessage {
 
@@ -83,13 +85,13 @@ public interface IcapMessage {
     /**
      * @return the protocol version of this message.
      */
-    IcapVersion getProtocolVersion();
+    HttpVersion getProtocolVersion();
 
     /**
      * Sets the protocol version of this message.
-     * @param version @see {@link IcapVersion}
+     * @param version @see {@link HttpVersion}
      */
-    void setProtocolVersion(IcapVersion version);
+    void setProtocolVersion(HttpVersion version);
     
     /**
      * @return whether this message is a preview of the actual message.
@@ -125,4 +127,12 @@ public interface IcapMessage {
 	 * @return the actual http response instance @see {@link HttpResponse}
 	 */
 	HttpResponse getHttpResponse();
+	
+	void setMethod(HttpMethod method);
+
+	HttpMethod getMethod();
+	
+	void setUri(String uri);
+	
+	String getUri();
 }

@@ -1,5 +1,6 @@
 package ch.mimo.netty.handler.codec.icap;
 
+
 public class IcapRequestDecoder extends IcapMessageDecoder {
 
 	public IcapRequestDecoder() {
@@ -16,8 +17,7 @@ public class IcapRequestDecoder extends IcapMessageDecoder {
 	}
 
 	@Override
-	public IcapMessage createMessage() {
-//		return new DefaultIcapMessage(IcapVersion.ICAP_1_0);
-		return null;
+	protected IcapMessage createMessage(String[] initialLine) throws Exception {
+		return new DefaultIcapMessage(IcapVersion.valueOf(initialLine[2]),IcapMethod.valueOf(initialLine[0]),initialLine[1]);
 	}
 }

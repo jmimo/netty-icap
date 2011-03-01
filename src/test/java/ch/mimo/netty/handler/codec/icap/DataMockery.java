@@ -10,6 +10,14 @@ public final class DataMockery {
 	private DataMockery() {
 	}
 	
+	public static final ChannelBuffer createWhiteSpacePrefixedOPTIONSRequest() {
+		StringBuilder builder = new StringBuilder();
+		addLine(builder,"  OPTIONS icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(builder,"Host: icap.google.com:1344");
+		addLine(builder,null);
+		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
+	}
+	
 	public static final ChannelBuffer createREQMODWithGetRequestNoBody() {
 		StringBuilder builder = new StringBuilder();
 		addLine(builder,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");

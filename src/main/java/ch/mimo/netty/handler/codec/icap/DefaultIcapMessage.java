@@ -4,16 +4,27 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 
 
 public class DefaultIcapMessage implements IcapMessage {
 	
-	private IcapVersion version;
+	private HttpVersion version;
+	private HttpMethod method;
+	private String uri;
 	
-	public DefaultIcapMessage() {
+	public DefaultIcapMessage(HttpVersion version) {
+		setProtocolVersion(version);
 	}
+	
+    public DefaultIcapMessage(HttpVersion icapVersion, HttpMethod method, String uri) {
+        this(icapVersion);
+        setMethod(method);
+        setUri(uri);
+    }
 
 	@Override
 	public String getHeader(String name) {
@@ -76,12 +87,12 @@ public class DefaultIcapMessage implements IcapMessage {
 	}
 
 	@Override
-	public IcapVersion getProtocolVersion() {
+	public HttpVersion getProtocolVersion() {
 		return version;
 	}
 
 	@Override
-	public void setProtocolVersion(IcapVersion version) {
+	public void setProtocolVersion(HttpVersion version) {
 		this.version = version;
 	}
 
@@ -125,5 +136,21 @@ public class DefaultIcapMessage implements IcapMessage {
 	public HttpResponse getHttpResponse() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setMethod(HttpMethod method) {
+		this.method = method;
+	}
+
+	public HttpMethod getMethod() {
+		return method;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
+	public String getUri() {
+		return uri;
 	}
 }
