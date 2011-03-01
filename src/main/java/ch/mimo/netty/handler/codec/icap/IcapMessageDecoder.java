@@ -3,7 +3,6 @@ package ch.mimo.netty.handler.codec.icap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 
 public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDecoder.State> {
@@ -52,14 +51,14 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		switch (state) {
 		case SKIP_CONTROL_CHARS: {
             try {
-                skipControlCharacters(buffer);
+                IcapDecoderUtil.skipControlCharacters(buffer);
                 checkpoint(State.READ_ICAP_INITIAL);
             } finally {
                 checkpoint();
             }
 		}
 		case READ_ICAP_INITIAL: {
-			String[] initialLine = splitInitialLine(readLine(buffer,maxInitialLineLength));
+			String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
             if (initialLine.length < 3) {
                 // Invalid initial line - ignore.
                 checkpoint(State.SKIP_CONTROL_CHARS);
@@ -86,99 +85,4 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	public abstract boolean isDecodingRequest();
 	
 	protected abstract IcapMessage createMessage(String[] initialLine) throws Exception;
-	
-	/**
-	 * finds the true beginning of the request 
-	 * by skipping all prepended control and whitespace characters.
-	 * @param buffer
-	 */
-    private void skipControlCharacters(ChannelBuffer buffer) {
-        for (;;) {
-            char c = (char) buffer.readUnsignedByte();
-            if (!Character.isISOControl(c) &&
-                !Character.isWhitespace(c)) {
-                buffer.readerIndex(buffer.readerIndex() - 1);
-                break;
-            }
-        }
-    }
-    
-    private String readLine(ChannelBuffer buffer, int maxLineLength) throws TooLongFrameException {
-        StringBuilder sb = new StringBuilder(64);
-        int lineLength = 0;
-        while (true) {
-            byte nextByte = buffer.readByte();
-            if (nextByte == IcapCodecUtil.CR) {
-                nextByte = buffer.readByte();
-                if (nextByte == IcapCodecUtil.LF) {
-                    return sb.toString();
-                }
-            }
-            else if (nextByte == IcapCodecUtil.LF) {
-                return sb.toString();
-            }
-            else {
-                if (lineLength >= maxLineLength) {
-                    throw new TooLongFrameException(
-                            "An HTTP line is larger than " + maxLineLength +
-                            " bytes.");
-                }
-                lineLength ++;
-                sb.append((char) nextByte);
-            }
-        }
-    }
-    
-    private String[] splitInitialLine(String sb) {
-        int aStart;
-        int aEnd;
-        int bStart;
-        int bEnd;
-        int cStart;
-        int cEnd;
-
-        aStart = findNonWhitespace(sb, 0);
-        aEnd = findWhitespace(sb, aStart);
-
-        bStart = findNonWhitespace(sb, aEnd);
-        bEnd = findWhitespace(sb, bStart);
-
-        cStart = findNonWhitespace(sb, bEnd);
-        cEnd = findEndOfString(sb);
-
-        return new String[] {
-                sb.substring(aStart, aEnd),
-                sb.substring(bStart, bEnd),
-                cStart < cEnd? sb.substring(cStart, cEnd) : "" };
-    }
-    
-    private int findNonWhitespace(String sb, int offset) {
-        int result;
-        for (result = offset; result < sb.length(); result ++) {
-            if (!Character.isWhitespace(sb.charAt(result))) {
-                break;
-            }
-        }
-        return result;
-    }
-    
-    private int findWhitespace(String sb, int offset) {
-        int result;
-        for (result = offset; result < sb.length(); result ++) {
-            if (Character.isWhitespace(sb.charAt(result))) {
-                break;
-            }
-        }
-        return result;
-    }
-    
-    private int findEndOfString(String sb) {
-        int result;
-        for (result = sb.length(); result > 0; result --) {
-            if (!Character.isWhitespace(sb.charAt(result - 1))) {
-                break;
-            }
-        }
-        return result;
-    }
 }
