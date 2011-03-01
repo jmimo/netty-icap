@@ -64,7 +64,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		// TODO parse and store icap headers with the HttpHeaders class.
 		// The IcapHeaders class will provide the missing headers "Preview" and "Encapsulation"
 		// plus the parsing functionality for the Encapsulation header!
-		return null;
+		return new DefaultIcapMessage();
 	}
 	
 	public abstract boolean isDecodingRequest();
