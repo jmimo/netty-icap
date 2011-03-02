@@ -81,4 +81,25 @@ public class IcapDecoderUtilTest extends Assert {
 		assertEquals("Uri could not be identified","icap://icap.mimo.ch:1344/reqmod",params[1]);
 		assertEquals("Protocol and Version could not be identified","ICAP/1.0",params[2]);
 	}
+	
+	@Test
+	public void testParseHeaderLine() {
+		StringBuilder builder = new StringBuilder("Encapsulation: req-hdr=50, res-hdr=120, null-body=210");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append("Host: icap.mimo.ch");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		String header = null;
+		try {
+			int headerSize = 0;
+			header = IcapDecoderUtil.readHeader(buffer,headerSize,200,"ICAP");
+			assertEquals("Encapsulation header was expected","Encapsulation: req-hdr=50, res-hdr=120, null-body=210",header);
+			header = IcapDecoderUtil.readHeader(buffer,headerSize,200,"ICAP");
+			assertEquals("Host header was expected","Host: icap.mimo.ch",header);
+			assertEquals("total length of parsed headers is wrong",10,headerSize);
+		} catch (TooLongFrameException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
 }

@@ -102,4 +102,41 @@ public final class IcapDecoderUtil {
 		}
 		return result;
 	}
+	
+	/**
+	 * reads one individual header "key: value"
+	 * @param buffer which contains the request stream
+	 * @param headerSize the current header size, accumulated for all headers.
+	 * @param maxHeaderSize the maximal allowed header length (all headers combined).
+	 * @param headerType error message prefix like "ICAP" or "HTTP Request"
+	 * @return one complete header containing key and value.
+	 * @throws TooLongFrameException In case the total header length is exceeded.
+	 */
+	public static String readHeader(ChannelBuffer buffer, int headerSize, int maxHeaderSize, String headerType) throws TooLongFrameException {
+		StringBuilder sb = new StringBuilder(64);
+		loop: for (;;) {
+			char nextByte = (char) buffer.readByte();
+			headerSize++;
+
+			switch (nextByte) {
+			case IcapCodecUtil.CR:
+				nextByte = (char) buffer.readByte();
+				headerSize++;
+				if (nextByte == IcapCodecUtil.LF) {
+					break loop;
+				}
+				break;
+			case IcapCodecUtil.LF:
+				break loop;
+			}
+
+			// Abort decoding if the header part is too large.
+			if (headerSize >= maxHeaderSize) {
+				throw new TooLongFrameException(headerType + " header is larger than " + maxHeaderSize + " bytes.");
+			}
+
+			sb.append(nextByte);
+		}
+		return sb.toString();
+	}
 }
