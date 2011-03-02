@@ -23,8 +23,8 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
 
-  <name>The Netty Project</name>
-  <url>http://www.jboss.org/netty/</url>
+  <name>The Netty Icap Protocol Support Project</name>
+  <url>http://www.mimo.ch/netty-icap/</url>
   <description/>
 
   <licenses>
@@ -39,7 +39,8 @@
 	<dependency>
   		<groupId>org.jboss.netty</groupId>
   		<artifactId>netty</artifactId>
-  		<version>4.0.0.Alpha1-SNAPSHOT</version>
+  		<!-- version>4.0.0.Alpha1-SNAPSHOT</version -->
+		<version>3.2.4.Final</version>
 	</dependency>
     <!-- Logging frameworks - completely optional -->
     <dependency>
