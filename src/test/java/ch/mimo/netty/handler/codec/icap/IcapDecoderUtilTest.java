@@ -91,15 +91,32 @@ public class IcapDecoderUtilTest extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
 		String header = null;
 		try {
-			int headerSize = 0;
-			header = IcapDecoderUtil.readHeader(buffer,headerSize,200,"ICAP");
+			SizeDelimiter sizeDelimiter = new SizeDelimiter(200);
+			header = IcapDecoderUtil.readHeader(buffer,sizeDelimiter,"ICAP");
 			assertEquals("Encapsulation header was expected","Encapsulation: req-hdr=50, res-hdr=120, null-body=210",header);
-			header = IcapDecoderUtil.readHeader(buffer,headerSize,200,"ICAP");
+			header = IcapDecoderUtil.readHeader(buffer,sizeDelimiter,"ICAP");
 			assertEquals("Host header was expected","Host: icap.mimo.ch",header);
-			assertEquals("total length of parsed headers is wrong",10,headerSize);
+			assertEquals("total length of parsed headers is wrong",75,sizeDelimiter.getSize());
 		} catch (TooLongFrameException e) {
 			e.printStackTrace();
 			fail();
 		}
+	}
+	
+	@Test
+	public void testParseTooLargeHeaderLine() {
+		StringBuilder builder = new StringBuilder("Encapsulation: req-hdr=50, res-hdr=120, null-body=210");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append("Host: icap.mimo.ch");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		boolean exception = false;
+		try {
+			SizeDelimiter sizeDelimiter = new SizeDelimiter(40);
+			IcapDecoderUtil.readHeader(buffer,sizeDelimiter,"ICAP");
+		} catch (TooLongFrameException e) {
+			exception = true;
+		}
+		assertTrue("No exception was thrown",exception);
 	}
 }
