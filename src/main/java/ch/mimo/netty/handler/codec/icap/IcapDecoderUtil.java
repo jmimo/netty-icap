@@ -103,15 +103,27 @@ public final class IcapDecoderUtil {
 		return result;
 	}
 	
+//	public static String readCompleteHeaderSection(ChannelBuffer buffer, SizeDelimiter sizeDelimiter) throws TooLongFrameException {
+//		String line = readSingleHeaderLine(buffer,sizeDelimiter);
+//		while(line.length() != 0) {
+//			
+//		}
+//		return null;
+//	}
+	
+	public static boolean isHeaderLineSimpleValue(String header) {
+		char firstChar = header.charAt(0);
+		return firstChar == ' ' || firstChar == '\t';
+	}
+	
 	/**
 	 * reads one individual header "key: value"
 	 * @param buffer which contains the request stream
 	 * @param sizeDelimiter the current header size, accumulated for all headers.
-	 * @param headerType error message prefix like "ICAP" or "HTTP Request"
 	 * @return one complete header containing key and value.
 	 * @throws TooLongFrameException In case the total header length is exceeded.
 	 */
-	public static String readHeader(ChannelBuffer buffer, SizeDelimiter sizeDelimiter, String headerType) throws TooLongFrameException {
+	public static String readSingleHeaderLine(ChannelBuffer buffer, SizeDelimiter sizeDelimiter) throws TooLongFrameException {
 		StringBuilder sb = new StringBuilder(64);
 		loop: for (;;) {
 			char nextByte = (char) buffer.readByte();
@@ -132,4 +144,42 @@ public final class IcapDecoderUtil {
 		}
 		return sb.toString();
 	}
+	
+    public static String[] splitHeader(String sb) {
+        final int length = sb.length();
+        int nameStart;
+        int nameEnd;
+        int colonEnd;
+        int valueStart;
+        int valueEnd;
+
+        nameStart = findNonWhitespace(sb, 0);
+        for (nameEnd = nameStart; nameEnd < length; nameEnd ++) {
+            char ch = sb.charAt(nameEnd);
+            if (ch == ':' || Character.isWhitespace(ch)) {
+                break;
+            }
+        }
+
+        for (colonEnd = nameEnd; colonEnd < length; colonEnd ++) {
+            if (sb.charAt(colonEnd) == ':') {
+                colonEnd ++;
+                break;
+            }
+        }
+
+        valueStart = findNonWhitespace(sb, colonEnd);
+        if (valueStart == length) {
+            return new String[] {
+                    sb.substring(nameStart, nameEnd),
+                    ""
+            };
+        }
+
+        valueEnd = findEndOfString(sb);
+        return new String[] {
+                sb.substring(nameStart, nameEnd),
+                sb.substring(valueStart, valueEnd)
+        };
+    }
 }

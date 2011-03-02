@@ -69,7 +69,37 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
             checkpoint(State.READ_ICAP_HEADER);
 		}
 		case READ_ICAP_HEADER: {
-			
+			SizeDelimiter sizeDelimiter = new SizeDelimiter(maxHeaderSize);
+			String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
+			String name = null;
+			String value = null;
+			if(line.length() != 0) {
+				message.clearHeaders();
+				while(line.length() != 0) {
+					if(name != null && IcapDecoderUtil.isHeaderLineSimpleValue(line)) {
+						value = value + ' ' + line.trim();
+					} else {
+						if(name != null) {
+							message.addHeader(name,value);
+						}
+						String[] header = IcapDecoderUtil.splitHeader(line);
+						name = header[0];
+						value = header[1];
+					}
+					line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
+				}
+	            if (name != null) {
+	                message.addHeader(name,value);
+	            }
+			}
+			// validate icap headers
+			if(message.containsHeader(IcapHeaders.Names.HOST) & 
+					message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+				// TODO return with error to client
+			} else {
+				// TODO missing required header host, encapsulated
+			}
+			// TODO parse encapsulation header for subsequent parsing
 		}
 		default:
 			break;
