@@ -14,7 +14,8 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	
 	protected static enum State {
 		SKIP_CONTROL_CHARS,
-		READ_INITIAL
+		READ_ICAP_INITIAL,
+		READ_ICAP_HEADER
 	}
 	
     /**
@@ -50,11 +51,25 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		switch (state) {
 		case SKIP_CONTROL_CHARS: {
             try {
-                skipControlCharacters(buffer);
-                checkpoint(State.READ_INITIAL);
+                IcapDecoderUtil.skipControlCharacters(buffer);
+                checkpoint(State.READ_ICAP_INITIAL);
             } finally {
                 checkpoint();
             }
+		}
+		case READ_ICAP_INITIAL: {
+			String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
+            if (initialLine.length < 3) {
+                // Invalid initial line - ignore.
+                checkpoint(State.SKIP_CONTROL_CHARS);
+                return null;
+            }
+            
+            message = createMessage(initialLine);
+            checkpoint(State.READ_ICAP_HEADER);
+		}
+		case READ_ICAP_HEADER: {
+			
 		}
 		default:
 			break;
@@ -64,26 +79,10 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		// TODO parse and store icap headers with the HttpHeaders class.
 		// The IcapHeaders class will provide the missing headers "Preview" and "Encapsulation"
 		// plus the parsing functionality for the Encapsulation header!
-		return null;
+		return message;
 	}
 	
 	public abstract boolean isDecodingRequest();
 	
-	public abstract IcapMessage createMessage();
-	
-	/**
-	 * finds the true beginning of the request 
-	 * by skipping all prepended control and whitespace characters.
-	 * @param buffer
-	 */
-    private void skipControlCharacters(ChannelBuffer buffer) {
-        for (;;) {
-            char c = (char) buffer.readUnsignedByte();
-            if (!Character.isISOControl(c) &&
-                !Character.isWhitespace(c)) {
-                buffer.readerIndex(buffer.readerIndex() - 1);
-                break;
-            }
-        }
-    }
+	protected abstract IcapMessage createMessage(String[] initialLine) throws Exception;
 }
