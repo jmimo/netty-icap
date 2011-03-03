@@ -11,12 +11,16 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
     private final int maxInitialLineLength;
     private final int maxIcapHeaderSize;
     private final int maxChunkSize;
+    
 	private IcapMessage message;
 	
 	protected static enum State {
 		SKIP_CONTROL_CHARS,
 		READ_ICAP_INITIAL,
-		READ_ICAP_HEADER
+		READ_ICAP_HEADER,
+		READ_HTTP_REQUEST_HEADER,
+		READ_HTTP_RESPONSE_HEADER,
+		READ_HTTP_BODY
 	}
 	
     /**
@@ -70,16 +74,38 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
             checkpoint(State.READ_ICAP_HEADER);
 		}
 		case READ_ICAP_HEADER: {
-			State nextState = readIcapHeaders(buffer);
+			try {
+				readIcapHeaders(buffer);
+				if(message.getEncapsulatedHeader().containsKey(Encapsulated.REQHDR)) {
+					checkpoint(State.READ_HTTP_REQUEST_HEADER);
+				}
+				if(message.getEncapsulatedHeader().containsKey(Encapsulated.RESHDR)) {
+					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
+				}
+			} finally {
+				checkpoint();
+			}
+		}
+		case READ_HTTP_REQUEST_HEADER: {
+			try {
+				readHttpRequestHeaders(buffer);
+				if(message.getEncapsulatedHeader().containsKey(Encapsulated.RESHDR)) {
+					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
+				}
+				// TODO checkpoint to body
+			} finally {
+				checkpoint();
+			}
+		}
+		case READ_HTTP_RESPONSE_HEADER: {
+			// TODO checkpoint to body
+		}
+		case READ_HTTP_BODY: {
+			// TODO handle Preview!
 		}
 		default:
 			break;
 		}
-		
-		
-		// TODO parse and store icap headers with the HttpHeaders class.
-		// The IcapHeaders class will provide the missing headers "Preview" and "Encapsulation"
-		// plus the parsing functionality for the Encapsulation header!
 		return message;
 	}
 	
@@ -87,7 +113,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	
 	protected abstract IcapMessage createMessage(String[] initialLine) throws Exception;
 	
-	private State readIcapHeaders(ChannelBuffer buffer) throws TooLongFrameException {
+	private void readIcapHeaders(ChannelBuffer buffer) throws TooLongFrameException {
 		SizeDelimiter sizeDelimiter = new SizeDelimiter(maxIcapHeaderSize);
 		String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
 		String name = null;
@@ -118,12 +144,12 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		if(message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
 			throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
 		}
-		// TODO parse encapsulation header for subsequent parsing
-		return State.SKIP_CONTROL_CHARS;
+		Encapsulated encapsulated = new Encapsulated(message.getMethod(),message.getHeader(IcapHeaders.Names.ENCAPSULATED));
+		message.setEncapsulatedHeader(encapsulated);
 	}
-	
-	private void parseEncapsulatedInformation() {
-		String contents = message.getHeader(IcapHeaders.Names.ENCAPSULATED);
-		
+
+	private void readHttpRequestHeaders(ChannelBuffer buffer) throws TooLongFrameException {
+		// TODO correct reading offset by req-hdr value.
+		// TODO parse the headers.
 	}
 }

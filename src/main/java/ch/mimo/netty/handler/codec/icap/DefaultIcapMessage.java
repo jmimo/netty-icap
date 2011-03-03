@@ -15,6 +15,7 @@ public class DefaultIcapMessage implements IcapMessage {
 	private HttpVersion version;
 	private HttpMethod method;
 	private String uri;
+	private Encapsulated encapsulated;
 	
 	public DefaultIcapMessage(HttpVersion version) {
 		setProtocolVersion(version);
@@ -152,5 +153,15 @@ public class DefaultIcapMessage implements IcapMessage {
 
 	public String getUri() {
 		return uri;
+	}
+
+	@Override
+	public void setEncapsulatedHeader(Encapsulated encapsulated) {
+		this.encapsulated = encapsulated;
+	}
+
+	@Override
+	public Encapsulated getEncapsulatedHeader() {
+		return encapsulated;
 	}
 }

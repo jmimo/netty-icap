@@ -135,4 +135,8 @@ public interface IcapMessage {
 	void setUri(String uri);
 	
 	String getUri();
+	
+	void setEncapsulatedHeader(Encapsulated encapsulated);
+	
+	Encapsulated getEncapsulatedHeader();
 }
