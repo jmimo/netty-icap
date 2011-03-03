@@ -3,12 +3,13 @@ package ch.mimo.netty.handler.codec.icap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 
 public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDecoder.State> {
 
     private final int maxInitialLineLength;
-    private final int maxHeaderSize;
+    private final int maxIcapHeaderSize;
     private final int maxChunkSize;
 	private IcapMessage message;
 	
@@ -20,7 +21,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	
     /**
      * Creates a new instance with the default
-     * {@code maxInitialLineLength (4096}}, {@code maxHeaderSize (8192)}, and
+     * {@code maxInitialLineLength (4096}}, {@code maxIcapHeaderSize (8192)}, and
      * {@code maxChunkSize (8192)}.
      */
     protected IcapMessageDecoder() {
@@ -30,19 +31,19 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
     /**
      * Creates a new instance with the specified parameters.
      */
-    protected IcapMessageDecoder(int maxInitialLineLength, int maxHeaderSize, int maxChunkSize) {
+    protected IcapMessageDecoder(int maxInitialLineLength, int maxIcapHeaderSize, int maxChunkSize) {
         super(State.SKIP_CONTROL_CHARS,true);
         if (maxInitialLineLength <= 0) {
             throw new IllegalArgumentException("maxInitialLineLength must be a positive integer: " + maxInitialLineLength);
         }
-        if (maxHeaderSize <= 0) {
-            throw new IllegalArgumentException("maxHeaderSize must be a positive integer: " + maxHeaderSize);
+        if (maxIcapHeaderSize <= 0) {
+            throw new IllegalArgumentException("maxIcapHeaderSize must be a positive integer: " + maxIcapHeaderSize);
         }
         if (maxChunkSize < 0) {
             throw new IllegalArgumentException("maxChunkSize must be a positive integer: " + maxChunkSize);
         }
         this.maxInitialLineLength = maxInitialLineLength;
-        this.maxHeaderSize = maxHeaderSize;
+        this.maxIcapHeaderSize = maxIcapHeaderSize;
         this.maxChunkSize = maxChunkSize;
     }
 
@@ -69,37 +70,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
             checkpoint(State.READ_ICAP_HEADER);
 		}
 		case READ_ICAP_HEADER: {
-			SizeDelimiter sizeDelimiter = new SizeDelimiter(maxHeaderSize);
-			String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
-			String name = null;
-			String value = null;
-			if(line.length() != 0) {
-				message.clearHeaders();
-				while(line.length() != 0) {
-					if(name != null && IcapDecoderUtil.isHeaderLineSimpleValue(line)) {
-						value = value + ' ' + line.trim();
-					} else {
-						if(name != null) {
-							message.addHeader(name,value);
-						}
-						String[] header = IcapDecoderUtil.splitHeader(line);
-						name = header[0];
-						value = header[1];
-					}
-					line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
-				}
-	            if (name != null) {
-	                message.addHeader(name,value);
-	            }
-			}
-			// validate icap headers
-			if(message.containsHeader(IcapHeaders.Names.HOST) & 
-					message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
-				// TODO return with error to client
-			} else {
-				// TODO missing required header host, encapsulated
-			}
-			// TODO parse encapsulation header for subsequent parsing
+			State nextState = readIcapHeaders(buffer);
 		}
 		default:
 			break;
@@ -115,4 +86,44 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	public abstract boolean isDecodingRequest();
 	
 	protected abstract IcapMessage createMessage(String[] initialLine) throws Exception;
+	
+	private State readIcapHeaders(ChannelBuffer buffer) throws TooLongFrameException {
+		SizeDelimiter sizeDelimiter = new SizeDelimiter(maxIcapHeaderSize);
+		String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
+		String name = null;
+		String value = null;
+		if(line.length() != 0) {
+			message.clearHeaders();
+			while(line.length() != 0) {
+				if(name != null && IcapDecoderUtil.isHeaderLineSimpleValue(line)) {
+					value = value + ' ' + line.trim();
+				} else {
+					if(name != null) {
+						message.addHeader(name,value);
+					}
+					String[] header = IcapDecoderUtil.splitHeader(line);
+					name = header[0];
+					value = header[1];
+				}
+				line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
+			}
+            if (name != null) {
+                message.addHeader(name,value);
+            }
+		}
+		// validate icap headers
+		if(message.containsHeader(IcapHeaders.Names.HOST)) {
+			throw new Error("Mandatory ICAP message header [Host] is missing");
+		}
+		if(message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+			throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
+		}
+		// TODO parse encapsulation header for subsequent parsing
+		return State.SKIP_CONTROL_CHARS;
+	}
+	
+	private void parseEncapsulatedInformation() {
+		String contents = message.getHeader(IcapHeaders.Names.ENCAPSULATED);
+		
+	}
 }

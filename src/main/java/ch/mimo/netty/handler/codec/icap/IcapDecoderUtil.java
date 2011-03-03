@@ -103,14 +103,6 @@ public final class IcapDecoderUtil {
 		return result;
 	}
 	
-//	public static String readCompleteHeaderSection(ChannelBuffer buffer, SizeDelimiter sizeDelimiter) throws TooLongFrameException {
-//		String line = readSingleHeaderLine(buffer,sizeDelimiter);
-//		while(line.length() != 0) {
-//			
-//		}
-//		return null;
-//	}
-	
 	public static boolean isHeaderLineSimpleValue(String header) {
 		char firstChar = header.charAt(0);
 		return firstChar == ' ' || firstChar == '\t';
