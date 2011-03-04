@@ -7,8 +7,8 @@ public class IcapRequestDecoder extends IcapMessageDecoder {
 		super();
 	}
 
-	public IcapRequestDecoder(int maxInitialLineLength, int maxHeaderSize, int maxChunkSize) {
-		super(maxInitialLineLength, maxHeaderSize, maxChunkSize);
+	public IcapRequestDecoder(int maxInitialLineLength, int maxIcapHeaderSize, int maxHttpHeaderSize, int maxChunkSize) {
+		super(maxInitialLineLength, maxIcapHeaderSize, maxHttpHeaderSize, maxChunkSize);
 	}
 
 	@Override
