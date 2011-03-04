@@ -1,11 +1,6 @@
 package ch.mimo.netty.handler.codec.icap;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.jboss.netty.handler.codec.http.HttpMethod;
-
 
 public class Encapsulated {
 	
@@ -16,38 +11,48 @@ public class Encapsulated {
 	public static final String OPTBODY 	= "opt-body";
 	public static final String NULLBODY = "null-body";
 	
-	private HttpMethod requestMethod;
 	private String headerValue;
-	private Map<String,Integer> parameterMap;
+	private Entry[] entries;
 	
-	public Encapsulated(HttpMethod requestMethod, String headerValue) {
-		this.requestMethod = requestMethod;
-		this.headerValue = headerValue;
-		parameterMap = new HashMap<String,Integer>();
-		init(headerValue);
-		validateParameters();
+	public Encapsulated() {
+		entries = new Entry[3];
 	}
 	
-	public boolean containsKey(String key) {
-		return parameterMap.containsKey(key);
+	public static Encapsulated parseHeader(String headerValue) {
+		Encapsulated encapsulated = new Encapsulated();
+		encapsulated.parseHeaderValue(headerValue);
+		return encapsulated;
 	}
 	
-	public int getEncapsulatedValue(String key) {
-		return parameterMap.get(key);
+	public int getPosition(String parameter) {
+		for(Entry entry : entries) {
+			if(entry.getName().equals(parameter)) {
+				return entry.getPosition();
+			}
+		}
+		return -1;
 	}
 	
-	private void init(String headerValue) {
+	/*
+	REQMOD request: 	 [req-hdr] req-body
+	REQMOD response: 	{[req-hdr] req-body} | {[res-hdr] res-body}
+	RESPMOD request:	 [req-hdr] [res-hdr] res-body
+	RESPMOD response:	 [res-hdr] res-body
+	OPTIONS response:	 opt-body
+	 */
+	public void parseHeaderValue(String headerValue) {
 		StringTokenizer tokenizer = new StringTokenizer(headerValue,",");
+		int counter = 0;
 		while(tokenizer.hasMoreTokens()) {
+			if(counter > 3) {
+				throw new Error("There are more than 3 Encapsulation values!");
+			}
 			String parameterString = tokenizer.nextToken();
 			if(parameterString != null) {
 				String[] parameter = splitParameter(parameterString.trim());
-				if(parameterMap.containsKey(parameter[0])) {
-					throw new Error("Duplicate definition of Encapsulated header value [" + parameter[0] + "]");
-				}
 				try {
 					int value = Integer.parseInt(parameter[1]);
-					parameterMap.put(parameter[0],value);
+					entries[counter++] = new Entry(parameter[0],value);
 				} catch(NumberFormatException nfe) {
 					throw new Error("the Encapsulated header value [" + parameter[1] + "] for the key [" + parameter[0] + "] is not a number");
 				}
@@ -68,22 +73,22 @@ public class Encapsulated {
 		return new String[]{key.trim(),value};
 	}
 	
-	private void validateParameters() {
-		if(requestMethod.equals(IcapMethod.REQMOD)) {
-			if(!parameterMap.containsKey(REQHDR)) {
-				throw new Error("Missing required Encapsulated header value: " + REQHDR);
-			}
- 		} else if(requestMethod.equals(IcapMethod.RESPMOD)) {
-			if(!parameterMap.containsKey(REQHDR)) {
-				throw new Error("Missing required Encapsulated header value: " + REQHDR);
-			}
-			if(!parameterMap.containsKey(RESHDR)) {
-				throw new Error("Missing required Encapsulated header value: " + RESHDR);
-			}
-		} else if(requestMethod.equals(IcapMethod.OPTIONS)) {
-			// NOOP there are no mandatory header values for a request of type OPTIONS.
-		} else {
-			throw new Error("Unknown request method [" + requestMethod + "] this should happen...");
+	private class Entry {
+
+		private String name;
+		private Integer position;
+		
+		public Entry(String name, Integer position) {
+			this.name = name;
+			this.position = position;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public Integer getPosition() {
+			return position;
 		}
 	}
 }

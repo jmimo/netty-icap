@@ -76,12 +76,12 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		case READ_ICAP_HEADER: {
 			try {
 				readIcapHeaders(buffer);
-				if(message.getEncapsulatedHeader().containsKey(Encapsulated.REQHDR)) {
-					checkpoint(State.READ_HTTP_REQUEST_HEADER);
-				}
-				if(message.getEncapsulatedHeader().containsKey(Encapsulated.RESHDR)) {
-					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
-				}
+//				if(message.getEncapsulatedHeader().containsKey(Encapsulated.REQHDR)) {
+//					checkpoint(State.READ_HTTP_REQUEST_HEADER);
+//				}
+//				if(message.getEncapsulatedHeader().containsKey(Encapsulated.RESHDR)) {
+//					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
+//				}
 			} finally {
 				checkpoint();
 			}
@@ -89,9 +89,9 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		case READ_HTTP_REQUEST_HEADER: {
 			try {
 				readHttpRequestHeaders(buffer);
-				if(message.getEncapsulatedHeader().containsKey(Encapsulated.RESHDR)) {
-					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
-				}
+//				if(message.getEncapsulatedHeader().containsKey(Encapsulated.RESHDR)) {
+//					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
+//				}
 				// TODO checkpoint to body
 			} finally {
 				checkpoint();
@@ -144,7 +144,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		if(message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
 			throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
 		}
-		Encapsulated encapsulated = new Encapsulated(message.getMethod(),message.getHeader(IcapHeaders.Names.ENCAPSULATED));
+		Encapsulated encapsulated = Encapsulated.parseHeader(message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		message.setEncapsulatedHeader(encapsulated);
 	}
 
