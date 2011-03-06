@@ -26,8 +26,12 @@ public class Encapsulated {
 	
 	public int getPosition(String parameter) {
 		for(Entry entry : entries) {
-			if(entry.getName().equals(parameter)) {
-				return entry.getPosition();
+			if(entry != null) {
+				if(entry.getName() != null) {
+					if(entry.getName().equals(parameter)) {
+						return entry.getPosition();
+					}
+				}
 			}
 		}
 		return -1;
@@ -41,6 +45,9 @@ public class Encapsulated {
 	OPTIONS response:	 opt-body
 	 */
 	public void parseHeaderValue(String headerValue) {
+		if(headerValue == null) {
+			throw new Error("No value associated with Encapsualted header");
+		}
 		StringTokenizer tokenizer = new StringTokenizer(headerValue,",");
 		int counter = 0;
 		while(tokenizer.hasMoreTokens()) {
@@ -90,5 +97,22 @@ public class Encapsulated {
 		public Integer getPosition() {
 			return position;
 		}
+		
+		@Override
+		public String toString() {
+			return name + "=" + position;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Encapsulated: ");
+		for(Entry entry : entries) {
+			if(entry != null) {
+				builder.append(" [").append(entry.toString()).append("] ");
+			}
+		}
+ 		return builder.toString();
 	}
 }

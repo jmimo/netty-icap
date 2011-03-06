@@ -113,6 +113,8 @@ public interface IcapMessage {
      */
 	HttpRequest getHttpRequest();
 	
+	void setHttpRequest(HttpRequest httpRequest);
+	
 	/**
 	 * @return true if a http response was delivered.
 	 */

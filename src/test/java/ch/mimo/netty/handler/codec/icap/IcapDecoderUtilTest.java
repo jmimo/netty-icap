@@ -139,6 +139,8 @@ public class IcapDecoderUtilTest extends Assert {
 			assertEquals("total length of parsed headers is wrong",75,sizeDelimiter.getSize());
 			header = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
 			assertEquals("header length is not null",0,header.length());
+			byte bite = buffer.getByte(buffer.readerIndex());
+			assertEquals("...",'G',(char)bite);
 		} catch (TooLongFrameException e) {
 			e.printStackTrace();
 			fail();

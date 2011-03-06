@@ -1,24 +1,31 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.jboss.netty.util.internal.StringUtil;
 
 
 public class DefaultIcapMessage implements IcapMessage {
 	
+	private IcapHeaders icapHeaders;
 	private HttpVersion version;
 	private HttpMethod method;
 	private String uri;
 	private Encapsulated encapsulated;
 	
+	private HttpRequest httpRequest;
+	
 	public DefaultIcapMessage(HttpVersion version) {
 		setProtocolVersion(version);
+		icapHeaders = new IcapHeaders();
 	}
 	
     public DefaultIcapMessage(HttpVersion icapVersion, HttpMethod method, String uri) {
@@ -29,62 +36,52 @@ public class DefaultIcapMessage implements IcapMessage {
 
 	@Override
 	public String getHeader(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return icapHeaders.getHeader(name);
 	}
 
 	@Override
 	public List<String> getHeaders(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return icapHeaders.getHeaders(name);
 	}
 
 	@Override
 	public List<Entry<String, String>> getHeaders() {
-		// TODO Auto-generated method stub
-		return null;
+		return icapHeaders.getHeaders();
 	}
 
 	@Override
 	public boolean containsHeader(String name) {
-		// TODO Auto-generated method stub
-		return false;
+		return icapHeaders.containsHeader(name);
 	}
 
 	@Override
 	public Set<String> getHeaderNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return icapHeaders.getHeaderNames();
 	}
 
 	@Override
 	public void addHeader(String name, Object value) {
-		// TODO Auto-generated method stub
-		
+		icapHeaders.addHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Object value) {
-		// TODO Auto-generated method stub
-		
+		icapHeaders.setHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Iterable<?> values) {
-		// TODO Auto-generated method stub
-		
+		icapHeaders.setHeader(name,values);
 	}
 
 	@Override
 	public void removeHeader(String name) {
-		// TODO Auto-generated method stub
-		
+		icapHeaders.removeHeader(name);
 	}
 
 	@Override
 	public void clearHeaders() {
-		// TODO Auto-generated method stub
-		
+		icapHeaders.clearHeaders();
 	}
 
 	@Override
@@ -117,8 +114,12 @@ public class DefaultIcapMessage implements IcapMessage {
 
 	@Override
 	public HttpRequest getHttpRequest() {
-		// TODO Auto-generated method stub
-		return null;
+		return httpRequest;
+	}
+	
+	@Override
+	public void setHttpRequest(HttpRequest httpRequest) {
+		this.httpRequest = httpRequest;
 	}
 
 	@Override
@@ -164,4 +165,35 @@ public class DefaultIcapMessage implements IcapMessage {
 	public Encapsulated getEncapsulatedHeader() {
 		return encapsulated;
 	}
+	
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
+        buf.append("(version: ");
+        buf.append(getProtocolVersion().getText());
+        buf.append(')');
+        buf.append(StringUtil.NEWLINE);
+        appendHeaders(buf);
+
+        if(httpRequest != null) {
+        	buf.append("--- encapsulated HTTP Request ---").append(StringUtil.NEWLINE);
+        	buf.append(httpRequest.toString());
+        }
+        
+        // TODO add http response
+        
+        // Remove the last newline.
+        buf.setLength(buf.length() - StringUtil.NEWLINE.length());
+        return buf.toString();
+    }
+    
+    void appendHeaders(StringBuilder buf) {
+        for (Map.Entry<String, String> e: getHeaders()) {
+            buf.append(e.getKey());
+            buf.append(": ");
+            buf.append(e.getValue());
+            buf.append(StringUtil.NEWLINE);
+        }
+    }
 }

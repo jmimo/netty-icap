@@ -2,12 +2,12 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.util.internal.StringUtil;
 
 public final class DataMockery {
-	
-	private static final String LINEBREAK = "\r\n";
 
 	private DataMockery() {
+
 	}
 	
 	public static final ChannelBuffer createWhiteSpacePrefixedOPTIONSRequest() {
@@ -44,9 +44,9 @@ public final class DataMockery {
 	
 	private static final void addLine(StringBuilder builder, String value) {
 		if(value == null) {
-			builder.append(LINEBREAK);
+			builder.append(StringUtil.NEWLINE);
 		} else {
-			builder.append(value).append(LINEBREAK);
+			builder.append(value).append(StringUtil.NEWLINE);
 		}
 	}
 }

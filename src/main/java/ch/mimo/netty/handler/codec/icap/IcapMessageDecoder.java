@@ -1,9 +1,17 @@
 package ch.mimo.netty.handler.codec.icap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
+import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
+import org.jboss.netty.handler.codec.http.HttpMessage;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 
 public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDecoder.State> {
@@ -12,6 +20,8 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
     private final int maxIcapHeaderSize;
     private final int maxHttpHeaderSize;
     private final int maxChunkSize;
+    
+    private int encapsulationOffset;
     
 	private IcapMessage message;
 	
@@ -33,6 +43,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
      */
     protected IcapMessageDecoder() {
         this(4096,8192,8192,8192);
+        encapsulationOffset = 0;
     }
     
     /**
@@ -78,12 +89,15 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		}
 		case READ_ICAP_HEADER: {
 			try {
-				readHeaders(buffer,maxIcapHeaderSize);
+				List<String[]> headerList = readHeaders(buffer,maxIcapHeaderSize);
+				for(String[] header : headerList) {
+					message.addHeader(header[0],header[1]);
+				}
 				// validate mandatory icap headers
-				if(message.containsHeader(IcapHeaders.Names.HOST)) {
+				if(!message.containsHeader(IcapHeaders.Names.HOST)) {
 					throw new Error("Mandatory ICAP message header [Host] is missing");
 				}
-				if(message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+				if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
 					throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
 				}
 				Encapsulated encapsulated = Encapsulated.parseHeader(message.getHeader(IcapHeaders.Names.ENCAPSULATED));
@@ -98,17 +112,26 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 			}
 		}
 		case READ_HTTP_REQUEST_INITIAL: {
-			// TODO offset the buffer first.
+			encapsulationOffset = buffer.readerIndex();
 			String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
-			// TODO start HttpMessage
+			HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.valueOf(initialLine[2]),HttpMethod.valueOf(initialLine[0]),initialLine[1]);
+			this.message.setHttpRequest(httpRequest);
 			checkpoint(State.READ_HTTP_REQUEST_HEADER);
 		}
 		case READ_HTTP_REQUEST_HEADER: {
 			try {
-				readHeaders(buffer,maxHttpHeaderSize);
-//				if(message.getEncapsulatedHeader().containsKey(Encapsulated.RESHDR)) {
-//					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
-//				}
+				List<String[]> headerList = readHeaders(buffer,maxHttpHeaderSize);
+				for(String[] header : headerList) {
+					message.getHttpRequest().addHeader(header[0],header[1]);
+				}
+				// TODO validate buffer index with encapsulation value, don't know whether this check is necessary?
+				if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESHDR) > -1) {
+					checkpoint(State.READ_HTTP_RESPONSE_HEADER);
+				}
+				// TODO handle null- & opt-body
+				if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESBODY) > -1) {
+					checkpoint(State.READ_HTTP_BODY);
+				}
 				// TODO checkpoint to res-hdr or body
 			} finally {
 				checkpoint();
@@ -117,7 +140,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		case READ_HTTP_RESPONSE_INITIAL: {
 			// TODO offset the buffer first.
 			String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
-			// TODO start HttpMessage
+			// TODO start HttpResponses
 		}
 		case READ_HTTP_RESPONSE_HEADER: {
 			try {
@@ -140,19 +163,19 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	
 	protected abstract IcapMessage createMessage(String[] initialLine) throws Exception;
 	
-	private void readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
+	private List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
+		List<String[]> headerList = new ArrayList<String[]>();
 		SizeDelimiter sizeDelimiter = new SizeDelimiter(maxIcapHeaderSize);
 		String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
 		String name = null;
 		String value = null;
 		if(line.length() != 0) {
-			message.clearHeaders();
 			while(line.length() != 0) {
 				if(name != null && IcapDecoderUtil.isHeaderLineSimpleValue(line)) {
 					value = value + ' ' + line.trim();
 				} else {
 					if(name != null) {
-						message.addHeader(name,value);
+						headerList.add(new String[]{name,value});
 					}
 					String[] header = IcapDecoderUtil.splitHeader(line);
 					name = header[0];
@@ -161,8 +184,9 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 				line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
 			}
             if (name != null) {
-                message.addHeader(name,value);
+            	headerList.add(new String[]{name,value});
             }
 		}
+		return headerList;
 	}
 }
