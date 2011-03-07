@@ -22,6 +22,7 @@ public class DefaultIcapMessage implements IcapMessage {
 	private Encapsulated encapsulated;
 	
 	private HttpRequest httpRequest;
+	private HttpResponse httpResponse;
 	
 	public DefaultIcapMessage(HttpVersion version) {
 		setProtocolVersion(version);
@@ -136,8 +137,11 @@ public class DefaultIcapMessage implements IcapMessage {
 
 	@Override
 	public HttpResponse getHttpResponse() {
-		// TODO Auto-generated method stub
-		return null;
+		return httpResponse;
+	}
+	
+	public void setHttpResponse(HttpResponse response) {
+		this.httpResponse = response;
 	}
 
 	public void setMethod(HttpMethod method) {
@@ -181,7 +185,10 @@ public class DefaultIcapMessage implements IcapMessage {
         	buf.append(httpRequest.toString());
         }
         
-        // TODO add http response
+        if(httpResponse != null) {
+        	buf.append("--- encapsulated HTTP Response ---").append(StringUtil.NEWLINE);
+        	buf.append(httpResponse.toString());
+        }
         
         // Remove the last newline.
         buf.setLength(buf.length() - StringUtil.NEWLINE.length());

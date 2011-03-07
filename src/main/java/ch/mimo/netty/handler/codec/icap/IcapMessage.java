@@ -130,6 +130,8 @@ public interface IcapMessage {
 	 */
 	HttpResponse getHttpResponse();
 	
+	void setHttpResponse(HttpResponse response);
+	
 	void setMethod(HttpMethod method);
 
 	HttpMethod getMethod();

@@ -82,6 +82,22 @@ public final class IcapDecoderUtil {
 		}
 		return result;
 	}
+	
+	public static String[] splitInitialResponseLine(String sb) {
+		int aStart;
+		int aEnd;
+		int bStart;
+		int bEnd;
+		
+		aStart = findNonWhitespace(sb, 0);
+		aEnd = findWhitespace(sb, aStart);
+
+		bStart = findNonWhitespace(sb, aEnd);
+		bEnd = findWhitespace(sb, bStart);
+		
+		return new String[] { sb.substring(aStart, aEnd),
+				sb.substring(bStart, bEnd)};
+	}
 
 	public static int findWhitespace(String sb, int offset) {
 		int result;

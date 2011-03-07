@@ -18,6 +18,12 @@ public class IcapRequestDecoder extends IcapMessageDecoder {
 
 	@Override
 	protected IcapMessage createMessage(String[] initialLine) throws Exception {
-		return new DefaultIcapMessage(IcapVersion.valueOf(initialLine[2]),IcapMethod.valueOf(initialLine[0]),initialLine[1]);
+		if(initialLine != null) {
+			if(initialLine.length == 3) {
+				return new DefaultIcapMessage(IcapVersion.valueOf(initialLine[2]),IcapMethod.valueOf(initialLine[0]),initialLine[1]);
+			}
+		}
+		// TODO replace with specific exception.
+		throw new Exception("initial line array has wrong size");
 	}
 }
