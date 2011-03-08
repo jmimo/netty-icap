@@ -32,6 +32,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 		SKIP_CONTROL_CHARS,
 		READ_ICAP_INITIAL,
 		READ_ICAP_HEADER,
+		READ_ICAP_OPTIONS_REQUEST,
 		READ_HTTP_REQUEST_INITIAL,
 		READ_HTTP_REQUEST_HEADER,
 		READ_HTTP_RESPONSE_INITIAL,
@@ -73,95 +74,109 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, State state) throws Exception {
 		switch (state) {
-		case SKIP_CONTROL_CHARS: {
-            try {
-                IcapDecoderUtil.skipControlCharacters(buffer);
-                checkpoint(State.READ_ICAP_INITIAL);
-            } finally {
-                checkpoint();
-            }
-		}
-		case READ_ICAP_INITIAL: {
-			String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
-            message = createMessage(initialLine);
-            checkpoint(State.READ_ICAP_HEADER);
-		}
-		case READ_ICAP_HEADER: {
-			List<String[]> headerList = readHeaders(buffer,maxIcapHeaderSize);
-			for(String[] header : headerList) {
-				message.addHeader(header[0],header[1]);
+			case SKIP_CONTROL_CHARS: {
+	            try {
+	                IcapDecoderUtil.skipControlCharacters(buffer);
+	                checkpoint(State.READ_ICAP_INITIAL);
+	            } finally {
+	                checkpoint();
+	            }
 			}
-			// validate mandatory icap headers
-			if(!message.containsHeader(IcapHeaders.Names.HOST)) {
-				throw new Error("Mandatory ICAP message header [Host] is missing");
+			case READ_ICAP_INITIAL: {
+				String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
+				if(initialLine != null && initialLine.length == 3) {
+					message = createMessage(initialLine);
+				} else {
+					checkpoint(State.SKIP_CONTROL_CHARS);
+					return null;
+				}
 			}
-			if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
-				throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
+			case READ_ICAP_HEADER: {
+				List<String[]> headerList = readHeaders(buffer,maxIcapHeaderSize);
+				message.clearHeaders();
+				for(String[] header : headerList) {
+					message.addHeader(header[0],header[1]);
+				}
+				// validate mandatory icap headers
+				if(!message.containsHeader(IcapHeaders.Names.HOST)) {
+					throw new Error("Mandatory ICAP message header [Host] is missing");
+				}
+				if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+					throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
+				}
+				Encapsulated encapsulated = Encapsulated.parseHeader(message.getHeader(IcapHeaders.Names.ENCAPSULATED));
+				message.setEncapsulatedHeader(encapsulated);
+				// make first parsing direction decision
+				// a. if OPTIONS
+				// b. if REQ / RESP mod
+				if(message.getMethod().equals(IcapMethod.OPTIONS)) {
+					checkpoint(State.READ_ICAP_OPTIONS_REQUEST);
+				} else {
+					if(encapsulated.getPosition(Encapsulated.REQHDR) == 0) {
+						checkpoint(State.READ_HTTP_REQUEST_INITIAL);
+					} else {
+						// NOOP this is not what I expected. If the method is not OPTIONS and REQHDR is not null the request does not
+						// comply with the RFC. When we reply we can parse this section again... 
+					}
+				}
 			}
-			Encapsulated encapsulated = Encapsulated.parseHeader(message.getHeader(IcapHeaders.Names.ENCAPSULATED));
-			message.setEncapsulatedHeader(encapsulated);
-			if(!message.getMethod().equals(IcapMethod.OPTIONS)) {
-				checkpoint(State.READ_HTTP_REQUEST_INITIAL);
-			} else {
-				// TODO process options request...
+			case READ_HTTP_REQUEST_INITIAL: {
+				encapsulationOffset = buffer.readerIndex();
+				String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
+				HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.valueOf(initialLine[2]),HttpMethod.valueOf(initialLine[0]),initialLine[1]);
+				this.message.setHttpRequest(httpRequest);
+				checkpoint(State.READ_HTTP_REQUEST_HEADER);
 			}
-		}
-		case READ_HTTP_REQUEST_INITIAL: {
-			encapsulationOffset = buffer.readerIndex();
-			String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
-			HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.valueOf(initialLine[2]),HttpMethod.valueOf(initialLine[0]),initialLine[1]);
-			this.message.setHttpRequest(httpRequest);
-			checkpoint(State.READ_HTTP_REQUEST_HEADER);
-		}
-		case READ_HTTP_REQUEST_HEADER: {
-			List<String[]> headerList = readHeaders(buffer,maxHttpHeaderSize);
-			for(String[] header : headerList) {
-				message.getHttpRequest().addHeader(header[0],header[1]);
+			case READ_HTTP_REQUEST_HEADER: {
+				List<String[]> headerList = readHeaders(buffer,maxHttpHeaderSize);
+				for(String[] header : headerList) {
+					message.getHttpRequest().addHeader(header[0],header[1]);
+				}
+				// TODO validate buffer index with encapsulation value, don't know whether this check is necessary?
+				if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESHDR) > -1) {
+					checkpoint(State.READ_HTTP_RESPONSE_INITIAL);
+				} else if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESBODY) > -1) {
+					// TODO handle null- & opt-body
+					checkpoint(State.READ_HTTP_BODY);
+				} else {
+					checkpoint(State.END_OF_REQUEST);
+				}
 			}
-			// TODO validate buffer index with encapsulation value, don't know whether this check is necessary?
-			if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESHDR) > -1) {
-				checkpoint(State.READ_HTTP_RESPONSE_INITIAL);
-			} else if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESBODY) > -1) {
-				// TODO handle null- & opt-body
-				checkpoint(State.READ_HTTP_BODY);
-			} else {
-				checkpoint(State.END_OF_REQUEST);
+			case READ_HTTP_RESPONSE_INITIAL: {
+				// TODO offset the buffer first.
+				String[] initialLine = IcapDecoderUtil.splitInitialResponseLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
+				HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.valueOf(initialLine[0]),HttpResponseStatus.valueOf(Integer.valueOf(initialLine[1])));
+				this.message.setHttpResponse(httpResponse);
+				checkpoint(State.READ_HTTP_RESPONSE_HEADER);
 			}
-		}
-		case READ_HTTP_RESPONSE_INITIAL: {
-			// TODO offset the buffer first.
-			String[] initialLine = IcapDecoderUtil.splitInitialResponseLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
-			HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.valueOf(initialLine[0]),HttpResponseStatus.valueOf(Integer.valueOf(initialLine[1])));
-			this.message.setHttpResponse(httpResponse);
-			checkpoint(State.READ_HTTP_RESPONSE_HEADER);
-		}
-		case READ_HTTP_RESPONSE_HEADER: {
-			List<String[]> headerList = readHeaders(buffer,maxHttpHeaderSize);
-			for(String[] header : headerList) {
-				message.getHttpResponse().addHeader(header[0],header[1]);
+			case READ_HTTP_RESPONSE_HEADER: {
+				List<String[]> headerList = readHeaders(buffer,maxHttpHeaderSize);
+				for(String[] header : headerList) {
+					message.getHttpResponse().addHeader(header[0],header[1]);
+				}
+				if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESBODY) > -1) {
+					// TODO handle null- & opt-body
+					checkpoint(State.READ_HTTP_BODY);
+				} else {
+					checkpoint(State.END_OF_REQUEST);
+				}
 			}
-			if(message.getEncapsulatedHeader().getPosition(Encapsulated.RESBODY) > -1) {
-				// TODO handle null- & opt-body
-				checkpoint(State.READ_HTTP_BODY);
-			} else {
-				checkpoint(State.END_OF_REQUEST);
+			case READ_HTTP_BODY: {
+				// TODO handle Preview and chunks!
 			}
-		}
-		case READ_HTTP_BODY: {
-			// TODO handle Preview and chunks!
-		}
-		case END_OF_REQUEST: {
-			// NOOP
-		}
-		default:
-			break;
+			case END_OF_REQUEST: {
+				// NOOP
+			}
+			default: {
+				throw new Error("Shouldn't reach here.");
+			}
 		}
 		return message;
 	}
 	
 	public abstract boolean isDecodingRequest();
 	
-	protected abstract IcapMessage createMessage(String[] initialLine) throws Exception;
+	protected abstract IcapMessage createMessage(String[] initialLine);
 	
 	private List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
 		List<String[]> headerList = new ArrayList<String[]>();
