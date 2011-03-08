@@ -171,7 +171,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 				throw new Error("Shouldn't reach here.");
 			}
 		}
-		return message;
+//		return message;
 	}
 	
 	public abstract boolean isDecodingRequest();
