@@ -1,21 +1,63 @@
 package ch.mimo.netty.handler.codec.icap;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Encapsulated {
 	
-	public static final String REQHDR 	= "req-hdr";
-	public static final String RESHDR 	= "res-hdr";
-	public static final String REQBODY 	= "req-body";
-	public static final String RESBODY 	= "res-body";
-	public static final String OPTBODY 	= "opt-body";
-	public static final String NULLBODY = "null-body";
+	public static enum EntryName {
+		REQHDR(1,"req-hdr"),
+		RESHDR(2,"res-hdr"),
+		REQBODY(3,"req-body"),
+		RESBODY(4,"res-body"),
+		OPTBODY(5,"opt-body"),
+		NULLBODY(6,"null-body");
+		
+		private int hash;
+		private String value;
+		
+		EntryName(int hash, String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+		
+		public int getHash() {
+			return hash;
+		}
+		
+		public static EntryName fromString(String value) {
+			if(value != null) {
+				for(EntryName entryName : EntryName.values()) {
+					if(value.equalsIgnoreCase(entryName.getValue())) {
+						return entryName;
+					}
+				}
+			}
+			return null;
+		}
+		
+		public static EntryName fromHash(int hash) {
+			for(EntryName entryName : EntryName.values()) {
+				if(hash == entryName.getHash()) {
+					return entryName;
+				}
+			}
+			return null;
+		}
+	}
 	
 	private String headerValue;
-	private Entry[] entries;
+	private List<Entry> entries;
+//	private Entry[] entries;
+	private int bufferOffsetIndex;
 	
 	public Encapsulated() {
-		entries = new Entry[3];
+		entries = new ArrayList<Encapsulated.Entry>();
 	}
 	
 	public static Encapsulated parseHeader(String headerValue) {
@@ -24,17 +66,41 @@ public class Encapsulated {
 		return encapsulated;
 	}
 	
-	public int getPosition(String parameter) {
+	public int getPosition(EntryName entity) {
 		for(Entry entry : entries) {
 			if(entry != null) {
 				if(entry.getName() != null) {
-					if(entry.getName().equals(parameter)) {
+					if(entry.getName().equals(entity)) {
 						return entry.getPosition();
 					}
 				}
 			}
 		}
 		return -1;
+	}
+	
+	public EntryName getNextEntity(EntryName previous) {
+		try {
+			Entry entry = null;
+			if(previous == null) {
+				entry = entries.get(0);
+				if(entry != null) {
+					return entry.getName();
+				}
+			}
+			for(int i = 0 ; i < entries.size() ; i++) {
+				entry = entries.get(i);
+				if(entry.getName().equals(previous)) {
+					entry = entries.get(i + 1);
+					if(entry != null) {
+						return entry.getName();
+					}
+				}
+			}
+		} catch(IndexOutOfBoundsException ioobe) {
+			// NOOP
+		}
+		return null;
 	}
 	
 	/*
@@ -49,22 +115,19 @@ public class Encapsulated {
 			throw new Error("No value associated with Encapsualted header");
 		}
 		StringTokenizer tokenizer = new StringTokenizer(headerValue,",");
-		int counter = 0;
 		while(tokenizer.hasMoreTokens()) {
-			if(counter > 3) {
-				throw new Error("There are more than 3 Encapsulation values!");
-			}
 			String parameterString = tokenizer.nextToken();
 			if(parameterString != null) {
 				String[] parameter = splitParameter(parameterString.trim());
 				try {
 					int value = Integer.parseInt(parameter[1]);
-					entries[counter++] = new Entry(parameter[0],value);
+					entries.add(new Entry(EntryName.fromString(parameter[0]),value));
 				} catch(NumberFormatException nfe) {
 					throw new Error("the Encapsulated header value [" + parameter[1] + "] for the key [" + parameter[0] + "] is not a number");
 				}
 			}
 		}
+		Collections.sort(entries);
 	}
 	
 	private String[] splitParameter(String parameter) {
@@ -80,22 +143,27 @@ public class Encapsulated {
 		return new String[]{key.trim(),value};
 	}
 	
-	private class Entry {
+	private class Entry implements Comparable<Entry> {
 
-		private String name;
+		private EntryName name;
 		private Integer position;
 		
-		public Entry(String name, Integer position) {
+		public Entry(EntryName name, Integer position) {
 			this.name = name;
 			this.position = position;
 		}
 		
-		public String getName() {
+		public EntryName getName() {
 			return name;
 		}
 		
 		public Integer getPosition() {
 			return position;
+		}
+		
+		@Override
+		public int compareTo(Entry entry) {
+			return this.position.compareTo(entry.position);
 		}
 		
 		@Override
@@ -114,5 +182,13 @@ public class Encapsulated {
 			}
 		}
  		return builder.toString();
+	}
+
+	public void setBufferOffsetIndex(int bufferOffsetIndex) {
+		this.bufferOffsetIndex = bufferOffsetIndex;
+	}
+
+	public int getBufferOffsetIndex() {
+		return bufferOffsetIndex;
 	}
 }
