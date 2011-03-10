@@ -170,6 +170,10 @@ public class DefaultIcapMessage implements IcapMessage {
 		return encapsulated;
 	}
 	
+	public boolean isPreview() {
+		return containsHeader("Preview");
+	}
+	
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -195,7 +199,7 @@ public class DefaultIcapMessage implements IcapMessage {
         return buf.toString();
     }
     
-    void appendHeaders(StringBuilder buf) {
+    private void appendHeaders(StringBuilder buf) {
         for (Map.Entry<String, String> e: getHeaders()) {
             buf.append(e.getKey());
             buf.append(": ");

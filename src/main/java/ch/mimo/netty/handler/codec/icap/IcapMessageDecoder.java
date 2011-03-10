@@ -175,10 +175,8 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<IcapMessageDec
 			
 		} else if(entity.equals(Encapsulated.EntryName.RESBODY)) {
 			
-		} else if(entity.equals(Encapsulated.EntryName.OPTBODY)) {
-			
 		} else if(entity.equals(Encapsulated.EntryName.NULLBODY)) {
-			
+			// no body in message (special tag)
 		} else {
 			// TODO: should not reach here!
 		}

@@ -143,4 +143,6 @@ public interface IcapMessage {
 	void setEncapsulatedHeader(Encapsulated encapsulated);
 	
 	Encapsulated getEncapsulatedHeader();
+	
+	boolean isPreview();
 }
