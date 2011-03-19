@@ -38,7 +38,6 @@ public class ReadHttpResponseInitalAndHeadersState extends State {
 	@Override
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
 		Encapsulated encapsulated = icapMessageDecoder.message.getEncapsulatedHeader();
-		encapsulated.setProcessed(encapsulated.getNextEntry());
 		EntryName entry = encapsulated.getNextEntry();
 		if(entry != null) {
 			if(entry.equals(EntryName.REQHDR)) {

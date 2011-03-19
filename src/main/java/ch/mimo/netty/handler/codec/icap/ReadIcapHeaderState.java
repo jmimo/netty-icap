@@ -45,14 +45,16 @@ public class ReadIcapHeaderState extends State {
 			return StateEnum.OPTIONS_REQUEST_ACTION_STATE;
 		}
 		EntryName entry = encapsulated.getNextEntry();
-		if(entry.equals(EntryName.REQHDR)) {
-			return StateEnum.READ_HTTP_REQUEST_INITIAL_AND_HEADERS;
-		}
-		if(entry.equals(EntryName.RESHDR)) {
-			return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
-		}
-		if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
-			return StateEnum.BODY_PROCESSING_DECISION_STATE;
+		if(entry != null) {
+			if(entry.equals(EntryName.REQHDR)) {
+				return StateEnum.READ_HTTP_REQUEST_INITIAL_AND_HEADERS;
+			}
+			if(entry.equals(EntryName.RESHDR)) {
+				return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
+			}
+			if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
+				return StateEnum.BODY_PROCESSING_DECISION_STATE;
+			}
 		}
 		return null;
 	}

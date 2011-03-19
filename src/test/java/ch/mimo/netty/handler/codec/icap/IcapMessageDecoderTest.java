@@ -26,6 +26,20 @@ public class IcapMessageDecoderTest extends Assert {
 	public void decodeREQMODRequestWithNullBody() {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());
 		IcapMessage result = embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);	
+	}
+	
+	@Test
+	public void decodeRESPMODRequestWithNullBody() {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBody());
+		IcapMessage result = embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+	}
+	
+	@Test
+	public void decodeRESPMODRequestWithNullBodyAndReverseRequestAlignement() {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyAndReverseRequestAlignement());
+		IcapMessage result = embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 	}
 	

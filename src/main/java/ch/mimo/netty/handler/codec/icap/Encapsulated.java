@@ -150,9 +150,9 @@ public class Encapsulated {
 			return name;
 		}
 		
-		public Integer getPosition() {
-			return position;
-		}
+//		public Integer getPosition() {
+//			return position;
+//		}
 		
 		public void setIsProcessed() {
 			processed = true;
