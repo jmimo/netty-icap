@@ -8,26 +8,21 @@ import java.util.StringTokenizer;
 public class Encapsulated {
 	
 	public static enum EntryName {
-		REQHDR(1,"req-hdr"),
-		RESHDR(2,"res-hdr"),
-		REQBODY(3,"req-body"),
-		RESBODY(4,"res-body"),
-		OPTBODY(5,"opt-body"),
-		NULLBODY(6,"null-body");
+		REQHDR("req-hdr"),
+		RESHDR("res-hdr"),
+		REQBODY("req-body"),
+		RESBODY("res-body"),
+		OPTBODY("opt-body"),
+		NULLBODY("null-body");
 		
-		private int hash;
 		private String value;
 		
-		EntryName(int hash, String value) {
+		EntryName(String value) {
 			this.value = value;
 		}
 		
 		public String getValue() {
 			return value;
-		}
-		
-		public int getHash() {
-			return hash;
 		}
 		
 		public static EntryName fromString(String value) {
@@ -36,15 +31,6 @@ public class Encapsulated {
 					if(value.equalsIgnoreCase(entryName.getValue())) {
 						return entryName;
 					}
-				}
-			}
-			return null;
-		}
-		
-		public static EntryName fromHash(int hash) {
-			for(EntryName entryName : EntryName.values()) {
-				if(hash == entryName.getHash()) {
-					return entryName;
 				}
 			}
 			return null;
@@ -66,42 +52,39 @@ public class Encapsulated {
 		return encapsulated;
 	}
 	
-	public int getPosition(EntryName entity) {
+	public boolean containsEntry(EntryName entity) {
 		for(Entry entry : entries) {
-			if(entry != null) {
-				if(entry.getName() != null) {
-					if(entry.getName().equals(entity)) {
-						return entry.getPosition();
-					}
-				}
+			if(entry.getName().equals(entity)) {
+				return true;
 			}
 		}
-		return -1;
+		return false;
+ 	}
+	
+	public boolean containsBody() {
+		return containsEntry(EntryName.REQBODY) | 
+					containsEntry(EntryName.RESBODY) | 
+					containsEntry(EntryName.OPTBODY);
 	}
 	
-	public EntryName getNextEntity(EntryName previous) {
-		try {
-			Entry entry = null;
-			if(previous == null) {
-				entry = entries.get(0);
-				if(entry != null) {
-					return entry.getName();
-				}
+	public EntryName getNextEntry() {
+		for(Entry entry : entries) {
+			if(!entry.isProcessed()) {
+				return entry.getName();
 			}
-			for(int i = 0 ; i < entries.size() ; i++) {
-				entry = entries.get(i);
-				if(entry.getName().equals(previous)) {
-					entry = entries.get(i + 1);
-					if(entry != null) {
-						return entry.getName();
-					}
-				}
-			}
-		} catch(IndexOutOfBoundsException ioobe) {
-			// NOOP
 		}
 		return null;
 	}
+	
+	public void setProcessed(EntryName entryName) {
+		Entry entry = getEntryByName(entryName);
+		entry.setIsProcessed();
+	}
+	
+//	public int getPosition(EntryName entryName) {
+//		Entry entry = getEntryByName(entryName);
+//		return entry.getPosition();
+//	}
 	
 	/*
 	REQMOD request: 	 [req-hdr] req-body
@@ -143,10 +126,20 @@ public class Encapsulated {
 		return new String[]{key.trim(),value};
 	}
 	
+	private Entry getEntryByName(EntryName entryName) {
+		for(Entry entry : entries) {
+			if(entry.getName().equals(entryName)) {
+				return entry;
+			}
+		}
+		return null;
+	}
+	
 	private class Entry implements Comparable<Entry> {
 
 		private EntryName name;
 		private Integer position;
+		private boolean processed;
 		
 		public Entry(EntryName name, Integer position) {
 			this.name = name;
@@ -161,6 +154,14 @@ public class Encapsulated {
 			return position;
 		}
 		
+		public void setIsProcessed() {
+			processed = true;
+		}
+		
+		public boolean isProcessed() {
+			return processed;
+		}
+		
 		@Override
 		public int compareTo(Entry entry) {
 			return this.position.compareTo(entry.position);
@@ -168,7 +169,7 @@ public class Encapsulated {
 		
 		@Override
 		public String toString() {
-			return name + "=" + position;
+			return name + "=" + position + " : " + processed;
 		}
 	}
 	

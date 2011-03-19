@@ -1,5 +1,8 @@
 package ch.mimo.netty.handler.codec.icap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 
@@ -117,6 +120,33 @@ public final class IcapDecoderUtil {
 			}
 		}
 		return result;
+	}
+	
+	public static List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
+		List<String[]> headerList = new ArrayList<String[]>();
+		SizeDelimiter sizeDelimiter = new SizeDelimiter(maxSize);
+		String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
+		String name = null;
+		String value = null;
+		if(line.length() != 0) {
+			while(line.length() != 0) {
+				if(name != null && IcapDecoderUtil.isHeaderLineSimpleValue(line)) {
+					value = value + ' ' + line.trim();
+				} else {
+					if(name != null) {
+						headerList.add(new String[]{name,value});
+					}
+					String[] header = IcapDecoderUtil.splitHeader(line);
+					name = header[0];
+					value = header[1];
+				}
+				line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
+			}
+            if (name != null) {
+            	headerList.add(new String[]{name,value});
+            }
+		}
+		return headerList;
 	}
 	
 	public static boolean isHeaderLineSimpleValue(String header) {
