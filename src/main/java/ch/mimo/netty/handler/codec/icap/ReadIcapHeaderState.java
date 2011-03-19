@@ -6,17 +6,17 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
-public class ReadIcapHeaderState extends State {
+public class ReadIcapHeaderState extends State<Object> {
 
 	@Override
-	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
+	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		if(icapMessageDecoder.message == null) {
 			throw new IllegalArgumentException("This state requires a valid IcapMessage instance");
 		}
 	}
 
 	@Override
-	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
+	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		List<String[]> headerList = IcapDecoderUtil.readHeaders(buffer,icapMessageDecoder.maxIcapHeaderSize);
 		icapMessageDecoder.message.clearHeaders();
 		for(String[] header : headerList) {
@@ -35,7 +35,7 @@ public class ReadIcapHeaderState extends State {
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
 		if(message.getMethod().equals(IcapMethod.OPTIONS)) {

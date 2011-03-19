@@ -57,6 +57,8 @@ class IcapCodecUtil {
 
     static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
 
+    static byte[] IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102,CR,LF,CR,LF};
+    
     private IcapCodecUtil() {
         super();
     }

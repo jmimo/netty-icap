@@ -12,9 +12,9 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
     protected final int maxHttpHeaderSize;
     protected final int maxChunkSize;
     
-    private StateEnum previousState;
-    
 	protected IcapMessage message;
+	
+	protected int currentChunkSize;
 	
     /**
      * Creates a new instance with the default
@@ -45,15 +45,15 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
         this.maxChunkSize = maxChunkSize;
     }
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, StateEnum stateEnumValue) throws Exception {
 		State state = stateEnumValue.getState();
-		state.onEntry(buffer,this,previousState);
-		StateReturnValue returnValue = state.execute(buffer,this,previousState);
-		StateEnum nextState = state.onExit(buffer,this,previousState);
+		state.onEntry(buffer,this);
+		StateReturnValue returnValue = state.execute(buffer,this);
+		StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
 		if(nextState != null) {
 			checkpoint(nextState);
-			previousState = stateEnumValue;
 		} else {
 			checkpoint();
 		}

@@ -9,15 +9,19 @@ public enum StateEnum {
 	READ_HTTP_REQUEST_INITIAL_AND_HEADERS(new ReadHttpRequestInitialAndHeadersState()),
 	READ_HTTP_RESPONSE_INITIAL_AND_HEADERS(new ReadHttpResponseInitalAndHeadersState()),
 	PREVIEW_STATE(new PreviewState()),
-	BODY_PROCESSING_STATE(new BodyProcessingState());
+	READ_CHUNK_SIZE_STATE(new ReadChunkSizeState()),
+	READ_CHUNK_STATE(new ReadChunkState()),
+	READ_CHUNKED_CONTENT_AS_CHUNKS_STATE(new ReadChunkedContentAsChunksState()),
+	READ_CHUNK_DELIMITER_STATE(new ReadChunkDelimiterState()),
+	READ_TRAILING_HEADERS_STATE(new ReadTrailingHeadersState());
 	
-	private State state;
+	private State<? extends Object> state;
 	
-	StateEnum(State state) {
+	StateEnum(State<? extends Object> state) {
 		this.state = state;
 	}
 	
-	public State getState() {
+	public State<? extends Object> getState() {
 		return state;
 	}
 }

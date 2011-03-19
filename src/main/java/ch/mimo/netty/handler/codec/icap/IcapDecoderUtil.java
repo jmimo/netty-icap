@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
+import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
+import org.jboss.netty.handler.codec.http.HttpChunk;
+import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 public final class IcapDecoderUtil {
 
@@ -121,6 +125,19 @@ public final class IcapDecoderUtil {
 		}
 		return result;
 	}
+	
+    public static int getChunkSize(String hex) {
+        hex = hex.trim();
+        for (int i = 0; i < hex.length(); i ++) {
+            char c = hex.charAt(i);
+            if (c == ';' || Character.isWhitespace(c) || Character.isISOControl(c)) {
+                hex = hex.substring(0, i);
+                break;
+            }
+        }
+
+        return Integer.parseInt(hex, 16);
+    }
 	
 	public static List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
 		List<String[]> headerList = new ArrayList<String[]>();

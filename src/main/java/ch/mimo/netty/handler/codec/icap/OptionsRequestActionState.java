@@ -4,13 +4,13 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
-public class OptionsRequestActionState extends State {
+public class OptionsRequestActionState extends State<Object> {
 
 	public OptionsRequestActionState() {
 	}
 
 	@Override
-	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
+	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		if(icapMessageDecoder.message == null) {
 			throw new IllegalArgumentException("This state requires a valid IcapMessage instance");
 		}
@@ -20,7 +20,7 @@ public class OptionsRequestActionState extends State {
 	}
 
 	@Override
-	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
+	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		if(icapMessageDecoder.message.getEncapsulatedHeader().containsEntry(EntryName.OPTBODY)) {
 			return StateReturnValue.createIrrelevantResult();
 		}
@@ -28,7 +28,7 @@ public class OptionsRequestActionState extends State {
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
 		if(icapMessageDecoder.message.getEncapsulatedHeader().containsEntry(EntryName.OPTBODY)) {
 			// TODO return body processing state
 		}
