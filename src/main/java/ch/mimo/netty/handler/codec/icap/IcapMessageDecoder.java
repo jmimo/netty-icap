@@ -66,34 +66,4 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	public abstract boolean isDecodingRequest();
 	
 	protected abstract IcapMessage createMessage(String[] initialLine);
-	
-//	private void readEntity(Encapsulated.EntryName entity, ChannelBuffer buffer) throws TooLongFrameException {
-//		if(entity.equals(Encapsulated.EntryName.REQHDR)) {
-//			String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
-//			HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.valueOf(initialLine[2]),HttpMethod.valueOf(initialLine[0]),initialLine[1]);
-//			message.setHttpRequest(httpRequest);
-//			List<String[]> headerList = readHeaders(buffer,maxHttpHeaderSize);
-//			message.getHttpRequest().clearHeaders();
-//			for(String[] header : headerList) {
-//				message.getHttpRequest().addHeader(header[0],header[1]);
-//			}
-//		} else if(entity.equals(Encapsulated.EntryName.RESHDR)) {
-//			String[] initialLine = IcapDecoderUtil.splitInitialResponseLine(IcapDecoderUtil.readLine(buffer,maxInitialLineLength));
-//			HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.valueOf(initialLine[0]),HttpResponseStatus.valueOf(Integer.valueOf(initialLine[1])));
-//			message.setHttpResponse(httpResponse);
-//			List<String[]> headerList = readHeaders(buffer,maxHttpHeaderSize);
-//			message.getHttpResponse().clearHeaders();
-//			for(String[] header : headerList) {
-//				message.getHttpResponse().addHeader(header[0],header[1]);
-//			}
-//		} else if(entity.equals(Encapsulated.EntryName.REQBODY)) {
-//			
-//		} else if(entity.equals(Encapsulated.EntryName.RESBODY)) {
-//			
-//		} else if(entity.equals(Encapsulated.EntryName.NULLBODY)) {
-//			// no body in message (special tag)
-//		} else {
-//			// TODO: should not reach here!
-//		}
-//	}
 }

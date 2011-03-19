@@ -4,44 +4,45 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
+
 public class EncapsulatedTest extends Assert {
 
 	@Test
 	public void testSimpleValueParsing() {
 		String parameter = "req-hdr=0, res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
-//		assertEquals("req-hdr value is wrong",0,encapsulated.getPosition(Encapsulated.EntryName.REQHDR));
-//		assertEquals("res-hdr value is wrong",45,encapsulated.getPosition(Encapsulated.EntryName.RESHDR));
-//		assertEquals("req-body value is wrong",124,encapsulated.getPosition(Encapsulated.EntryName.REQBODY));
+		assertTrue("req-hdr value is missing",encapsulated.containsEntry(EntryName.REQHDR));
+		assertTrue("res-hdr value is missing",encapsulated.containsEntry(EntryName.RESHDR));
+		assertTrue("req-body value is missing",encapsulated.containsEntry(EntryName.REQBODY));
 	}
 	
 	@Test
 	public void testWhitespaceGap() {
 		String parameter = "req-hdr=0,  res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
-//		assertEquals("req-hdr value is wrong",0,encapsulated.getPosition(Encapsulated.EntryName.REQHDR));
-//		assertEquals("res-hdr value is wrong",45,encapsulated.getPosition(Encapsulated.EntryName.RESHDR));
-//		assertEquals("req-body value is wrong",124,encapsulated.getPosition(Encapsulated.EntryName.REQBODY));
-	}
-	
-	@Test
-	public void testIterator() {
-		String parameter = "req-hdr=0,  res-hdr=45, req-body=124";
-		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
-//		assertEquals("req-hdr was expected",encapsulated.getNextEntity(null),"req-hdr");
-//		assertEquals("res-hdr was expected",encapsulated.getNextEntity(Encapsulated.EntryName.REQHDR),"res-hdr");
-//		assertEquals("req-body was expected",encapsulated.getNextEntity(Encapsulated.EntryName.RESHDR),"req-body");
-//		assertNull("null was expected",encapsulated.getNextEntity(Encapsulated.EntryName.RESBODY));
+		assertTrue("req-hdr value is missing",encapsulated.containsEntry(EntryName.REQHDR));
+		assertTrue("res-hdr value is missing",encapsulated.containsEntry(EntryName.RESHDR));
+		assertTrue("req-body value is missing",encapsulated.containsEntry(EntryName.REQBODY));
 	}
 	
 	@Test
 	public void testIteratorWithWrongSequence() {
 		String parameter = "res-hdr=45, req-hdr=0, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
-//		assertEquals("req-hdr was expected",encapsulated.getNextEntity(null),"req-hdr");
-//		assertEquals("res-hdr was expected",encapsulated.getNextEntity(Encapsulated.EntryName.REQHDR),"res-hdr");
-//		assertEquals("req-body was expected",encapsulated.getNextEntity(Encapsulated.EntryName.RESHDR),"req-body");
-//		assertNull("null was expected",encapsulated.getNextEntity(Encapsulated.EntryName.RESBODY));
+		assertTrue("req-hdr value is missing",encapsulated.containsEntry(EntryName.REQHDR));
+		assertTrue("res-hdr value is missing",encapsulated.containsEntry(EntryName.RESHDR));
+		assertTrue("req-body value is missing",encapsulated.containsEntry(EntryName.REQBODY));
+		EntryName reqhdr = encapsulated.getNextEntry();
+		assertEquals("req-hdr was expected",EntryName.REQHDR,reqhdr);
+		encapsulated.setProcessed(reqhdr);
+		EntryName reshdr = encapsulated.getNextEntry();
+		assertEquals("res-hdr was expected",EntryName.RESHDR,reshdr);
+		encapsulated.setProcessed(reshdr);
+		EntryName reqbody = encapsulated.getNextEntry();
+		assertEquals("reqbody was expected",EntryName.REQBODY,reqbody);
+		encapsulated.setProcessed(reqbody);
+		assertNull("null was expected after last entry is processed",encapsulated.getNextEntry());
 	}
 	
 	@Test

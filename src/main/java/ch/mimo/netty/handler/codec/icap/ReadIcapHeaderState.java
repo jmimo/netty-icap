@@ -32,7 +32,6 @@ public class ReadIcapHeaderState extends State {
 			throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
 		}
 		Encapsulated encapsulated = Encapsulated.parseHeader(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
-		encapsulated.setBufferOffsetIndex(buffer.readerIndex());
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
 		return StateReturnValue.createIrrelevantResult();
 	}

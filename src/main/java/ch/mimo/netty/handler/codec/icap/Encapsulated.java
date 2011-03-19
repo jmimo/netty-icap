@@ -39,8 +39,6 @@ public class Encapsulated {
 	
 	private String headerValue;
 	private List<Entry> entries;
-//	private Entry[] entries;
-	private int bufferOffsetIndex;
 	
 	public Encapsulated() {
 		entries = new ArrayList<Encapsulated.Entry>();
@@ -80,11 +78,6 @@ public class Encapsulated {
 		Entry entry = getEntryByName(entryName);
 		entry.setIsProcessed();
 	}
-	
-//	public int getPosition(EntryName entryName) {
-//		Entry entry = getEntryByName(entryName);
-//		return entry.getPosition();
-//	}
 	
 	/*
 	REQMOD request: 	 [req-hdr] req-body
@@ -150,10 +143,6 @@ public class Encapsulated {
 			return name;
 		}
 		
-//		public Integer getPosition() {
-//			return position;
-//		}
-		
 		public void setIsProcessed() {
 			processed = true;
 		}
@@ -183,13 +172,5 @@ public class Encapsulated {
 			}
 		}
  		return builder.toString();
-	}
-
-	public void setBufferOffsetIndex(int bufferOffsetIndex) {
-		this.bufferOffsetIndex = bufferOffsetIndex;
-	}
-
-	public int getBufferOffsetIndex() {
-		return bufferOffsetIndex;
 	}
 }
