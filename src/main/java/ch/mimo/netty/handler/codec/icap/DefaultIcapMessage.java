@@ -210,8 +210,6 @@ public class DefaultIcapMessage implements IcapMessage {
         	buf.append(preview.toString());
         }
         
-        // Remove the last newline.
-        buf.setLength(buf.length() - StringUtil.NEWLINE.length());
         return buf.toString();
     }
     
