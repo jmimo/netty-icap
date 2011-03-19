@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -145,4 +146,8 @@ public interface IcapMessage {
 	Encapsulated getEncapsulatedHeader();
 	
 	boolean isPreview();
+	
+	void setPreview(HttpChunk chunk);
+	
+	HttpChunk getPreview();
 }

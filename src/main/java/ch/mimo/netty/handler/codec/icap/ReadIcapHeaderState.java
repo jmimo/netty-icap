@@ -8,9 +8,6 @@ import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
 public class ReadIcapHeaderState extends State {
 
-	public ReadIcapHeaderState() {
-	}
-
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
 		if(icapMessageDecoder.message == null) {

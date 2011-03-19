@@ -7,11 +7,9 @@ public enum StateEnum {
 	OPTIONS_REQUEST_ACTION_STATE(new OptionsRequestActionState()),
 	BODY_PROCESSING_DECISION_STATE(new BodyProcessingDecisionState()),
 	READ_HTTP_REQUEST_INITIAL_AND_HEADERS(new ReadHttpRequestInitialAndHeadersState()),
-	READ_HTTP_RESPONSE_INITIAL_AND_HEADERS(new ReadHttpResponseInitalAndHeadersState());
-//	OPTIONS_REQUEST_ACTION,
-//	READ_HTTP_REQUEST_HEADER,
-//	READ_HTTP_RESPONSE_HEADER,
-//	READ_BODY
+	READ_HTTP_RESPONSE_INITIAL_AND_HEADERS(new ReadHttpResponseInitalAndHeadersState()),
+	PREVIEW_STATE(new PreviewState()),
+	BODY_PROCESSING_STATE(new BodyProcessingState());
 	
 	private State state;
 	

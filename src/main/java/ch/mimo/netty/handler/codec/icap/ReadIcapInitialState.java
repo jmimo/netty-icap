@@ -4,9 +4,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 
 public class ReadIcapInitialState extends State {
-	
-	public ReadIcapInitialState() {
-	}
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {

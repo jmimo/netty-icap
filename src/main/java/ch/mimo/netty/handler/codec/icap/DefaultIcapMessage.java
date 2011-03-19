@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -23,6 +23,8 @@ public class DefaultIcapMessage implements IcapMessage {
 	
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
+	
+	private HttpChunk preview;
 	
 	public DefaultIcapMessage(HttpVersion version) {
 		setProtocolVersion(version);
@@ -171,7 +173,16 @@ public class DefaultIcapMessage implements IcapMessage {
 	}
 	
 	public boolean isPreview() {
+		// TODO remove literal
 		return containsHeader("Preview");
+	}
+	
+	public void setPreview(HttpChunk chunk) {
+		this.preview = chunk;
+	}
+	
+	public HttpChunk getPreview() {
+		return preview;
 	}
 	
     @Override
@@ -192,6 +203,11 @@ public class DefaultIcapMessage implements IcapMessage {
         if(httpResponse != null) {
         	buf.append("--- encapsulated HTTP Response ---").append(StringUtil.NEWLINE);
         	buf.append(httpResponse.toString());
+        }
+        
+        if(getPreview() != null) {
+        	buf.append("--- Preview ---");
+        	buf.append(preview.toString());
         }
         
         // Remove the last newline.
