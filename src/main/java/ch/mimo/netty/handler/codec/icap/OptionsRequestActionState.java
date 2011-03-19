@@ -30,7 +30,7 @@ public class OptionsRequestActionState extends State<Object> {
 	@Override
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
 		if(icapMessageDecoder.message.getEncapsulatedHeader().containsEntry(EntryName.OPTBODY)) {
-			// TODO return body processing state
+			return StateEnum.READ_CHUNK_SIZE_STATE;
 		}
 		return null;
 	}
