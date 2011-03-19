@@ -6,7 +6,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
-public class ReadIcapHeaderState extends State<Object> {
+public class ReadIcapHeaderState extends State<Boolean> {
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
@@ -31,26 +31,35 @@ public class ReadIcapHeaderState extends State<Object> {
 		}
 		Encapsulated encapsulated = Encapsulated.parseHeader(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
-		return StateReturnValue.createIrrelevantResult();
+		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS) &
+				icapMessageDecoder.message.getEncapsulatedHeader().containsEntry(EntryName.OPTBODY)) {
+			return StateReturnValue.createIrrelevantResultWithDecisionInformation(Boolean.TRUE);
+		}
+		
+		return StateReturnValue.createRelevantResultWithDecisionInformation(icapMessageDecoder.message,Boolean.FALSE);
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Boolean decisionInformation) throws Exception {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
-		if(message.getMethod().equals(IcapMethod.OPTIONS)) {
-			return StateEnum.OPTIONS_REQUEST_ACTION_STATE;
-		}
-		EntryName entry = encapsulated.getNextEntry();
-		if(entry != null) {
-			if(entry.equals(EntryName.REQHDR)) {
-				return StateEnum.READ_HTTP_REQUEST_INITIAL_AND_HEADERS;
+		if(message.getMethod().equals(IcapMethod.OPTIONS) & decisionInformation) {
+			return StateEnum.BODY_PROCESSING_DECISION_STATE;
+		} else {
+			if(message.getMethod().equals(IcapMethod.OPTIONS)) {
+				return null;
 			}
-			if(entry.equals(EntryName.RESHDR)) {
-				return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
-			}
-			if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
-				return StateEnum.BODY_PROCESSING_DECISION_STATE;
+			EntryName entry = encapsulated.getNextEntry();
+			if(entry != null) {
+				if(entry.equals(EntryName.REQHDR)) {
+					return StateEnum.READ_HTTP_REQUEST_INITIAL_AND_HEADERS;
+				}
+				if(entry.equals(EntryName.RESHDR)) {
+					return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
+				}
+				if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
+					return StateEnum.BODY_PROCESSING_DECISION_STATE;
+				}
 			}
 		}
 		return null;

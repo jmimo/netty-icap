@@ -6,9 +6,6 @@ import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
 public class OptionsRequestActionState extends State<Object> {
 
-	public OptionsRequestActionState() {
-	}
-
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		if(icapMessageDecoder.message == null) {

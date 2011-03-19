@@ -9,6 +9,7 @@ public class StateReturnValue {
 	public StateReturnValue(boolean relevance, Object value, Object decisionInformation) {
 		this.relevance = relevance;
 		this.value = value;
+		this.decisionInformation = decisionInformation;
 	}
 	
 	public static StateReturnValue createNullResult() {
@@ -45,5 +46,18 @@ public class StateReturnValue {
 	
 	public Object getDecisionInformation() {
 		return decisionInformation;
+	}
+	
+	public String toString() {
+		String printValue = "null";
+		String printDecisionInformation = "null";
+		if(value != null) {
+			printValue = value.getClass().getCanonicalName();
+		}
+		if(decisionInformation != null) {
+			printDecisionInformation = decisionInformation.getClass().getCanonicalName();
+		}
+		return "StateReturnValue: [relevance=" + relevance + 
+				"] [value=" + printValue + "] [decision information=" + printDecisionInformation + "]";
 	}
 }
