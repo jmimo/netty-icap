@@ -14,7 +14,12 @@ public class ReadHttpResponseInitalAndHeadersState extends State {
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
-		// NO-OP
+		if(icapMessageDecoder.message == null) {
+			throw new IllegalArgumentException("This state requires a valid IcapMessage instance");
+		}
+		if(icapMessageDecoder.message.getEncapsulatedHeader() == null) {
+			throw new IllegalArgumentException("This state requires a valid Encapsulation header instance");
+		}
 	}
 
 	@Override

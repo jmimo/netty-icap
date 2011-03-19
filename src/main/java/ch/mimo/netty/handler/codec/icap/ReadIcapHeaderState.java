@@ -13,8 +13,9 @@ public class ReadIcapHeaderState extends State {
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
-		// TODO validate required elements
-		// message cannot be null
+		if(icapMessageDecoder.message == null) {
+			throw new IllegalArgumentException("This state requires a valid IcapMessage instance");
+		}
 	}
 
 	@Override

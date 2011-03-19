@@ -6,7 +6,9 @@ public class BodyProcessingDecisionState extends State {
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, StateEnum previousState) throws Exception {
-		// NO-OP
+		if(icapMessageDecoder.message == null) {
+			throw new IllegalArgumentException("This state requires a valid IcapMessage instance");
+		}
 	}
 
 	@Override
