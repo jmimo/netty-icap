@@ -10,7 +10,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
     protected final int maxInitialLineLength;
     protected final int maxIcapHeaderSize;
     protected final int maxHttpHeaderSize;
-    private final int maxChunkSize;
+    protected final int maxChunkSize;
     
     private StateEnum previousState;
     
