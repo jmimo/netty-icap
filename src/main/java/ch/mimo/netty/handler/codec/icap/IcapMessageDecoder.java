@@ -49,8 +49,6 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, StateEnum stateEnumValue) throws Exception {
 		State state = stateEnumValue.getState();
-		// TODO remove this after debugging
-		System.out.println(stateEnumValue.name());
 		state.onEntry(buffer,this);
 		StateReturnValue returnValue = state.execute(buffer,this);
 		StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
