@@ -16,7 +16,7 @@ public class ReadChunkState extends State<Boolean> {
 		if(chunk.isLast()) {
 			return StateReturnValue.createRelevantResultWithDecisionInformation(new Object[]{chunk,HttpChunk.LAST_CHUNK},Boolean.TRUE);
 		}
-		return StateReturnValue.createRelevantResult(chunk);
+		return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,Boolean.FALSE);
 	}
 
 	@Override

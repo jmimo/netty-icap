@@ -3,22 +3,23 @@ package ch.mimo.netty.handler.codec.icap;
 import junit.framework.Assert;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
+import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.junit.Before;
 import org.junit.Test;
 
 public class IcapMessageDecoderTest extends Assert {
 
-	private DecoderEmbedder<IcapMessage> embedder;
+	private DecoderEmbedder<Object> embedder;
 	
 	@Before
 	public void setUp() {
-		embedder = new DecoderEmbedder<IcapMessage>(new IcapRequestDecoder());
+		embedder = new DecoderEmbedder<Object>(new IcapRequestDecoder());
 	}
 	
 	@Test
 	public void decodeOPTIONRequestTest() {
 		embedder.offer(DataMockery.createOPTIONSRequest());
-		IcapMessage result = embedder.poll();
+		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 		DataMockery.assertCreateOPTIONSRequest(result);
 	}
@@ -26,7 +27,7 @@ public class IcapMessageDecoderTest extends Assert {
 	@Test
 	public void stripPrefixingWhitespacesFromMessage() {
 		embedder.offer(DataMockery.createWhiteSpacePrefixedOPTIONSRequest());
-		IcapMessage result = embedder.poll();
+		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 		DataMockery.assertCreateWhiteSpacePrefixedOPTIONSRequest(result);
 	}
@@ -34,7 +35,7 @@ public class IcapMessageDecoderTest extends Assert {
 	@Test
 	public void decodeREQMODRequestWithNullBody() {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());
-		IcapMessage result = embedder.poll();
+		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 		DataMockery.assertCreateREQMODWithGetRequestNoBody(result);
 	}
@@ -42,7 +43,7 @@ public class IcapMessageDecoderTest extends Assert {
 	@Test
 	public void decodeRESPMODRequestWithNullBody() {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBody());
-		IcapMessage result = embedder.poll();
+		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 		DataMockery.assertCreateRESPMODWithGetRequestNoBody(result);
 	}
@@ -50,15 +51,19 @@ public class IcapMessageDecoderTest extends Assert {
 	@Test
 	public void decodeRESPMODRequestWithNullBodyAndReverseRequestAlignement() {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyAndReverseRequestAlignement());
-		IcapMessage result = embedder.poll();
+		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 		DataMockery.assertCreateRESPMODWithGetRequestNoBodyAndReverseRequestAlignement(result);
 	}
 	
-//	@Test
-//	public void decodeRESPMODRequestWithBody() {
-//		embedder.offer(DataMockery.createRESPMODWithGetRequestAndBody());
-//		IcapMessage result = embedder.poll();
-//		assertNotNull("The decoded icap request instance is null",result);
-//	}
+	@Test
+	public void decodeREQMODRequestWithTwoChunkBody() {
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBody());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertCreateREQMODWithTwoChunkBody(result);
+		DataMockery.assertCreateREQMODWithTwoChunkBodyFirstChunk((HttpChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithTwoChunkBodySecondChunk((HttpChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithTwoChunkBodyThirdChunk((HttpChunk)embedder.poll());
+	}
 }

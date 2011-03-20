@@ -35,10 +35,10 @@ public class ReadHttpRequestInitialAndHeadersState extends State<Object> {
 		}
 		Encapsulated encapsulated = icapMessageDecoder.message.getEncapsulatedHeader();
 		encapsulated.setProcessed(encapsulated.getNextEntry());
-		if(encapsulated.getNextEntry() == null || encapsulated.getNextEntry().equals(EntryName.NULLBODY)) {
-			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
+		if(encapsulated.getNextEntry() != null & encapsulated.getNextEntry().equals(EntryName.RESHDR)) {
+			return StateReturnValue.createIrrelevantResult();
 		}
-		return StateReturnValue.createIrrelevantResult();
+		return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 	}
 
 	@Override
@@ -50,7 +50,11 @@ public class ReadHttpRequestInitialAndHeadersState extends State<Object> {
 				return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
 			}
 			if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
-				return StateEnum.BODY_PROCESSING_DECISION_STATE;
+				if(icapMessageDecoder.message.isPreview()) {
+					return StateEnum.PREVIEW_STATE;
+				} else {
+					return StateEnum.READ_CHUNK_SIZE_STATE;
+				}
 			}
 		}
 		return null;

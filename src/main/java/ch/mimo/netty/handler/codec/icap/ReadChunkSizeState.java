@@ -12,7 +12,7 @@ public class ReadChunkSizeState extends State<Integer> {
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		String line = IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength);
 		int chunkSize = IcapDecoderUtil.getChunkSize(line);
-		
+		icapMessageDecoder.currentChunkSize = chunkSize;
 		return StateReturnValue.createIrrelevantResultWithDecisionInformation(chunkSize);
 	}
 

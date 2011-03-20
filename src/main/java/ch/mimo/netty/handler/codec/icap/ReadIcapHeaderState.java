@@ -6,7 +6,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
-public class ReadIcapHeaderState extends State<Boolean> {
+public class ReadIcapHeaderState extends State<Object> {
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
@@ -31,20 +31,24 @@ public class ReadIcapHeaderState extends State<Boolean> {
 		}
 		Encapsulated encapsulated = Encapsulated.parseHeader(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
-		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS) &
-				icapMessageDecoder.message.getEncapsulatedHeader().containsEntry(EntryName.OPTBODY)) {
-			return StateReturnValue.createIrrelevantResultWithDecisionInformation(Boolean.TRUE);
-		}
 		
-		return StateReturnValue.createRelevantResultWithDecisionInformation(icapMessageDecoder.message,Boolean.FALSE);
+		if((!encapsulated.containsEntry(EntryName.REQHDR) & !encapsulated.containsEntry(EntryName.RESHDR)) | 
+				icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
+			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
+		}
+		return StateReturnValue.createIrrelevantResult();
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Boolean decisionInformation) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
-		if(message.getMethod().equals(IcapMethod.OPTIONS) & decisionInformation) {
-			return StateEnum.BODY_PROCESSING_DECISION_STATE;
+		if(message.getMethod().equals(IcapMethod.OPTIONS) & encapsulated.containsEntry(EntryName.OPTBODY)) {
+			if(icapMessageDecoder.message.isPreview()) {
+				return StateEnum.PREVIEW_STATE;
+			} else {
+				return StateEnum.READ_CHUNK_SIZE_STATE;
+			}
 		} else {
 			if(message.getMethod().equals(IcapMethod.OPTIONS)) {
 				return null;
@@ -58,7 +62,11 @@ public class ReadIcapHeaderState extends State<Boolean> {
 					return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
 				}
 				if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
-					return StateEnum.BODY_PROCESSING_DECISION_STATE;
+					if(icapMessageDecoder.message.isPreview()) {
+						return StateEnum.PREVIEW_STATE;
+					} else {
+						return StateEnum.READ_CHUNK_SIZE_STATE;
+					}
 				}
 			}
 		}
