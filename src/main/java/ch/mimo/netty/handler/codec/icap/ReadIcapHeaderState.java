@@ -57,11 +57,12 @@ public class ReadIcapHeaderState extends State<Object> {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
 		if(message.getMethod().equals(IcapMethod.OPTIONS) & encapsulated.containsEntry(EntryName.OPTBODY)) {
-			if(icapMessageDecoder.message.isPreview()) {
-				return StateEnum.PREVIEW_STATE;
-			} else {
-				return StateEnum.READ_CHUNK_SIZE_STATE;
-			}
+			// TODO remove literal
+//			if(icapMessageDecoder.message.isPreview() & Integer.parseInt(icapMessageDecoder.message.getHeader("Preview")) > 0) {
+//				return StateEnum.PREVIEW_STATE;
+//			} else {
+//				return StateEnum.READ_CHUNK_SIZE_STATE;
+//			}
 		} else {
 			if(message.getMethod().equals(IcapMethod.OPTIONS)) {
 				return null;
@@ -75,11 +76,12 @@ public class ReadIcapHeaderState extends State<Object> {
 					return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
 				}
 				if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
-					if(icapMessageDecoder.message.isPreview()) {
-						return StateEnum.PREVIEW_STATE;
-					} else {
+					// TODO remove comments
+//					if(icapMessageDecoder.message.isPreview()) {
+//						return StateEnum.PREVIEW_STATE;
+//					} else {
 						return StateEnum.READ_CHUNK_SIZE_STATE;
-					}
+//					}
 				}
 			}
 		}

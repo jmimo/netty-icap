@@ -168,4 +168,16 @@ public class IcapDecoderUtilTest extends Assert {
 		assertEquals("Header Key was not expected","Encapsulation",elements[0]);
 		assertEquals("Header Value was not expected","req-hdr=50, res-hdr=120, null-body=210",elements[1]);
 	}
+	
+	@Test
+	public void testChunkSize() {
+		String line = "33";
+		assertEquals("wrong chunk size",51,IcapDecoderUtil.getChunkSize(line));
+	}
+	
+	@Test
+	public void testIEOFChunkSize() {
+		String line ="0; ieof";
+		assertEquals("wrong chunk size",-1,IcapDecoderUtil.getChunkSize(line));
+	}
 }

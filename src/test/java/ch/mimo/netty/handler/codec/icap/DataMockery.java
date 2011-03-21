@@ -252,6 +252,12 @@ public final class DataMockery extends Assert {
 		assertChunk("preview chunk", chunk,"This is data that was returned by an origin server.",false);
 	}
 	
+	public static final void assertCreateREQMODWithPreviewChunkLastChunk(IcapChunk chunk) {
+		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
+		assertTrue("preview chunk is not last chunk",chunk.isLast());
+		assertFalse("preview chunk states that it is early terminated",chunk.isEarlyTerminated());
+	}
+	
 	public static final ChannelBuffer createREQMODWithEarlyTerminatedPreview() {
 		StringBuilder builder = new StringBuilder();
 		addLine(builder,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
@@ -292,6 +298,12 @@ public final class DataMockery extends Assert {
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertTrue("preview chunk does not indicated that is is early terminated",chunk.isEarlyTerminated());
 		assertChunk("preview chunk", chunk,"This is data that was returned by an origin",false);
+	}
+	
+	public static final void assertCreateREQMODWithEarlyTerminatedPreviewLastChunk(IcapChunk chunk) {
+		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
+		assertTrue("preview chunk is not last chunk",chunk.isLast());
+		assertTrue("preview chunk is not early terminated",chunk.isEarlyTerminated());
 	}
 	
 //	public static final ChannelBuffer createRESPMODWithGetRequestAndBody() {

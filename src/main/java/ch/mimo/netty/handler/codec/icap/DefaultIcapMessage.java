@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -36,8 +35,6 @@ public class DefaultIcapMessage implements IcapMessage {
 	
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
-	
-	private HttpChunk preview;
 	
 	public DefaultIcapMessage(HttpVersion version) {
 		setProtocolVersion(version);
@@ -190,14 +187,6 @@ public class DefaultIcapMessage implements IcapMessage {
 		return containsHeader("Preview");
 	}
 	
-	public void setPreview(HttpChunk chunk) {
-		this.preview = chunk;
-	}
-	
-	public HttpChunk getPreview() {
-		return preview;
-	}
-	
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -218,9 +207,10 @@ public class DefaultIcapMessage implements IcapMessage {
         	buf.append(httpResponse.toString());
         }
         
-        if(getPreview() != null) {
+        if(isPreview()) {
         	buf.append("--- Preview ---");
-        	buf.append(preview.toString());
+        	// TODO remove literal
+        	buf.append("Preview size: " + getHeader("Preview"));
         }
         
         return buf.toString();

@@ -24,19 +24,19 @@ public class DefaultIcapChunk extends DefaultHttpChunk implements IcapChunk {
 	public DefaultIcapChunk(ChannelBuffer content) {
 		super(content);
 	}
-
-	public DefaultIcapChunk(ChannelBuffer content, boolean isPreview, boolean isEarlyTerminated) {
-		this(content);
-		preview = isPreview;
-		earlyTerminated = isEarlyTerminated;
+	
+	public void setIsPreviewChunk() {
+		preview = true;
 	}
 	
-	@Override
 	public boolean isPreviewChunk() {
 		return preview;
 	}
 
-	@Override
+	public void setIsEarlyTerminated() {
+		earlyTerminated = true;
+	}
+	
 	public boolean isEarlyTerminated() {
 		return earlyTerminated;
 	}

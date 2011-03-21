@@ -159,8 +159,4 @@ public interface IcapMessage {
 	Encapsulated getEncapsulatedHeader();
 	
 	boolean isPreview();
-	
-	void setPreview(HttpChunk chunk);
-	
-	HttpChunk getPreview();
 }

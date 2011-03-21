@@ -20,7 +20,7 @@ import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 
 public class PreviewState extends State<Object> {
-
+	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		if(icapMessageDecoder.message == null) {
@@ -30,6 +30,9 @@ public class PreviewState extends State<Object> {
 
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+		int chunkSize = icapMessageDecoder.currentChunkSize;
+		
+		
 		// TODO remove literal
 		int previewSize = Integer.parseInt(icapMessageDecoder.message.getHeader("Preview"));
 		int readable = buffer.readableBytes();
@@ -50,7 +53,6 @@ public class PreviewState extends State<Object> {
 		
 		if(preview != null) {
 			HttpChunk chunk = new DefaultHttpChunk(buffer.readBytes(previewSize));
-			icapMessageDecoder.message.setPreview(chunk);
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		}
 		return StateReturnValue.createIrrelevantResult();
@@ -58,9 +60,9 @@ public class PreviewState extends State<Object> {
 
 	@Override
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
-		if(icapMessageDecoder.message.getPreview() == null) {
-			return StateEnum.PREVIEW_STATE;
-		}
-		return StateEnum.READ_CHUNK_SIZE_STATE;
+//		if(icapMessageDecoder.message.getPreview() == null) {
+//			return StateEnum.PREVIEW_STATE;
+//		}
+		return StateEnum.READ_CHUNK_DELIMITER_STATE;
 	}
 }

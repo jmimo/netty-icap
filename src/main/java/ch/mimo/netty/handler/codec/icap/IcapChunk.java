@@ -25,6 +25,10 @@ import org.jboss.netty.handler.codec.http.HttpChunk;
 public interface IcapChunk extends HttpChunk {
 
 	static IcapChunkTrailer LAST_ICAP_CHUNK = new IcapChunkTrailer() {
+		
+		private boolean preview;
+		private boolean earlyTerminated;
+		
         public ChannelBuffer getContent() {
             return ChannelBuffers.EMPTY_BUFFER;
         }
@@ -77,18 +81,28 @@ public interface IcapChunk extends HttpChunk {
             throw new IllegalStateException("read-only");
         }
 
-		@Override
+        public void setIsPreviewChunk() {
+        	preview = true;
+        }
+        
 		public boolean isPreviewChunk() {
-			return false;
+			return preview;
 		}
-
-		@Override
+		
+		public void setIsEarlyTerminated() {
+			earlyTerminated = true;
+		}
+		
 		public boolean isEarlyTerminated() {
-			return false;
+			return earlyTerminated;
 		}
 	};
 	
-	public boolean isPreviewChunk();
+	void setIsPreviewChunk();
 	
-	public boolean isEarlyTerminated();
+	boolean isPreviewChunk();
+	
+	void setIsEarlyTerminated();
+	
+	boolean isEarlyTerminated();
 }

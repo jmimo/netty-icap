@@ -78,4 +78,23 @@ public class IcapMessageDecoderTest extends Assert {
 		DataMockery.assertCreateREQMODWithTwoChunkBodySecondChunk((IcapChunk)embedder.poll());
 		DataMockery.assertCreateREQMODWithTwoChunkBodyThirdChunk((IcapChunk)embedder.poll());
 	}
+	
+	@Test
+	public void decodeREQMODRequestWithPreview() {
+		embedder.offer(DataMockery.createREQMODWithPreview());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertCreateREQMODWithPreview(result);
+		DataMockery.assertCreateREQMODWithPreviewChunk((IcapChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithPreviewChunkLastChunk((IcapChunk)embedder.poll());
+	}
+	
+	@Test
+	public void decodeREQMODRequestWithEarlyTerminatedPreview() {
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreview());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertCreateREQMODWithEarlyTerminatedPreview((IcapChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithEarlyTerminatedPreviewLastChunk((IcapChunk)embedder.poll());
+	}
 }

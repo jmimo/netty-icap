@@ -13,26 +13,66 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.util.Arrays;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 
-public class ReadChunkState extends State<Object> {
+public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessing> {
 
+	public static enum ReadChunkStateProcessing {
+		READ_CHUNK_AGAIN,
+		GO_TO_DELIMITER
+	}
+	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 	}
 
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
-		// TODO when reading preview then the early terminater ieof has to be expected. Otherwise a full buffer readBytes will do.
-		// TODO change HttpChunk to IcapChunk that carries the necessary ieof and preview flags.
+		// TODO if preview consider that the string might reach 0; ieof earlier than expected
+		IcapChunk chunk = null;
+		if(icapMessageDecoder.message.isPreview()) {
+			int readable = buffer.readableBytes();
+			int currentChunkSize = icapMessageDecoder.currentChunkSize;
+			if((readable + IcapCodecUtil.IEOF_SEQUENCE.length) > currentChunkSize) {
+				chunk = new DefaultIcapChunk(buffer.readBytes(currentChunkSize));
+				chunk.setIsPreviewChunk();
+				return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
+			} else {
+				ChannelBuffer previewBuffer = buffer.readBytes(readable);
+				// TODO generalize this and make it static
+				byte[] end = new byte[IcapCodecUtil.IEOF_SEQUENCE.length];
+				previewBuffer.getBytes(previewBuffer.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length,end);
+				if(Arrays.equals(IcapCodecUtil.IEOF_SEQUENCE,end)) {
+					previewBuffer = previewBuffer.copy(0,previewBuffer.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length);
+					buffer.readerIndex(buffer.readerIndex() - end.length);
+					chunk = new DefaultIcapChunk(previewBuffer);
+					chunk.setIsPreviewChunk();
+					chunk.setIsEarlyTerminated();
+					return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.READ_CHUNK_AGAIN);
+				} else {
+					StateReturnValue.createIrrelevantResult();
+				}
+			}
+		}
 		
-		IcapChunk chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
-		return StateReturnValue.createRelevantResult(chunk);
+		
+		chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
+		if(icapMessageDecoder.message.isPreview()) {
+			chunk.setIsPreviewChunk();
+		}
+		return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
-		return StateEnum.READ_CHUNK_DELIMITER_STATE;
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, ReadChunkStateProcessing decisionInformation) throws Exception {
+		if(decisionInformation.equals(ReadChunkStateProcessing.READ_CHUNK_AGAIN)) {
+			return StateEnum.READ_CHUNK_STATE;
+		} else if(decisionInformation.equals(ReadChunkStateProcessing.GO_TO_DELIMITER)) {
+			return StateEnum.READ_CHUNK_DELIMITER_STATE;
+		} else {
+			return null;
+		}
 	}
-
 }

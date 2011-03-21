@@ -137,6 +137,10 @@ public final class IcapDecoderUtil {
 	
     public static int getChunkSize(String hex) {
         hex = hex.trim();
+        // TODO literal this
+        if(hex.equals("0; ieof")) {
+        	return -1;
+        }
         for (int i = 0; i < hex.length(); i ++) {
             char c = hex.charAt(i);
             if (c == ';' || Character.isWhitespace(c) || Character.isISOControl(c)) {
@@ -144,7 +148,6 @@ public final class IcapDecoderUtil {
                 break;
             }
         }
-
         return Integer.parseInt(hex, 16);
     }
 	
