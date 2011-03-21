@@ -1,7 +1,6 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 
 public class ReadChunkedContentAsChunksState extends State<Object> {
@@ -12,12 +11,12 @@ public class ReadChunkedContentAsChunksState extends State<Object> {
 
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
-		HttpChunk chunk = null;
+		IcapChunk chunk = null;
 		if(icapMessageDecoder.currentChunkSize > icapMessageDecoder.maxChunkSize) {
-			chunk = new DefaultHttpChunk(buffer.readBytes(icapMessageDecoder.maxChunkSize));
+			chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.maxChunkSize));
 			icapMessageDecoder.currentChunkSize -= icapMessageDecoder.maxChunkSize;
 		} else {
-			chunk = new DefaultHttpChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
+			chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
 			icapMessageDecoder.currentChunkSize = 0;
 		}
 		

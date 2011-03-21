@@ -3,7 +3,6 @@ package ch.mimo.netty.handler.codec.icap;
 import junit.framework.Assert;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
-import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -62,8 +61,8 @@ public class IcapMessageDecoderTest extends Assert {
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 		DataMockery.assertCreateREQMODWithTwoChunkBody(result);
-		DataMockery.assertCreateREQMODWithTwoChunkBodyFirstChunk((HttpChunk)embedder.poll());
-		DataMockery.assertCreateREQMODWithTwoChunkBodySecondChunk((HttpChunk)embedder.poll());
-		DataMockery.assertCreateREQMODWithTwoChunkBodyThirdChunk((HttpChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithTwoChunkBodyFirstChunk((IcapChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithTwoChunkBodySecondChunk((IcapChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithTwoChunkBodyThirdChunk((IcapChunk)embedder.poll());
 	}
 }

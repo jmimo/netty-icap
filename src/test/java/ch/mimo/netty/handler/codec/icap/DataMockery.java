@@ -6,7 +6,6 @@ import junit.framework.Assert;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
@@ -193,16 +192,40 @@ public final class DataMockery extends Assert {
 		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",message.getHttpRequest());
 	}
 	
-	public static final void assertCreateREQMODWithTwoChunkBodyFirstChunk(HttpChunk chunk) {
+	public static final void assertCreateREQMODWithTwoChunkBodyFirstChunk(IcapChunk chunk) {
 		assertChunk("first chunk",chunk,"This is data that was returned by an origin server.",false);
 	}
 	
-	public static final void assertCreateREQMODWithTwoChunkBodySecondChunk(HttpChunk chunk) {
+	public static final void assertCreateREQMODWithTwoChunkBodySecondChunk(IcapChunk chunk) {
 		assertChunk("second chunk",chunk,"And this the second chunk which contains more information.",false);
 	}
 	
-	public static final void assertCreateREQMODWithTwoChunkBodyThirdChunk(HttpChunk chunk) {
+	public static final void assertCreateREQMODWithTwoChunkBodyThirdChunk(IcapChunk chunk) {
 		assertChunk("third chunk",chunk,null,true);
+	}
+	
+	public static final ChannelBuffer createREQMODWithPreview() {
+		StringBuilder builder = new StringBuilder();
+		addLine(builder,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(builder,"Host: icap-server.net");
+		addLine(builder,"Encapsulated: req-hdr=0, req-body=181");
+		addLine(builder,"Preview: 51");
+		addLine(builder,null);
+		addLine(builder,"POST / HTTP/1.1");
+		addLine(builder,"Host: www.origin-server.com");
+		addLine(builder,"Accept: text/html, text/plain");
+		addLine(builder,"Accept-Encoding: compress");
+		addLine(builder,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(builder,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(builder,null);
+//		addLine(builder,"33");
+		addLine(builder,"This is data that was returned by an origin server.");
+//		addLine(builder,"3A");
+//		addLine(builder,"And this the second chunk which contains more information.");		
+		addLine(builder,"0");
+		addLine(builder,null);
+		addLine(builder,null);
+		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
 	}
 	
 //	public static final ChannelBuffer createRESPMODWithGetRequestAndBody() {
@@ -249,7 +272,7 @@ public final class DataMockery extends Assert {
 		assertEquals("The header: " + key + " is invalid",expected,message.getHeader(key));
 	}
 	
-	private static void assertChunk(String title, HttpChunk chunk, String expectedContent, boolean isLast) {
+	private static void assertChunk(String title, IcapChunk chunk, String expectedContent, boolean isLast) {
 		assertNotNull(title + " chunk is null",chunk);
 		if(isLast) {
 			assertTrue(title + " is not last chunk",chunk.isLast());

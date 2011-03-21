@@ -1,10 +1,8 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
-import org.jboss.netty.handler.codec.http.HttpChunk;
 
-public class ReadChunkState extends State<Boolean> {
+public class ReadChunkState extends State<Object> {
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
@@ -12,18 +10,18 @@ public class ReadChunkState extends State<Boolean> {
 
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
-		HttpChunk chunk = new DefaultHttpChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
+		// TODO when reading preview then the early terminater ieof has to be expected. Otherwise a full buffer readBytes will do.
+		// TODO change HttpChunk to IcapChunk that carries the necessary ieof and preview flags.
+		
+		IcapChunk chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
 		if(chunk.isLast()) {
-			return StateReturnValue.createRelevantResultWithDecisionInformation(new Object[]{chunk,HttpChunk.LAST_CHUNK},Boolean.TRUE);
+			return StateReturnValue.createRelevantResult(new Object[]{chunk,IcapChunk.LAST_CHUNK});
 		}
-		return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,Boolean.FALSE);
+		return StateReturnValue.createRelevantResult(chunk);
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Boolean decisionInformation) throws Exception {
-		if(decisionInformation) {
-			return null;
-		}
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
 		return StateEnum.READ_CHUNK_DELIMITER_STATE;
 	}
 
