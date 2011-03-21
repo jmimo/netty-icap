@@ -1,7 +1,6 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.HttpChunk;
 
 public class ReadChunkedContentAsChunksState extends State<Object> {
 
@@ -22,7 +21,7 @@ public class ReadChunkedContentAsChunksState extends State<Object> {
 		
 		if(chunk.isLast()) {
 			icapMessageDecoder.currentChunkSize = 0;
-			return StateReturnValue.createRelevantResult(new Object[]{chunk,HttpChunk.LAST_CHUNK}); 
+			return StateReturnValue.createRelevantResult(new Object[]{chunk,IcapChunk.LAST_ICAP_CHUNK}); 
 		}
 		return StateReturnValue.createRelevantResult(chunk);
 	}

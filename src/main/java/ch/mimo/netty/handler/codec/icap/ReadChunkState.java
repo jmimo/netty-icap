@@ -14,9 +14,6 @@ public class ReadChunkState extends State<Object> {
 		// TODO change HttpChunk to IcapChunk that carries the necessary ieof and preview flags.
 		
 		IcapChunk chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
-		if(chunk.isLast()) {
-			return StateReturnValue.createRelevantResult(new Object[]{chunk,IcapChunk.LAST_CHUNK});
-		}
 		return StateReturnValue.createRelevantResult(chunk);
 	}
 

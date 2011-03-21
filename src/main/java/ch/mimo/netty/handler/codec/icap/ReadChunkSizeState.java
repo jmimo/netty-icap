@@ -13,6 +13,9 @@ public class ReadChunkSizeState extends State<Integer> {
 		String line = IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength);
 		int chunkSize = IcapDecoderUtil.getChunkSize(line);
 		icapMessageDecoder.currentChunkSize = chunkSize;
+		if(chunkSize == 0) {
+			return StateReturnValue.createRelevantResultWithDecisionInformation(IcapChunk.LAST_ICAP_CHUNK,chunkSize);
+		}
 		return StateReturnValue.createIrrelevantResultWithDecisionInformation(chunkSize);
 	}
 
