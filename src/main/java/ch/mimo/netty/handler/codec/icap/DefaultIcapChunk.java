@@ -24,7 +24,7 @@ public class DefaultIcapChunk extends DefaultHttpChunk implements IcapChunk {
 	}
 
 	@Override
-	public boolean wasEarlyTerminated() {
+	public boolean isEarlyTerminated() {
 		return earlyTerminated;
 	}
 	

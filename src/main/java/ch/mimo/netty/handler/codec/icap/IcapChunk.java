@@ -70,12 +70,12 @@ public interface IcapChunk extends HttpChunk {
 		}
 
 		@Override
-		public boolean wasEarlyTerminated() {
+		public boolean isEarlyTerminated() {
 			return false;
 		}
 	};
 	
 	public boolean isPreviewChunk();
 	
-	public boolean wasEarlyTerminated();
+	public boolean isEarlyTerminated();
 }

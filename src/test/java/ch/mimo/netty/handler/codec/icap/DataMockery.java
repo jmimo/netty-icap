@@ -169,13 +169,9 @@ public final class DataMockery extends Assert {
 		addLine(builder,"Cookie: ff39fk3jur@4ii0e02i");
 		addLine(builder,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
 		addLine(builder,null);
-		addLine(builder,"33");
-		addLine(builder,"This is data that was returned by an origin server.");
-		addLine(builder,"3A");
-		addLine(builder,"And this the second chunk which contains more information.");		
-		addLine(builder,"0");
-		addLine(builder,null);
-		addLine(builder,null);
+		addChunk(builder,"This is data that was returned by an origin server.");
+		addChunk(builder,"And this the second chunk which contains more information.");
+		addChunk(builder,null);
 		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
 	}
 	
@@ -218,14 +214,71 @@ public final class DataMockery extends Assert {
 		addLine(builder,"Cookie: ff39fk3jur@4ii0e02i");
 		addLine(builder,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
 		addLine(builder,null);
-//		addLine(builder,"33");
-		addLine(builder,"This is data that was returned by an origin server.");
-//		addLine(builder,"3A");
-//		addLine(builder,"And this the second chunk which contains more information.");		
-		addLine(builder,"0");
+		addChunk(builder,"This is data that was returned by an origin server.");
+		addChunk(builder,null);
+		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
+	}
+	
+	public static final void assertCreateREQMODWithPreview(IcapMessage message) {
+		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
+		assertHeaderValue("Host","icap-server.net",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=181",message);
+		assertHeaderValue("Preview","51",message);
+		assertNotNull("http request was null",message.getHttpRequest());
+		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept-Encoding","compress",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Cookie","ff39fk3jur@4ii0e02i",message.getHttpRequest());
+		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",message.getHttpRequest());
+	}
+	
+	public static final void assertCreateREQMODWithPreviewChunk(IcapChunk chunk) {
+		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
+		assertFalse("preview chunk indicated that is is early terminated",chunk.isEarlyTerminated());
+		assertChunk("preview chunk", chunk,"This is data that was returned by an origin server.",false);
+	}
+	
+	public static final ChannelBuffer createREQMODWithEarlyTerminatedPreview() {
+		StringBuilder builder = new StringBuilder();
+		addLine(builder,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(builder,"Host: icap-server.net");
+		addLine(builder,"Encapsulated: req-hdr=0, req-body=181");
+		addLine(builder,"Preview: 51");
+		addLine(builder,null);
+		addLine(builder,"POST / HTTP/1.1");
+		addLine(builder,"Host: www.origin-server.com");
+		addLine(builder,"Accept: text/html, text/plain");
+		addLine(builder,"Accept-Encoding: compress");
+		addLine(builder,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(builder,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(builder,null);
+		addLine(builder,"33");
+		addLine(builder,"This is data that was returned by an origin");
+		addLine(builder,"0; ieof");
 		addLine(builder,null);
 		addLine(builder,null);
 		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
+	}
+	
+	public static final void assertCreateREQMODWithEarlyTerminatedPreview(IcapMessage message) {
+		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
+		assertHeaderValue("Host","icap-server.net",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=181",message);
+		assertHeaderValue("Preview","51",message);
+		assertNotNull("http request was null",message.getHttpRequest());
+		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept-Encoding","compress",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Cookie","ff39fk3jur@4ii0e02i",message.getHttpRequest());
+		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",message.getHttpRequest());
+	}
+	
+	public static final void assertCreateREQMODWithEarlyTerminatedPreview(IcapChunk chunk) {
+		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
+		assertTrue("preview chunk does not indicated that is is early terminated",chunk.isEarlyTerminated());
+		assertChunk("preview chunk", chunk,"This is data that was returned by an origin",false);
 	}
 	
 //	public static final ChannelBuffer createRESPMODWithGetRequestAndBody() {
@@ -257,6 +310,19 @@ public final class DataMockery extends Assert {
 			builder.append(StringUtil.NEWLINE);
 		} else {
 			builder.append(value).append(StringUtil.NEWLINE);
+		}
+	}
+	
+	private static void addChunk(StringBuilder builder, String chunkData) {
+		if(chunkData == null) {
+			addLine(builder,"0");
+			addLine(builder,null);
+			addLine(builder,null);
+		} else {
+			int length = chunkData.length();
+			String hex = Integer.toString(length,16);
+			addLine(builder,hex);
+			addLine(builder,chunkData);
 		}
 	}
 	
