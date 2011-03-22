@@ -368,33 +368,6 @@ public final class DataMockery extends Assert {
 		assertFalse("preview chunk states that it is early terminated",chunk.isEarlyTerminated());
 	}
 	
-	
-	
-	
-//	public static final ChannelBuffer createRESPMODWithGetRequestAndBody() {
-//		StringBuilder builder = new StringBuilder();
-//		addLine(builder,"RESPMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
-//		addLine(builder,"Host: icap-server.net");
-//		addLine(builder,"Encapsulated: req-hdr=0, res-hdr=137, res-body=296");
-//		addLine(builder,null);
-//		addLine(builder,"GET /origin-resource HTTP/1.1");
-//		addLine(builder,"Host: www.origin-server.com");
-//		addLine(builder,"Accept: text/html, text/plain, image/gif");
-//		addLine(builder,"Accept-Encoding: gzip, compress");
-//		addLine(builder,null);
-//		addLine(builder,"HTTP/1.1 200 OK");
-//		addLine(builder,"Date: Mon, 10 Jan 2000 09:52:22 GMT");
-//		addLine(builder,"Server: Apache/1.3.6 (Unix)");
-//		addLine(builder,"ETag: \"63840-1ab7-378d415b\"");
-//		addLine(builder,"Content-Type: text/html");
-//		addLine(builder,"Content-Length: 51");
-//		addLine(builder,null);
-//		addLine(builder,"33");
-//		addLine(builder,"This is data that was returned by an origin server.");
-//		addLine(builder,"0");
-//		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
-//	}
-	
 	private static final void addLine(StringBuilder builder, String value) {
 		if(value == null) {
 			builder.append(StringUtil.NEWLINE);
