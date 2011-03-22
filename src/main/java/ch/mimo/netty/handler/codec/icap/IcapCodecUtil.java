@@ -19,12 +19,26 @@ import java.util.List;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.util.CharsetUtil;
+import org.jboss.netty.util.internal.StringUtil;
 
 /**
  * This class is an exact copy of @see HttpCodecUtil
  * Once the ICAP codec will be integrated into netty this has to be consolidated.
  */
 class IcapCodecUtil {
+	
+	static {
+		// merges the newline character with the ieof sequence
+		Byte[] PRE_IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
+		byte[] NEWLINE = StringUtil.NEWLINE.getBytes();
+		Byte[] MERGED_IEOF_SEQUENCE = new Byte[NEWLINE.length + PRE_IEOF_SEQUENCE.length];
+		System.arraycopy(NEWLINE,0,MERGED_IEOF_SEQUENCE,0,NEWLINE.length);
+		System.arraycopy(PRE_IEOF_SEQUENCE,0,MERGED_IEOF_SEQUENCE,NEWLINE.length,PRE_IEOF_SEQUENCE.length);
+		IEOF_SEQUENCE = MERGED_IEOF_SEQUENCE;
+	}
+	
+	static Byte[] IEOF_SEQUENCE;
+	
     //space ' '
     static final byte SP = 32;
 
@@ -69,8 +83,6 @@ class IcapCodecUtil {
     static final byte DOUBLE_QUOTE = '"';
 
     static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
-
-    static byte[] IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102,CR,LF,CR,LF};
     
     private IcapCodecUtil() {
         super();

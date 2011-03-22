@@ -274,6 +274,7 @@ public final class DataMockery extends Assert {
 		addLine(builder,null);
 		addLine(builder,"33");
 		addLine(builder,"This is data that was returned by an origin");
+//		builder.append("0; ieof").append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF).append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
 		addLine(builder,"0; ieof");
 		addLine(builder,null);
 		addLine(builder,null);
@@ -295,12 +296,14 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final void assertCreateREQMODWithEarlyTerminatedPreview(IcapChunk chunk) {
+		assertNotNull("preview chunk was null",chunk);
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertTrue("preview chunk does not indicated that is is early terminated",chunk.isEarlyTerminated());
 		assertChunk("preview chunk", chunk,"This is data that was returned by an origin",false);
 	}
 	
 	public static final void assertCreateREQMODWithEarlyTerminatedPreviewLastChunk(IcapChunk chunk) {
+		assertNotNull("preview last chunk was null",chunk);
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertTrue("preview chunk is not last chunk",chunk.isLast());
 		assertTrue("preview chunk is not early terminated",chunk.isEarlyTerminated());

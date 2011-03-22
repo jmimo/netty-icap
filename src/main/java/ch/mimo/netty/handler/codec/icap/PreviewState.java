@@ -30,31 +30,31 @@ public class PreviewState extends State<Object> {
 
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
-		int chunkSize = icapMessageDecoder.currentChunkSize;
-		
-		
-		// TODO remove literal
-		int previewSize = Integer.parseInt(icapMessageDecoder.message.getHeader("Preview"));
-		int readable = buffer.readableBytes();
-		ChannelBuffer preview = null;
-		
-		if(readable > previewSize) {
-			preview = buffer.readBytes(previewSize);
-		} else {
-			preview = buffer.readBytes(readable);
-			byte[] end = new byte[IcapCodecUtil.IEOF_SEQUENCE.length];
-			preview.getBytes(preview.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length,end);
-			if(Arrays.equals(IcapCodecUtil.IEOF_SEQUENCE,end)) {
-				preview = preview.copy(0,preview.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length);
-			} else {
-				preview = null;
-			}
-		}
-		
-		if(preview != null) {
-			HttpChunk chunk = new DefaultHttpChunk(buffer.readBytes(previewSize));
-			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
-		}
+//		int chunkSize = icapMessageDecoder.currentChunkSize;
+//		
+//		
+//		// TODO remove literal
+//		int previewSize = Integer.parseInt(icapMessageDecoder.message.getHeader("Preview"));
+//		int readable = buffer.readableBytes();
+//		ChannelBuffer preview = null;
+//		
+//		if(readable > previewSize) {
+//			preview = buffer.readBytes(previewSize);
+//		} else {
+//			preview = buffer.readBytes(readable);
+//			byte[] end = new byte[IcapCodecUtil.IEOF_SEQUENCE.length];
+//			preview.getBytes(preview.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length,end);
+//			if(Arrays.equals(IcapCodecUtil.IEOF_SEQUENCE,end)) {
+//				preview = preview.copy(0,preview.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length);
+//			} else {
+//				preview = null;
+//			}
+//		}
+//		
+//		if(preview != null) {
+//			HttpChunk chunk = new DefaultHttpChunk(buffer.readBytes(previewSize));
+//			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
+//		}
 		return StateReturnValue.createIrrelevantResult();
 	}
 

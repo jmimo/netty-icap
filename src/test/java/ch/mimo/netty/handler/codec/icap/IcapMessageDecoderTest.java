@@ -13,9 +13,12 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.util.Arrays;
+
 import junit.framework.Assert;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
+import org.jboss.netty.util.internal.StringUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -97,4 +100,31 @@ public class IcapMessageDecoderTest extends Assert {
 		DataMockery.assertCreateREQMODWithEarlyTerminatedPreview((IcapChunk)embedder.poll());
 		DataMockery.assertCreateREQMODWithEarlyTerminatedPreviewLastChunk((IcapChunk)embedder.poll());
 	}
+	
+//	@Test
+//	public void testArrayEquals() {
+//		Byte[] one = new Byte[]{11,34,105,28};
+//		Object[] two = new Object[]{11,34,105,28};
+//		Byte[] three = new Byte[]{11,34,105,28};
+//		
+//		assertTrue("arrays are not equals",Arrays.equals(one,three));
+//	}
+	
+//	@Test
+//	public void testPrintIEOF() {
+//		System.out.print("[");
+//		for(Byte bite : IcapCodecUtil.IEOF_SEQUENCE) {
+//			System.out.print(new String(new byte[]{bite}));
+//		}
+//		System.out.println("]");
+//	}
+	
+//	@Test
+//	public void testNewLine() {
+//		byte[] data = StringUtil.NEWLINE.getBytes();
+//		for(Byte bite : data) {
+//			System.out.print(Integer.toHexString(bite) + "|");
+//		}
+//		System.out.println("]");		
+//	}
 }

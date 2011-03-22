@@ -67,7 +67,11 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 		state.onEntry(buffer,this);
 		StateReturnValue returnValue = state.execute(buffer,this);
 		//TODO remove when finished
-		System.out.print(returnValue.toString() + " ");
+		if(returnValue == null) {
+			System.out.print("return value is null ");
+		} else {
+			System.out.print(returnValue.toString() + " ");
+		}
 		StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
 		//TODO remove when finished
 		System.out.println(nextState);
