@@ -20,7 +20,7 @@ public class ReadIcapInitialState extends State<Object> {
 
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
-		// NO-OP
+		// NOOP
 	}
 
 	@Override

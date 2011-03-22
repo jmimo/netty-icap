@@ -118,6 +118,7 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 			window.add(bite);
 			Byte[] array = window.toArray(new Byte[0]);
 			boolean result = Arrays.equals(pattern,array);
+			// TODO remove this debug stuff
 //			System.out.println("==============================");
 //			System.out.print("Matcher: [");
 //			for(Byte bitex : pattern) {

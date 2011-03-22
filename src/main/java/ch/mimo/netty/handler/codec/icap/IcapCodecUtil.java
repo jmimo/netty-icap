@@ -26,6 +26,7 @@ import org.jboss.netty.util.CharsetUtil;
  */
 class IcapCodecUtil {
 	
+	// 0; ieof
 	static Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
 	
     //space ' '
