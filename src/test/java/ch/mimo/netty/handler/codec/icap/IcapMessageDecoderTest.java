@@ -97,30 +97,13 @@ public class IcapMessageDecoderTest extends Assert {
 		DataMockery.assertCreateREQMODWithEarlyTerminatedPreviewLastChunk((IcapChunk)embedder.poll());
 	}
 	
-//	@Test
-//	public void testArrayEquals() {
-//		Byte[] one = new Byte[]{11,34,105,28};
-//		Object[] two = new Object[]{11,34,105,28};
-//		Byte[] three = new Byte[]{11,34,105,28};
-//		
-//		assertTrue("arrays are not equals",Arrays.equals(one,three));
-//	}
-	
-//	@Test
-//	public void testPrintIEOF() {
-//		System.out.print("[");
-//		for(Byte bite : IcapCodecUtil.IEOF_SEQUENCE) {
-//			System.out.print(new String(new byte[]{bite}));
-//		}
-//		System.out.println("]");
-//	}
-	
-//	@Test
-//	public void testNewLine() {
-//		byte[] data = StringUtil.NEWLINE.getBytes();
-//		for(Byte bite : data) {
-//			System.out.print(Integer.toHexString(bite) + "|");
-//		}
-//		System.out.println("]");		
-//	}
+	@Test
+	public void decodeRESPMODWithGetRequestAndPreview() {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreview());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreview(result);
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewChunk((IcapChunk)embedder.poll());
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewLastChunk((IcapChunk)embedder.poll());
+	}
 }

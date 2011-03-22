@@ -48,10 +48,8 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 				}
 				previewBuffer.writeByte(bite);
 				if(ieofMatcher.addByteAndMatch(bite)) {
-					int step = correctBufferIndex(buffer);
-					// magic number is there because of the readable index being 0 based and the array length not.
-					// TODO remove magic number
-					ChannelBuffer ieofBuffer = previewBuffer.copy(0,previewBuffer.readableBytes() - (IcapCodecUtil.IEOF_SEQUENCE.length + step + 1));
+					int step = correctBufferIndex(buffer,IcapCodecUtil.IEOF_SEQUENCE.length);
+					ChannelBuffer ieofBuffer = previewBuffer.copy(0,previewBuffer.readableBytes() - (IcapCodecUtil.IEOF_SEQUENCE.length + step));
 					chunk = new DefaultIcapChunk(ieofBuffer);
 					chunk.setIsPreviewChunk();
 					chunk.setIsEarlyTerminated();
@@ -59,8 +57,8 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 					return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 				} 
 			}
-			// TODO remove magic number
-			chunk = new DefaultIcapChunk(previewBuffer.copy(0,previewBuffer.readableBytes() - 1));
+			int step = correctBufferIndex(buffer,0);
+			chunk = new DefaultIcapChunk(previewBuffer.copy(0,previewBuffer.readableBytes() - step));
 			chunk.setIsPreviewChunk();
 			return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 		} else {
@@ -80,15 +78,20 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 		}
 	}
 	
-	private int correctBufferIndex(ChannelBuffer buffer) {
-		buffer.readerIndex(buffer.readerIndex() - IcapCodecUtil.IEOF_SEQUENCE.length);
+	/**
+	 * This method steps back across the given token length and the prepending newline characters ('\r' & '\n') 
+	 * until the end of a chunk is reached.
+	 * @return the amount of newline characters that the index is put back. (classically: 1 '\n')
+	 */
+	private int correctBufferIndex(ChannelBuffer buffer, int size) {
+		buffer.readerIndex(buffer.readerIndex() - size);
 		int counter = 0;
 		for(;;) {
 			counter++;
-			byte next = buffer.getByte(buffer.readerIndex() - 1);
+			byte next = buffer.getByte(buffer.readerIndex() - counter);
 			if(next == IcapCodecUtil.CR) {
 				counter++;
-				if(buffer.getByte(buffer.readerIndex() - 1) == IcapCodecUtil.LF) {
+				if(buffer.getByte(buffer.readerIndex() - counter) == IcapCodecUtil.LF) {
 					break;
 				}
 			} else if(next == IcapCodecUtil.LF) {

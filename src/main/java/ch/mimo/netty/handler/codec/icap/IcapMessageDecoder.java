@@ -79,9 +79,10 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 		// TODO re-reading
 		if(nextState != null) {
 			checkpoint(nextState);
-		} else {
-			checkpoint();
-		}
+		} 
+//		else {
+//			checkpoint();
+//		}
 		if(returnValue.isRelevant()) {
 			return returnValue.getValue();
 		}
