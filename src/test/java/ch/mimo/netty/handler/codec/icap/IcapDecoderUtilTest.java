@@ -180,4 +180,11 @@ public class IcapDecoderUtilTest extends Assert {
 		String line ="0; ieof";
 		assertEquals("wrong chunk size",-1,IcapDecoderUtil.getChunkSize(line));
 	}
+	
+//	@Test
+//	public void printIeof() {
+//		for(byte bite : IcapCodecUtil.IEOF_SEQUENCE) {
+//			System.out.println("[" + bite + "] --> [" + new String(new byte[]{bite}) + "]");
+//		}
+//	}
 }

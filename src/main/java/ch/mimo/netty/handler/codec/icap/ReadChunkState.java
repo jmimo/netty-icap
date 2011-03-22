@@ -19,6 +19,7 @@ import java.util.Stack;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
+
 public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessing> {
 
 	public static enum ReadChunkStateProcessing {
@@ -118,34 +119,6 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 			window.add(bite);
 			Byte[] array = window.toArray(new Byte[0]);
 			boolean result = Arrays.equals(pattern,array);
-			// TODO remove this debug stuff
-//			System.out.println("==============================");
-//			System.out.print("Matcher: [");
-//			for(Byte bitex : pattern) {
-//				String car = new String(new byte[]{bitex});
-//				if(bitex == 13) {
-//					System.out.print("cr");
-//				} else if(bitex == 10) {
-//					System.out.print("lf");
-//				} else {
-//					System.out.print(car);
-//				}
-//			}
-//			System.out.print("]");
-//			
-//			System.out.print(" equals [");
-//			for(Byte bite1 : array) {
-//				String car = new String(new byte[]{bite1});
-//				if(bite1 == 13) {
-//					System.out.print("cr");
-//				} else if(bite1 == 10) {
-//					System.out.print("lf");
-//				} else {
-//					System.out.print(car);
-//				}
-//			}
-//			System.out.println("] result = [" + result + "]");
-//			System.out.println("==============================");
 			return result;
 		}
 		

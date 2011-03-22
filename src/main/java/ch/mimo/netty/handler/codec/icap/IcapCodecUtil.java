@@ -20,6 +20,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.util.CharsetUtil;
 
+
 /**
  * This class is an exact copy of @see HttpCodecUtil
  * Once the ICAP codec will be integrated into netty this has to be consolidated.
