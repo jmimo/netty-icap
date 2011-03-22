@@ -277,7 +277,6 @@ public final class DataMockery extends Assert {
 //		builder.append("0; ieof").append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF).append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
 		addLine(builder,"0; ieof");
 		addLine(builder,null);
-		addLine(builder,null);
 		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
 	}
 	

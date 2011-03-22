@@ -19,7 +19,7 @@ import java.util.List;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.util.CharsetUtil;
-import org.jboss.netty.util.internal.StringUtil;
+
 
 /**
  * This class is an exact copy of @see HttpCodecUtil
@@ -27,17 +27,8 @@ import org.jboss.netty.util.internal.StringUtil;
  */
 class IcapCodecUtil {
 	
-	static {
-		// merges the newline character with the ieof sequence
-		Byte[] PRE_IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
-		byte[] NEWLINE = StringUtil.NEWLINE.getBytes();
-		Byte[] MERGED_IEOF_SEQUENCE = new Byte[NEWLINE.length + PRE_IEOF_SEQUENCE.length];
-		System.arraycopy(NEWLINE,0,MERGED_IEOF_SEQUENCE,0,NEWLINE.length);
-		System.arraycopy(PRE_IEOF_SEQUENCE,0,MERGED_IEOF_SEQUENCE,NEWLINE.length,PRE_IEOF_SEQUENCE.length);
-		IEOF_SEQUENCE = MERGED_IEOF_SEQUENCE;
-	}
-	
-	static Byte[] IEOF_SEQUENCE;
+	// 0; ieof
+	static Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
 	
     //space ' '
     static final byte SP = 32;

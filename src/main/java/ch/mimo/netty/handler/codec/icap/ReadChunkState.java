@@ -18,7 +18,7 @@ import java.util.Stack;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.util.internal.StringUtil;
+
 
 public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessing> {
 
@@ -38,7 +38,7 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 			Matcher ieofMatcher = new Matcher(IcapCodecUtil.IEOF_SEQUENCE);
 			ChannelBuffer previewBuffer = ChannelBuffers.dynamicBuffer();
 			int counter = 0;
-			while(counter < icapMessageDecoder.currentChunkSize) {
+			while(counter <= icapMessageDecoder.currentChunkSize) {
 				Byte bite = null;
 				try {
 					bite = buffer.readByte();
@@ -48,8 +48,10 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 				}
 				previewBuffer.writeByte(bite);
 				if(ieofMatcher.addByteAndMatch(bite)) {
-					ChannelBuffer ieofBuffer = removeSequenceFromEndOfBuffer(previewBuffer,IcapCodecUtil.IEOF_SEQUENCE);
-					buffer.readerIndex(buffer.readerIndex() - IcapCodecUtil.IEOF_SEQUENCE.length - StringUtil.NEWLINE.getBytes().length);
+					int step = correctBufferIndex(buffer);
+					// magic number is there because of the readable index being 0 based and the array length not.
+					// TODO remove magic number
+					ChannelBuffer ieofBuffer = previewBuffer.copy(0,previewBuffer.readableBytes() - (IcapCodecUtil.IEOF_SEQUENCE.length + step + 1));
 					chunk = new DefaultIcapChunk(ieofBuffer);
 					chunk.setIsPreviewChunk();
 					chunk.setIsEarlyTerminated();
@@ -57,7 +59,8 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 					return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 				} 
 			}
-			chunk = new DefaultIcapChunk(previewBuffer);
+			// TODO remove magic number
+			chunk = new DefaultIcapChunk(previewBuffer.copy(0,previewBuffer.readableBytes() - 1));
 			chunk.setIsPreviewChunk();
 			return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 		} else {
@@ -77,8 +80,23 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 		}
 	}
 	
-	private ChannelBuffer removeSequenceFromEndOfBuffer(ChannelBuffer buffer, Byte[] sequence) {
-		return buffer.copy(0,buffer.writerIndex() - sequence.length);
+	private int correctBufferIndex(ChannelBuffer buffer) {
+		buffer.readerIndex(buffer.readerIndex() - IcapCodecUtil.IEOF_SEQUENCE.length);
+		int counter = 0;
+		for(;;) {
+			counter++;
+			byte next = buffer.getByte(buffer.readerIndex() - 1);
+			if(next == IcapCodecUtil.CR) {
+				counter++;
+				if(buffer.getByte(buffer.readerIndex() - 1) == IcapCodecUtil.LF) {
+					break;
+				}
+			} else if(next == IcapCodecUtil.LF) {
+				break;
+			}
+		}
+		buffer.readerIndex(buffer.readerIndex() - counter);
+		return counter;
 	}
 	
 	private class Matcher {
@@ -101,33 +119,6 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 			window.add(bite);
 			Byte[] array = window.toArray(new Byte[0]);
 			boolean result = Arrays.equals(pattern,array);
-//			System.out.println("==============================");
-//			System.out.print("Matcher: [");
-//			for(Byte bitex : pattern) {
-//				String car = new String(new byte[]{bitex});
-//				if(bitex == 13) {
-//					System.out.print("cr");
-//				} else if(bitex == 10) {
-//					System.out.print("lf");
-//				} else {
-//					System.out.print(car);
-//				}
-//			}
-//			System.out.print("]");
-//			
-//			System.out.print(" equals [");
-//			for(Byte bite1 : array) {
-//				String car = new String(new byte[]{bite1});
-//				if(bite1 == 13) {
-//					System.out.print("cr");
-//				} else if(bite1 == 10) {
-//					System.out.print("lf");
-//				} else {
-//					System.out.print(car);
-//				}
-//			}
-//			System.out.println("] result = [" + result + "]");
-//			System.out.println("==============================");
 			return result;
 		}
 		

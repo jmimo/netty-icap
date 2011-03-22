@@ -21,6 +21,7 @@ import java.util.StringTokenizer;
 public class Encapsulated {
 	
 	public static enum EntryName {
+		// TODO remove literals
 		REQHDR("req-hdr"),
 		RESHDR("res-hdr"),
 		REQBODY("req-body"),
@@ -72,11 +73,11 @@ public class Encapsulated {
 		return false;
  	}
 	
-	public boolean containsBody() {
-		return containsEntry(EntryName.REQBODY) | 
-					containsEntry(EntryName.RESBODY) | 
-					containsEntry(EntryName.OPTBODY);
-	}
+//	public boolean containsBody() {
+//		return containsEntry(EntryName.REQBODY) | 
+//					containsEntry(EntryName.RESBODY) | 
+//					containsEntry(EntryName.OPTBODY);
+//	}
 	
 	public EntryName getNextEntry() {
 		for(Entry entry : entries) {

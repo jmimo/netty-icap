@@ -76,6 +76,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 		//TODO remove when finished
 		System.out.println(nextState);
 		// TODO set checkpoint only if required. see preview chunk reading
+		// TODO re-reading
 		if(nextState != null) {
 			checkpoint(nextState);
 		} else {

@@ -13,12 +13,8 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import java.util.Arrays;
-
-import junit.framework.Assert;
-
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
-import org.jboss.netty.util.internal.StringUtil;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
