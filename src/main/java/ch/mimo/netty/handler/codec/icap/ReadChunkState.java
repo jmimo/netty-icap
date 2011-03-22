@@ -14,14 +14,16 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 
 public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessing> {
 
 	public static enum ReadChunkStateProcessing {
 		READ_CHUNK_AGAIN,
-		GO_TO_DELIMITER
+		GO_TO_DELIMITER,
 	}
 	
 	@Override
@@ -30,39 +32,40 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
-		// TODO if preview consider that the string might reach 0; ieof earlier than expected
 		IcapChunk chunk = null;
 		if(icapMessageDecoder.message.isPreview()) {
-			int readable = buffer.readableBytes();
-			int currentChunkSize = icapMessageDecoder.currentChunkSize;
-			if((readable + IcapCodecUtil.IEOF_SEQUENCE.length) > currentChunkSize) {
-				chunk = new DefaultIcapChunk(buffer.readBytes(currentChunkSize));
-				chunk.setIsPreviewChunk();
-				return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
-			} else {
-				ChannelBuffer previewBuffer = buffer.readBytes(readable);
-				// TODO generalize this and make it static
-				byte[] end = new byte[IcapCodecUtil.IEOF_SEQUENCE.length];
-				previewBuffer.getBytes(previewBuffer.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length,end);
-				if(Arrays.equals(IcapCodecUtil.IEOF_SEQUENCE,end)) {
-					previewBuffer = previewBuffer.copy(0,previewBuffer.readableBytes() - IcapCodecUtil.IEOF_SEQUENCE.length);
-					buffer.readerIndex(buffer.readerIndex() - end.length);
-					chunk = new DefaultIcapChunk(previewBuffer);
+			Matcher ieofMatcher = new Matcher(IcapCodecUtil.IEOF_SEQUENCE);
+			ChannelBuffer previewBuffer = ChannelBuffers.dynamicBuffer();
+			int counter = 0;
+			while(counter <= icapMessageDecoder.currentChunkSize) {
+				Byte bite = null;
+				try {
+					bite = buffer.readByte();
+					counter++;
+				} catch(IndexOutOfBoundsException ioobe) {
+					return StateReturnValue.createIrrelevantResultWithDecisionInformation(ReadChunkStateProcessing.READ_CHUNK_AGAIN);
+				}
+				previewBuffer.writeByte(bite);
+				if(ieofMatcher.addByteAndMatch(bite)) {
+					int step = correctBufferIndex(buffer);
+					// magic number is there because of the readable index being 0 based and the array length not.
+					// TODO remove magic number
+					ChannelBuffer ieofBuffer = previewBuffer.copy(0,previewBuffer.readableBytes() - (IcapCodecUtil.IEOF_SEQUENCE.length + step + 1));
+					chunk = new DefaultIcapChunk(ieofBuffer);
 					chunk.setIsPreviewChunk();
 					chunk.setIsEarlyTerminated();
-					return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.READ_CHUNK_AGAIN);
-				} else {
-					StateReturnValue.createIrrelevantResult();
-				}
+					icapMessageDecoder.currentChunkSize = 0;
+					return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
+				} 
 			}
-		}
-		
-		
-		chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
-		if(icapMessageDecoder.message.isPreview()) {
+			// TODO remove magic number
+			chunk = new DefaultIcapChunk(previewBuffer.copy(0,previewBuffer.readableBytes() - 1));
 			chunk.setIsPreviewChunk();
+			return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
+		} else {
+			chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
+			return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 		}
-		return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 	}
 
 	@Override
@@ -74,5 +77,76 @@ public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessin
 		} else {
 			return null;
 		}
+	}
+	
+	private int correctBufferIndex(ChannelBuffer buffer) {
+		buffer.readerIndex(buffer.readerIndex() - IcapCodecUtil.IEOF_SEQUENCE.length);
+		int counter = 0;
+		for(;;) {
+			counter++;
+			byte next = buffer.getByte(buffer.readerIndex() - 1);
+			if(next == IcapCodecUtil.CR) {
+				counter++;
+				if(buffer.getByte(buffer.readerIndex() - 1) == IcapCodecUtil.LF) {
+					break;
+				}
+			} else if(next == IcapCodecUtil.LF) {
+				break;
+			}
+		}
+		buffer.readerIndex(buffer.readerIndex() - counter);
+		return counter;
+	}
+	
+	private class Matcher {
+		
+		private Byte[] pattern;
+		private int length;
+		private Stack<Byte> window;
+		
+		
+		public Matcher(Byte[] pattern) {
+			this.pattern = pattern;
+			length = pattern.length;
+			this.window = new Stack<Byte>();
+		}
+		
+		private boolean addByteAndMatch(byte bite) {
+			if(window.size() >= length) {
+				window.remove(0);
+			}
+			window.add(bite);
+			Byte[] array = window.toArray(new Byte[0]);
+			boolean result = Arrays.equals(pattern,array);
+//			System.out.println("==============================");
+//			System.out.print("Matcher: [");
+//			for(Byte bitex : pattern) {
+//				String car = new String(new byte[]{bitex});
+//				if(bitex == 13) {
+//					System.out.print("cr");
+//				} else if(bitex == 10) {
+//					System.out.print("lf");
+//				} else {
+//					System.out.print(car);
+//				}
+//			}
+//			System.out.print("]");
+//			
+//			System.out.print(" equals [");
+//			for(Byte bite1 : array) {
+//				String car = new String(new byte[]{bite1});
+//				if(bite1 == 13) {
+//					System.out.print("cr");
+//				} else if(bite1 == 10) {
+//					System.out.print("lf");
+//				} else {
+//					System.out.print(car);
+//				}
+//			}
+//			System.out.println("] result = [" + result + "]");
+//			System.out.println("==============================");
+			return result;
+		}
+		
 	}
 }

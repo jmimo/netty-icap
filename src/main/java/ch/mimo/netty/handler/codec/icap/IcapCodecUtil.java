@@ -25,6 +25,9 @@ import org.jboss.netty.util.CharsetUtil;
  * Once the ICAP codec will be integrated into netty this has to be consolidated.
  */
 class IcapCodecUtil {
+	
+	static Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
+	
     //space ' '
     static final byte SP = 32;
 
@@ -69,8 +72,6 @@ class IcapCodecUtil {
     static final byte DOUBLE_QUOTE = '"';
 
     static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
-
-    static byte[] IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102,CR,LF,CR,LF};
     
     private IcapCodecUtil() {
         super();

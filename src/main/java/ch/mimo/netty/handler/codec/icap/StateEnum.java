@@ -19,7 +19,6 @@ public enum StateEnum {
 	READ_ICAP_HEADER_STATE(new ReadIcapHeaderState()),
 	READ_HTTP_REQUEST_INITIAL_AND_HEADERS(new ReadHttpRequestInitialAndHeadersState()),
 	READ_HTTP_RESPONSE_INITIAL_AND_HEADERS(new ReadHttpResponseInitalAndHeadersState()),
-//	PREVIEW_STATE(new PreviewState()),
 	READ_CHUNK_SIZE_STATE(new ReadChunkSizeState()),
 	READ_CHUNK_STATE(new ReadChunkState()),
 	READ_CHUNKED_CONTENT_AS_CHUNKS_STATE(new ReadChunkedContentAsChunksState()),
