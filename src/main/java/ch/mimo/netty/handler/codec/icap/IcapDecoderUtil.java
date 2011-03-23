@@ -22,7 +22,6 @@ import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 public final class IcapDecoderUtil {
 
 	private IcapDecoderUtil() {
-		super();
 	}
 
 	/**

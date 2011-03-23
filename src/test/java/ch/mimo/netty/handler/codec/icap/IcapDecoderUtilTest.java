@@ -13,6 +13,8 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.util.List;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
@@ -96,6 +98,24 @@ public class IcapDecoderUtilTest extends Assert {
 	}
 	
 	@Test
+	public void testParseInitialLineWithFourElements() {
+		String initialLine = "REQMOD icap://icap.mimo.ch:1344/reqmod Bla ICAP/1.0";
+		String[] params = IcapDecoderUtil.splitInitialLine(initialLine);
+		assertEquals("Operation could not be identified","REQMOD",params[0]);
+		assertEquals("Uri could not be identified","icap://icap.mimo.ch:1344/reqmod",params[1]);
+		assertEquals("Protocol and Version could not be identified","Bla ICAP/1.0",params[2]);
+	}
+	
+	@Test
+	public void testParseInitialLineWithFourtElementAtEndOfLine() {
+		String initialLine = "REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0 Bla";
+		String[] params = IcapDecoderUtil.splitInitialLine(initialLine);
+		assertEquals("Operation could not be identified","REQMOD",params[0]);
+		assertEquals("Uri could not be identified","icap://icap.mimo.ch:1344/reqmod",params[1]);
+		assertEquals("Protocol and Version could not be identified","ICAP/1.0 Bla",params[2]);
+	}
+	
+	@Test
 	public void testParseHeaderLine() {
 		StringBuilder builder = new StringBuilder("Encapsulation: req-hdr=50, res-hdr=120, null-body=210");
 		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
@@ -167,6 +187,38 @@ public class IcapDecoderUtilTest extends Assert {
 		assertNotNull("header elemens are null",elements);
 		assertEquals("Header Key was not expected","Encapsulation",elements[0]);
 		assertEquals("Header Value was not expected","req-hdr=50, res-hdr=120, null-body=210",elements[1]);
+	}
+	
+	@Test
+	public void testNonSimpleHeader() {
+		StringBuilder builder = new StringBuilder("Encapsulation: req-hdr=50, res-hdr=120, null-body=210");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append("Host: icap.mimo.ch");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append("NonSimpleHeader: NonSimpleValue1");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append(" NonSimpleValue2");
+		builder.append("\t").append("NonSimpleValue3");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		try {
+			List<String[]> headers = IcapDecoderUtil.readHeaders(buffer,400);
+			String[] header1 = headers.get(0);
+			assertEquals("header name was wrong",header1[0],"Encapsulation");
+			assertEquals("header value was wrong",header1[1],"req-hdr=50, res-hdr=120, null-body=210");
+			String[] header2 = headers.get(1);
+			assertEquals("header name was wrong",header2[0],"Host");
+			assertEquals("header value was wrong",header2[1],"icap.mimo.ch");
+			String[] header3 = headers.get(2);
+			assertEquals("header name was wrong",header3[0],"NonSimpleHeader");
+			StringBuilder resultBuilder = new StringBuilder("NonSimpleValue1 NonSimpleValue2");
+			resultBuilder.append("\t").append("NonSimpleValue3");
+			assertEquals("header value was wrong",header3[1],resultBuilder.toString());
+		
+		} catch(TooLongFrameException tlfe) {
+			fail("unexpected frame exception");
+		}
 	}
 	
 	@Test

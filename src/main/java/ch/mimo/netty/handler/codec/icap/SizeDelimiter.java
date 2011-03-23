@@ -26,11 +26,6 @@ public class SizeDelimiter {
 		this.errorMessage = "limit exeeded by: ";
 	}
 	
-	public SizeDelimiter( int limit, String errorMessage) {
-		this(limit);
-		this.errorMessage = errorMessage;
-	}
-	
 	public synchronized void increment(int count) throws TooLongFrameException {
 		counter += count;
 		checkLimit();
@@ -38,15 +33,6 @@ public class SizeDelimiter {
 	
 	public void increment() throws TooLongFrameException {
 		this.increment(1);
-	}
-	
-	public synchronized void decrement(int count) throws TooLongFrameException {
-		counter -= count;
-		checkLimit();
-	}
-	
-	public void decrement() throws TooLongFrameException {
-		this.decrement(1);
 	}
 	
 	public int getSize() {
