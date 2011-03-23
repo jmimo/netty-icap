@@ -13,117 +13,26 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import java.util.Arrays;
-import java.util.Stack;
-
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 
 
-public class ReadChunkState extends State<ReadChunkState.ReadChunkStateProcessing> {
-
-	public static enum ReadChunkStateProcessing {
-		READ_CHUNK_AGAIN,
-		GO_TO_DELIMITER,
-	}
+public class ReadChunkState extends State<Object> {
 	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 	}
 
 	@Override
-	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
-		IcapChunk chunk = null;
+	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {		
+		IcapChunk chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
 		if(icapMessageDecoder.message.isPreview()) {
-			Matcher ieofMatcher = new Matcher(IcapCodecUtil.IEOF_SEQUENCE);
-			ChannelBuffer previewBuffer = ChannelBuffers.dynamicBuffer();
-			int counter = 0;
-			while(counter <= icapMessageDecoder.currentChunkSize) {
-				Byte bite = null;
-				try {
-					bite = buffer.readByte();
-					counter++;
-				} catch(IndexOutOfBoundsException ioobe) {
-					return StateReturnValue.createIrrelevantResultWithDecisionInformation(ReadChunkStateProcessing.READ_CHUNK_AGAIN);
-				}
-				previewBuffer.writeByte(bite);
-				if(ieofMatcher.addByteAndMatch(bite)) {
-					int step = correctBufferIndex(buffer,IcapCodecUtil.IEOF_SEQUENCE.length);
-					ChannelBuffer ieofBuffer = previewBuffer.copy(0,previewBuffer.readableBytes() - (IcapCodecUtil.IEOF_SEQUENCE.length + step));
-					chunk = new DefaultIcapChunk(ieofBuffer);
-					chunk.setIsPreviewChunk();
-					chunk.setIsEarlyTerminated();
-					icapMessageDecoder.currentChunkSize = 0;
-					return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
-				} 
-			}
-			int step = correctBufferIndex(buffer,0);
-			chunk = new DefaultIcapChunk(previewBuffer.copy(0,previewBuffer.readableBytes() - step));
 			chunk.setIsPreviewChunk();
-			return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
-		} else {
-			chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
-			return StateReturnValue.createRelevantResultWithDecisionInformation(chunk,ReadChunkStateProcessing.GO_TO_DELIMITER);
 		}
+		return StateReturnValue.createRelevantResult(chunk);
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, ReadChunkStateProcessing decisionInformation) throws Exception {
-		if(decisionInformation.equals(ReadChunkStateProcessing.READ_CHUNK_AGAIN)) {
-			return StateEnum.READ_CHUNK_STATE;
-		} else if(decisionInformation.equals(ReadChunkStateProcessing.GO_TO_DELIMITER)) {
-			return StateEnum.READ_CHUNK_DELIMITER_STATE;
-		} else {
-			return null;
-		}
-	}
-	
-	/**
-	 * This method steps back across the given token length and the prepending newline characters ('\r' & '\n') 
-	 * until the end of a chunk is reached.
-	 * @return the amount of newline characters that the index is put back. (classically: 1 '\n')
-	 */
-	private int correctBufferIndex(ChannelBuffer buffer, int size) {
-		buffer.readerIndex(buffer.readerIndex() - size);
-		int counter = 0;
-		for(;;) {
-			counter++;
-			byte next = buffer.getByte(buffer.readerIndex() - counter);
-			if(next == IcapCodecUtil.CR) {
-				counter++;
-				if(buffer.getByte(buffer.readerIndex() - counter) == IcapCodecUtil.LF) {
-					break;
-				}
-			} else if(next == IcapCodecUtil.LF) {
-				break;
-			}
-		}
-		buffer.readerIndex(buffer.readerIndex() - counter);
-		return counter;
-	}
-	
-	private class Matcher {
-		
-		private Byte[] pattern;
-		private int length;
-		private Stack<Byte> window;
-		
-		
-		public Matcher(Byte[] pattern) {
-			this.pattern = pattern;
-			length = pattern.length;
-			this.window = new Stack<Byte>();
-		}
-		
-		private boolean addByteAndMatch(byte bite) {
-			if(window.size() >= length) {
-				window.remove(0);
-			}
-			window.add(bite);
-			Byte[] array = window.toArray(new Byte[0]);
-			boolean result = Arrays.equals(pattern,array);
-			return result;
-		}
-		
-	}
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
+		return StateEnum.READ_CHUNK_DELIMITER_STATE;
+	}	
 }

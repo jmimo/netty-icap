@@ -31,10 +31,12 @@ public class ReadChunkedContentAsChunksState extends State<Object> {
 			chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
 			icapMessageDecoder.currentChunkSize = 0;
 		}
-		
+		if(icapMessageDecoder.message.isPreview()) {
+			chunk.setIsPreviewChunk();
+		}
 		if(chunk.isLast()) {
 			icapMessageDecoder.currentChunkSize = 0;
-			return StateReturnValue.createRelevantResult(new Object[]{chunk,IcapChunk.LAST_ICAP_CHUNK}); 
+			return StateReturnValue.createRelevantResult(new Object[]{chunk,new DefaultIcapChunkTrailer()}); 
 		}
 		return StateReturnValue.createRelevantResult(chunk);
 	}

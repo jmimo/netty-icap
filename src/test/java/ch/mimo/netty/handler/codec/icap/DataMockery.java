@@ -263,7 +263,7 @@ public final class DataMockery extends Assert {
 		addLine(builder,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(builder,"Host: icap-server.net");
 		addLine(builder,"Encapsulated: req-hdr=0, req-body=181");
-		addLine(builder,"Preview: 51");
+		addLine(builder,"Preview: 151");
 		addLine(builder,null);
 		addLine(builder,"POST / HTTP/1.1");
 		addLine(builder,"Host: www.origin-server.com");
@@ -273,7 +273,7 @@ public final class DataMockery extends Assert {
 		addLine(builder,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
 		addLine(builder,null);
 		addLine(builder,"33");
-		addLine(builder,"This is data that was returned by an origin");
+		addLine(builder,"This is data that was returned by an origin server.");
 		addLine(builder,"0; ieof");
 		addLine(builder,null);
 		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
@@ -283,7 +283,7 @@ public final class DataMockery extends Assert {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, req-body=181",message);
-		assertHeaderValue("Preview","51",message);
+		assertHeaderValue("Preview","151",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
 		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
@@ -296,8 +296,8 @@ public final class DataMockery extends Assert {
 	public static final void assertCreateREQMODWithEarlyTerminatedPreview(IcapChunk chunk) {
 		assertNotNull("preview chunk was null",chunk);
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
-		assertTrue("preview chunk does not indicated that is is early terminated",chunk.isEarlyTerminated());
-		assertChunk("preview chunk", chunk,"This is data that was returned by an origin",false);
+		assertFalse("preview chunk does not indicated that is is early terminated",chunk.isEarlyTerminated());
+		assertChunk("preview chunk", chunk,"This is data that was returned by an origin server.",false);
 	}
 	
 	public static final void assertCreateREQMODWithEarlyTerminatedPreviewLastChunk(IcapChunk chunk) {
@@ -329,7 +329,7 @@ public final class DataMockery extends Assert {
 		addLine(builder,"Server: Apache/1.3.6 (Unix)");
 		addLine(builder,"ETag: \"63840-1ab7-378d415b\"");
 		addLine(builder,"Content-Type: text/html");
-		addLine(builder,"Content-Length: 51");
+		addLine(builder,"Content-Length: 151");
 		addLine(builder,null);
 		addChunk(builder,"This is data that was returned by an origin server.");
 		addChunk(builder,null);
@@ -352,7 +352,7 @@ public final class DataMockery extends Assert {
 		assertHttpMessageHeaderValue("Server","Apache/1.3.6 (Unix)",message.getHttpResponse());
 		assertHttpMessageHeaderValue("ETag","\"63840-1ab7-378d415b\"",message.getHttpResponse());
 		assertHttpMessageHeaderValue("Content-Type","text/html",message.getHttpResponse());
-		assertHttpMessageHeaderValue("Content-Length","51",message.getHttpResponse());
+		assertHttpMessageHeaderValue("Content-Length","151",message.getHttpResponse());
 	}
 
 	

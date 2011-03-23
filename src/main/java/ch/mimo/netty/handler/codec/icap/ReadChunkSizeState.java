@@ -25,24 +25,16 @@ public class ReadChunkSizeState extends State<Integer> {
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		String line = IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength);
 		int chunkSize = IcapDecoderUtil.getChunkSize(line);
+		icapMessageDecoder.currentChunkSize = chunkSize;
 		if(chunkSize == -1) {
 			icapMessageDecoder.currentChunkSize = 0;
-			IcapChunkTrailer trailer = IcapChunk.LAST_ICAP_CHUNK;
-			trailer.setIsPreviewChunk();
-			trailer.setIsEarlyTerminated();
-			return StateReturnValue.createRelevantResultWithDecisionInformation(trailer,0);
+			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(true,true),0);
+		} else if(chunkSize == 0){
+			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(icapMessageDecoder.message.isPreview(),false),chunkSize);
 		} else {
 			icapMessageDecoder.currentChunkSize = chunkSize;
+			return StateReturnValue.createIrrelevantResultWithDecisionInformation(chunkSize);
 		}
-		
-		if(chunkSize == 0) {
-			IcapChunkTrailer trailer = IcapChunk.LAST_ICAP_CHUNK;
-			if(icapMessageDecoder.message.isPreview()) {
-				trailer.setIsPreviewChunk();
-			}
-			return StateReturnValue.createRelevantResultWithDecisionInformation(trailer,chunkSize);
-		}
-		return StateReturnValue.createIrrelevantResultWithDecisionInformation(chunkSize);
 	}
 
 	@Override
