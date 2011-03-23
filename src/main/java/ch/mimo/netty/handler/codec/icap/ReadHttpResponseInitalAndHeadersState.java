@@ -38,7 +38,7 @@ public class ReadHttpResponseInitalAndHeadersState extends State<Object> {
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		String line = IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength);
-		String[] initialLine = IcapDecoderUtil.splitInitialResponseLine(line);
+		String[] initialLine = IcapDecoderUtil.splitInitialLine(line);
 		HttpResponse message = new DefaultHttpResponse(HttpVersion.valueOf(initialLine[0]),HttpResponseStatus.valueOf(Integer.parseInt(initialLine[1])));
 		icapMessageDecoder.message.setHttpResponse(message);
 		List<String[]> headerList = IcapDecoderUtil.readHeaders(buffer,icapMessageDecoder.maxHttpHeaderSize);

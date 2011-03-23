@@ -306,12 +306,7 @@ public final class DataMockery extends Assert {
 		assertTrue("preview chunk is not last chunk",chunk.isLast());
 		assertTrue("preview chunk is not early terminated",chunk.isEarlyTerminated());
 	}
-	
-	
-	
-	
-	
-	
+
 	public static final ChannelBuffer createRESPMODWithGetRequestAndPreview() {
 		StringBuilder builder = new StringBuilder();
 		addLine(builder,"RESPMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
@@ -355,7 +350,6 @@ public final class DataMockery extends Assert {
 		assertHttpMessageHeaderValue("Content-Length","151",message.getHttpResponse());
 	}
 
-	
 	public static final void assertCreateRESPMODWithGetRequestAndPreviewChunk(IcapChunk chunk) {
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertFalse("preview chunk indicated that is is early terminated",chunk.isEarlyTerminated());

@@ -32,8 +32,29 @@ public class IcapDecoderUtilTest extends Assert {
 	}
 	
 	@Test
+	public void testSkipControlCharacter() {
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(new byte[]{0x0001,'A'});
+		IcapDecoderUtil.skipControlCharacters(buffer);
+		assertEquals("control character was not skiped",'A',buffer.readByte());
+	}
+	
+	@Test
 	public void testReadLine() {
 		StringBuilder builder = new StringBuilder("REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0").append(new String(IcapCodecUtil.CRLF)).append("NEW LINE");
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		String line = null;
+		try {
+			line = IcapDecoderUtil.readLine(buffer,100);
+		} catch (TooLongFrameException e) {
+			e.printStackTrace();
+			fail();
+		}
+		assertEquals("Line was not identified","REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0",line);
+	}
+	
+	@Test
+	public void testReadLineWithSingleLineBreak() {
+		StringBuilder builder = new StringBuilder("REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0").append(new String(new byte[]{IcapCodecUtil.LF})).append("NEW LINE");
 		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
 		String line = null;
 		try {
@@ -86,6 +107,14 @@ public class IcapDecoderUtilTest extends Assert {
 		assertEquals("Operation could not be identified","REQMOD",params[0]);
 		assertEquals("Uri could not be identified","icap://icap.mimo.ch:1344/reqmod",params[1]);
 		assertEquals("Protocol and Version could not be identified","ICAP/1.0",params[2]);
+	}
+	
+	@Test
+	public void testParseInitialLineWithTwoElements() {
+		String initialLine = "HTTP/1.1 200";
+		String[] params = IcapDecoderUtil.splitInitialLine(initialLine);
+		assertEquals("Protocol and Version could not be identified","HTTP/1.1",params[0]);
+		assertEquals("Response status could not be identified","200",params[1]);
 	}
 	
 	@Test
@@ -190,6 +219,15 @@ public class IcapDecoderUtilTest extends Assert {
 	}
 	
 	@Test
+	public void testHeaderSplitWithWhitespace() {
+		String header = "Encapsulation";
+		String[] elements = IcapDecoderUtil.splitHeader(header);
+		assertNotNull("header elemens are null",elements);
+		assertEquals("Header Key was not expected","Encapsulation",elements[0]);
+		assertEquals("Header Value was not expected","",elements[1]);
+	}
+	
+	@Test
 	public void testNonSimpleHeader() {
 		StringBuilder builder = new StringBuilder("Encapsulation: req-hdr=50, res-hdr=120, null-body=210");
 		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
@@ -233,10 +271,15 @@ public class IcapDecoderUtilTest extends Assert {
 		assertEquals("wrong chunk size",-1,IcapDecoderUtil.getChunkSize(line));
 	}
 	
-//	@Test
-//	public void printIeof() {
-//		for(byte bite : IcapCodecUtil.IEOF_SEQUENCE) {
-//			System.out.println("[" + bite + "] --> [" + new String(new byte[]{bite}) + "]");
-//		}
-//	}
+	@Test
+	public void testChunkSizeWithTrailingSemicolon() {
+		String line = "0;";
+		assertEquals("wrong chunk size",0,IcapDecoderUtil.getChunkSize(line));
+	}
+	
+	@Test
+	public void testChunkSizeWithTrailingWhitespace() {
+		String line = "0 ";
+		assertEquals("wrong chunk size",0,IcapDecoderUtil.getChunkSize(line));
+	}
 }

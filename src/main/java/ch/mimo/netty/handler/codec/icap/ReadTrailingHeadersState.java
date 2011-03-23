@@ -61,7 +61,7 @@ public class ReadTrailingHeadersState extends State<Object> {
 
             return StateReturnValue.createRelevantResult(trailer);
         }
-        return StateReturnValue.createRelevantResult(HttpChunk.LAST_CHUNK);
+        return StateReturnValue.createRelevantResult(new DefaultIcapChunkTrailer());
 	}
 
 	@Override
