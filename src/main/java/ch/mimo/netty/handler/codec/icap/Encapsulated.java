@@ -198,9 +198,10 @@ public class Encapsulated {
 		
 		@Override
 		public int compareTo(Entry entry) {
-			if(entry.getName().equals(EntryName.NULLBODY)) {
-				return 1;
-			}
+			// TODO creates issue with header exsistence validation in icap header decode state
+//			if(entry.getName().equals(EntryName.NULLBODY)) {
+//				return 1;
+//			}
 			return this.position.compareTo(entry.position);
 		}
 		
