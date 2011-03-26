@@ -18,8 +18,9 @@ import org.jboss.netty.buffer.ChannelBuffer;
 public class IcapResponseEncoder extends IcapMessageEncoder {
 
 	@Override
-	protected void encodeInitialLine(ChannelBuffer buf, IcapMessage message) {
+	protected int encodeInitialLine(ChannelBuffer buf, IcapMessage message) {
 		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

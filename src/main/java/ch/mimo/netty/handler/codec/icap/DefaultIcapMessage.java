@@ -25,7 +25,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.internal.StringUtil;
 
 
-public class DefaultIcapMessage implements IcapMessage {
+public abstract class DefaultIcapMessage implements IcapMessage {
 	
 	private IcapHeaders icapHeaders;
 	private HttpVersion version;

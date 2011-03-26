@@ -62,27 +62,14 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, StateEnum stateEnumValue) throws Exception {
 		State state = stateEnumValue.getState();
-		//TODO remove when finished
-		System.out.print(stateEnumValue.name() + " ");
 		state.onEntry(buffer,this);
 		StateReturnValue returnValue = state.execute(buffer,this);
-		//TODO remove when finished
-		if(returnValue == null) {
-			System.out.print("return value is null ");
-		} else {
-			System.out.print(returnValue.toString() + " ");
-		}
 		StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
-		//TODO remove when finished
-		System.out.println(nextState);
 		// TODO set checkpoint only if required. see preview chunk reading
 		// TODO re-reading
 		if(nextState != null) {
 			checkpoint(nextState);
 		} 
-//		else {
-//			checkpoint();
-//		}
 		if(returnValue.isRelevant()) {
 			return returnValue.getValue();
 		}

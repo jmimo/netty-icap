@@ -13,10 +13,14 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.jboss.netty.buffer.ChannelBuffer;
 
 public class Encapsulated {
 	
@@ -93,6 +97,11 @@ public class Encapsulated {
 		entry.setIsProcessed();
 	}
 	
+	public void addEntry(EntryName name, int position) {
+		Entry entry = new Entry(name,position);
+		entries.add(entry);
+	}
+	
 	/*
 	REQMOD request: 	 [req-hdr] req-body
 	REQMOD response: 	{[req-hdr] req-body} | {[res-hdr] res-body}
@@ -142,6 +151,24 @@ public class Encapsulated {
 		return null;
 	}
 	
+	public int encode(ChannelBuffer buffer) throws UnsupportedEncodingException {
+		int index = buffer.readableBytes();
+		Collections.sort(entries);
+		// TODO remove literal
+		buffer.writeBytes("Encapsulated: ".getBytes("ASCII"));
+		Iterator<Entry> entryIterator = entries.iterator();
+		while(entryIterator.hasNext()) {
+			Entry entry = entryIterator.next();
+			buffer.writeBytes(entry.getName().getValue().getBytes("ASCII"));
+			buffer.writeBytes("=".getBytes("ASCII"));
+			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes("ASCII"));
+			if(entryIterator.hasNext()) {
+				buffer.writeByte(IcapCodecUtil.SP);
+			}
+		}
+		return buffer.readableBytes() - index;
+	}
+	
 	private class Entry implements Comparable<Entry> {
 
 		private EntryName name;
@@ -157,6 +184,10 @@ public class Encapsulated {
 			return name;
 		}
 		
+		public int getPosition() {
+			return position;
+		}
+		
 		public void setIsProcessed() {
 			processed = true;
 		}
@@ -167,6 +198,9 @@ public class Encapsulated {
 		
 		@Override
 		public int compareTo(Entry entry) {
+			if(entry.getName().equals(EntryName.NULLBODY)) {
+				return 1;
+			}
 			return this.position.compareTo(entry.position);
 		}
 		

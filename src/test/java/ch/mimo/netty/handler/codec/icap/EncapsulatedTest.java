@@ -13,8 +13,13 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+
 import junit.framework.Assert;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
 
 import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
@@ -68,5 +73,21 @@ public class EncapsulatedTest extends Assert {
 			error = true;
 		}
 		assertTrue("Validation error did not occur",error);
+	}
+	
+	@Test
+	public void testEncodeEncapsulatedHeader() {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		Encapsulated encapsulated = new Encapsulated();
+		encapsulated.addEntry(EntryName.REQHDR,0);
+		encapsulated.addEntry(EntryName.RESHDR,123);
+		encapsulated.addEntry(EntryName.REQBODY,270);
+		try {
+			assertEquals("amount of bytes written was wrong",48,encapsulated.encode(buffer));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			fail("Encapsualted encoding failed");
+		}
+		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0 res-hdr=123 req-body=270",buffer.toString(Charset.defaultCharset()));
 	}
 }
