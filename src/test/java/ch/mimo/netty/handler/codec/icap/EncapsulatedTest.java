@@ -83,11 +83,62 @@ public class EncapsulatedTest extends Assert {
 		encapsulated.addEntry(EntryName.RESHDR,123);
 		encapsulated.addEntry(EntryName.REQBODY,270);
 		try {
-			assertEquals("amount of bytes written was wrong",48,encapsulated.encode(buffer));
+			assertEquals("amount of bytes written was wrong",54,encapsulated.encode(buffer));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			fail("Encapsualted encoding failed");
 		}
-		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0 res-hdr=123 req-body=270",buffer.toString(Charset.defaultCharset()));
+		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, req-body=270\r\n\r\n",buffer.toString(Charset.defaultCharset()));
+	}
+	
+	@Test
+	public void testEncodeEncapsulatedHeaderWithOdering() {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		Encapsulated encapsulated = new Encapsulated();
+		encapsulated.addEntry(EntryName.REQBODY,270);
+		encapsulated.addEntry(EntryName.RESHDR,123);
+		encapsulated.addEntry(EntryName.REQHDR,0);
+
+		try {
+			assertEquals("amount of bytes written was wrong",54,encapsulated.encode(buffer));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			fail("Encapsualted encoding failed");
+		}
+		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, req-body=270\r\n\r\n",buffer.toString(Charset.defaultCharset()));
+	}
+	
+	@Test
+	public void testEncodeEncapsulatedHeaderWithNullBody() {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		Encapsulated encapsulated = new Encapsulated();
+		encapsulated.addEntry(EntryName.NULLBODY,270);
+		encapsulated.addEntry(EntryName.RESHDR,123);
+		encapsulated.addEntry(EntryName.REQHDR,0);
+
+		try {
+			assertEquals("amount of bytes written was wrong",55,encapsulated.encode(buffer));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			fail("Encapsualted encoding failed");
+		}
+		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, null-body=270\r\n\r\n",buffer.toString(Charset.defaultCharset()));
+	}
+	
+	@Test
+	public void testEncodeEncapsulatedHeaderWithNullBodyThatHasZeroValue() {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		Encapsulated encapsulated = new Encapsulated();
+		encapsulated.addEntry(EntryName.NULLBODY,0);
+		encapsulated.addEntry(EntryName.RESHDR,123);
+		encapsulated.addEntry(EntryName.REQHDR,0);
+
+		try {
+			assertEquals("amount of bytes written was wrong",53,encapsulated.encode(buffer));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			fail("Encapsualted encoding failed");
+		}
+		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, null-body=0\r\n\r\n",buffer.toString(Charset.defaultCharset()));
 	}
 }

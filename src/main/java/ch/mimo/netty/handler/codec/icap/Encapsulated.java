@@ -163,9 +163,13 @@ public class Encapsulated {
 			buffer.writeBytes("=".getBytes("ASCII"));
 			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes("ASCII"));
 			if(entryIterator.hasNext()) {
-				buffer.writeByte(IcapCodecUtil.SP);
+				buffer.writeBytes(new byte[]{',',IcapCodecUtil.SP});
 			}
 		}
+        buffer.writeByte(IcapCodecUtil.CR);
+        buffer.writeByte(IcapCodecUtil.LF);
+        buffer.writeByte(IcapCodecUtil.CR);
+        buffer.writeByte(IcapCodecUtil.LF);
 		return buffer.readableBytes() - index;
 	}
 	
@@ -198,10 +202,9 @@ public class Encapsulated {
 		
 		@Override
 		public int compareTo(Entry entry) {
-			// TODO creates issue with header exsistence validation in icap header decode state
-//			if(entry.getName().equals(EntryName.NULLBODY)) {
-//				return 1;
-//			}
+			if(this.name.equals(EntryName.NULLBODY)) {
+				return 1;
+			}
 			return this.position.compareTo(entry.position);
 		}
 		

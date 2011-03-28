@@ -13,34 +13,41 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-public class DefaultIcapRequest extends DefaultIcapMessage implements IcapRequest, IcapRequestWithPreview {
+import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
-	private List<IcapChunk> previewChunks;
+public class DefaultIcapRequest extends DefaultIcapMessage implements IcapRequest {
+	
+	private EntryName contentType;
+	private ChannelBuffer content;
 	
 	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri) {
 		super(icapVersion,method,uri);
-		// TODO remove literal
-		super.addHeader("Preview","0");
-		previewChunks = new ArrayList<IcapChunk>();
+		content = ChannelBuffers.EMPTY_BUFFER;
+		contentType = EntryName.NULLBODY;
 	}
 
 	@Override
-	public void addPreviewChunk(IcapChunk chunk) {
-		int preview = Integer.parseInt(super.getHeader("Preview"));
-		preview += chunk.getContent().readableBytes();
-		super.removeHeader("Preview");
-		super.addHeader("Preview",Integer.toString(preview));
-		previewChunks.add(chunk);
+	public void setContentType(EntryName type) {
+		contentType = type;
 	}
 
 	@Override
-	public IcapChunk[] getPreviewChunks() {
-		return previewChunks.toArray(new IcapChunk[]{});
+	public EntryName getContentType() {
+		return contentType;
+	}
+	
+	@Override
+	public void setContent(ChannelBuffer content) {
+		this.content = content;
+	}
+
+	@Override
+	public ChannelBuffer getContent() {
+		return content;
 	}
 }

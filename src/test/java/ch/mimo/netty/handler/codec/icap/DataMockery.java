@@ -19,9 +19,12 @@ import junit.framework.Assert;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.internal.StringUtil;
 
 public final class DataMockery extends Assert {
@@ -64,7 +67,7 @@ public final class DataMockery extends Assert {
 		StringBuilder builder = new StringBuilder();
 		addLine(builder,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(builder,"Host: icap-server.net");
-		addLine(builder,"Encapsulated: req-hdr=0, null-body=170");
+		addLine(builder,"Encapsulated: req-hdr=0, null-body=168");
 		addLine(builder,null);
 		addLine(builder,"GET / HTTP/1.1");
 		addLine(builder,"Host: www.origin-server.com");
@@ -76,10 +79,23 @@ public final class DataMockery extends Assert {
 		return ChannelBuffers.wrappedBuffer(builder.toString().getBytes());
 	}
 	
+	public static final IcapRequest createRQMODWithGetRequestNoBody() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod");
+		request.addHeader("Host","icap-server.net");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		return request;
+	}
+	
 	public static final void assertCreateREQMODWithGetRequestNoBody(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
-		assertHeaderValue("Encapsulated","req-hdr=0, null-body=170",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, null-body=168",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.GET,message.getHttpRequest().getMethod());
 		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());

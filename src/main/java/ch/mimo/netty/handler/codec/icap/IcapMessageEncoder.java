@@ -27,6 +27,8 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
+import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
+
 public abstract class IcapMessageEncoder extends OneToOneEncoder {
 
 	EncoderEmbedder<HttpRequestEncoder> httpRequestEncoderEmbedder;
@@ -45,18 +47,41 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
             ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(channel.getConfig().getBufferFactory());
 			encodeInitialLine(buffer,message);
 			encodeHeaders(buffer,message);
-            buffer.writeByte(IcapCodecUtil.CR);
-            buffer.writeByte(IcapCodecUtil.LF);
-            int httpRequestSize = encodeHttpRequestHeader(buffer,message.getHttpRequest());
-            int httpResponseSize = encodeHttpResponseHeader(buffer,message.getHttpResponse());
-//            Encapsulated
+			ChannelBuffer httpRequestBuffer = encodeHttpRequestHeader(message.getHttpRequest());
+			ChannelBuffer httpResponseBuffer = encodeHttpResponseHeader(message.getHttpResponse());
+//            int httpRequestSize = encodeHttpRequestHeader(buffer,message.getHttpRequest());
+//            int httpResponseSize = encodeHttpResponseHeader(buffer,message.getHttpResponse());
+            int index = 0;
+            Encapsulated encapsulated = new Encapsulated();
+            if(httpRequestBuffer.readableBytes() > 0) {
+            	encapsulated.addEntry(EntryName.REQHDR,index);
+            	index = httpRequestBuffer.readableBytes();
+            	// TODO don't forget to consider the line feed between this request and the next request or body.
+            }
+            if(httpResponseBuffer.readableBytes() > 0) {
+            	encapsulated.addEntry(EntryName.RESHDR,index);
+            	index += httpResponseBuffer.readableBytes();
+            }
+            if(msg instanceof IcapRequest) {
+            	IcapRequest icapRequest = (IcapRequest)msg;
+            	encapsulated.addEntry(icapRequest.getContentType(),index);
+//            	if(!icapRequest.getContentType().equals(EntryName.NULLBODY)) {
+//            		// TODO dont forget the line feeds..
+//            		encapsulated.addEntry(icapRequest.getContentType(),index);
+//            	} else {
+//            		encapsulated.addEntry(get, position)
+//            	}
+            }
             
             
-			// TODO create Encapsulated header !
-            // TODO remove chunked or content length details from http request and response before encoding.
-            // TODO measure positions and write encapsulation header.
+            
+            // TODO consider body and preview for encapsulated header
+            encapsulated.encode(buffer);
+            buffer.writeBytes(httpRequestBuffer);
+            buffer.writeBytes(httpResponseBuffer);
             // TODO wrap buffers and return request or response.
             // TODO how do I know the size of the preview! maybe a ChannelBuffer containing the preview would help here.
+            return buffer;
 		} else if(msg instanceof IcapChunk) {
 			// TODO implement chunk encoding
 		}
@@ -65,7 +90,8 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 
 	protected abstract int encodeInitialLine(ChannelBuffer buffer, IcapMessage message)  throws Exception;
 	
-	private int encodeHttpRequestHeader(ChannelBuffer buffer, HttpRequest httpRequest) throws UnsupportedEncodingException {
+	private ChannelBuffer encodeHttpRequestHeader(HttpRequest httpRequest) throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		if(httpRequest != null) {
 			// TODO replace ASCII literal
 			buffer.writeBytes(httpRequest.getMethod().toString().getBytes("ASCII"));
@@ -82,12 +108,12 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 	        } catch (UnsupportedEncodingException e) {
 	            throw (Error) new Error().initCause(e);
 	        }
-	        return buffer.readableBytes();
 		}
-		return -1;
+		return buffer;
 	}
 	
-	private int encodeHttpResponseHeader(ChannelBuffer buffer, HttpResponse httpResponse) throws UnsupportedEncodingException {
+	private ChannelBuffer encodeHttpResponseHeader(HttpResponse httpResponse) throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		if(httpResponse != null) {
 			// TODO replace ASCII literal
 			buffer.writeBytes(httpResponse.getProtocolVersion().toString().getBytes("ASCII"));
@@ -102,9 +128,8 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 	        } catch (UnsupportedEncodingException e) {
 	            throw (Error) new Error().initCause(e);
 	        }
-	        return buffer.readableBytes();
 		}
-		return -1;
+		return buffer;
 	}
 	
     private int encodeHeaders(ChannelBuffer buffer, IcapMessage message) {
