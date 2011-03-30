@@ -22,6 +22,8 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
+import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
+
 public interface IcapMessage {
 
     /**
@@ -158,4 +160,8 @@ public interface IcapMessage {
 	Encapsulated getEncapsulatedHeader();
 	
 	boolean isPreview();
+	
+	void setBody(EntryName body);
+
+	EntryName getBody();
 }

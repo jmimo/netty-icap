@@ -13,6 +13,8 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.io.UnsupportedEncodingException;
+
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,12 +25,12 @@ public class IcapMessageDecoderTest extends Assert {
 	private DecoderEmbedder<Object> embedder;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws UnsupportedEncodingException {
 		embedder = new DecoderEmbedder<Object>(new IcapRequestDecoder());
 	}
 	
 	@Test
-	public void decodeOPTIONRequestTest() {
+	public void decodeOPTIONRequestTest() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createOPTIONSRequest());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -36,7 +38,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void stripPrefixingWhitespacesFromMessage() {
+	public void stripPrefixingWhitespacesFromMessage() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createWhiteSpacePrefixedOPTIONSRequest());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -44,7 +46,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void decodeREQMODRequestWithNullBody() {
+	public void decodeREQMODRequestWithNullBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -52,7 +54,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void decodeRESPMODRequestWithNullBody() {
+	public void decodeRESPMODRequestWithNullBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBody());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -60,7 +62,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void decodeRESPMODRequestWithNullBodyAndReverseRequestAlignement() {
+	public void decodeRESPMODRequestWithNullBodyAndReverseRequestAlignement() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyAndReverseRequestAlignement());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -68,7 +70,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void decodeREQMODRequestWithTwoChunkBody() {
+	public void decodeREQMODRequestWithTwoChunkBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBody());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -79,7 +81,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void decodeREQMODRequestWithPreview() {
+	public void decodeREQMODRequestWithPreview() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithPreview());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -89,7 +91,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void decodeREQMODRequestWithEarlyTerminatedPreview() {
+	public void decodeREQMODRequestWithEarlyTerminatedPreview() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreview());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
@@ -98,7 +100,7 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
-	public void decodeRESPMODWithGetRequestAndPreview() {
+	public void decodeRESPMODWithGetRequestAndPreview() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreview());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);

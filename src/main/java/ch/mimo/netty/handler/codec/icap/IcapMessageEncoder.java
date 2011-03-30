@@ -49,37 +49,26 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 			encodeHeaders(buffer,message);
 			ChannelBuffer httpRequestBuffer = encodeHttpRequestHeader(message.getHttpRequest());
 			ChannelBuffer httpResponseBuffer = encodeHttpResponseHeader(message.getHttpResponse());
-//            int httpRequestSize = encodeHttpRequestHeader(buffer,message.getHttpRequest());
-//            int httpResponseSize = encodeHttpResponseHeader(buffer,message.getHttpResponse());
             int index = 0;
             Encapsulated encapsulated = new Encapsulated();
             if(httpRequestBuffer.readableBytes() > 0) {
             	encapsulated.addEntry(EntryName.REQHDR,index);
             	index = httpRequestBuffer.readableBytes();
-            	// TODO don't forget to consider the line feed between this request and the next request or body.
+            	httpRequestBuffer.writeBytes(IcapCodecUtil.CRLF);
             }
             if(httpResponseBuffer.readableBytes() > 0) {
             	encapsulated.addEntry(EntryName.RESHDR,index);
             	index += httpResponseBuffer.readableBytes();
+            	httpRequestBuffer.writeBytes(IcapCodecUtil.CRLF);
             }
-            if(msg instanceof IcapRequest) {
-            	IcapRequest icapRequest = (IcapRequest)msg;
-            	encapsulated.addEntry(icapRequest.getContentType(),index);
-//            	if(!icapRequest.getContentType().equals(EntryName.NULLBODY)) {
-//            		// TODO dont forget the line feeds..
-//            		encapsulated.addEntry(icapRequest.getContentType(),index);
-//            	} else {
-//            		encapsulated.addEntry(get, position)
-//            	}
+            if(message.getBody() != null) {
+            	encapsulated.addEntry(message.getBody(),index);
+            } else {
+            	encapsulated.addEntry(EntryName.NULLBODY,index);
             }
-            
-            
-            
-            // TODO consider body and preview for encapsulated header
             encapsulated.encode(buffer);
             buffer.writeBytes(httpRequestBuffer);
             buffer.writeBytes(httpResponseBuffer);
-            // TODO wrap buffers and return request or response.
             // TODO how do I know the size of the preview! maybe a ChannelBuffer containing the preview would help here.
             return buffer;
 		} else if(msg instanceof IcapChunk) {

@@ -1,5 +1,6 @@
 package ch.mimo.netty.handler.codec.icap;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import junit.framework.Assert;
@@ -19,7 +20,7 @@ public class IcapMessageEncoderTest extends Assert {
 	}
 	
 	@Test
-	public void encodeREQMODRequestWithoutBody() {
+	public void encodeREQMODRequestWithoutBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createRQMODWithGetRequestNoBody());
 		String request = getBufferContent(embedder.poll());
 		assertEquals("encoded request is wrong",getBufferContent(DataMockery.createREQMODWithGetRequestNoBody()),request);

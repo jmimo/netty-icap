@@ -13,41 +13,13 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
-
 public class DefaultIcapRequest extends DefaultIcapMessage implements IcapRequest {
-	
-	private EntryName contentType;
-	private ChannelBuffer content;
 	
 	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri) {
 		super(icapVersion,method,uri);
-		content = ChannelBuffers.EMPTY_BUFFER;
-		contentType = EntryName.NULLBODY;
 	}
 
-	@Override
-	public void setContentType(EntryName type) {
-		contentType = type;
-	}
-
-	@Override
-	public EntryName getContentType() {
-		return contentType;
-	}
-	
-	@Override
-	public void setContent(ChannelBuffer content) {
-		this.content = content;
-	}
-
-	@Override
-	public ChannelBuffer getContent() {
-		return content;
-	}
 }
