@@ -21,12 +21,13 @@ import junit.framework.Assert;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
+import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.util.internal.StringUtil;
 
 public final class DataMockery extends Assert {
 
@@ -58,6 +59,12 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final IcapMessage createOPTIONSRequestIcapMessage() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod");
+		request.addHeader("Host","icap.google.com:1344");
+		return request;
+	}
+	
 	public static final void assertCreateOPTIONSRequest(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap.google.com:1344",message);
@@ -80,7 +87,7 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
-	public static final IcapRequest createRQMODWithGetRequestNoBody() {
+	public static final IcapRequest createREQMODWithGetRequestNoBodyIcapMessage() {
 		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod");
 		request.addHeader("Host","icap-server.net");
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/");
@@ -110,7 +117,7 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"RESPMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
-		addLine(buffer,"Encapsulated: req-hdr=0, res-hdr=137, null-body=296");
+		addLine(buffer,"Encapsulated: req-hdr=0, res-hdr=135, null-body=292");
 		addLine(buffer,null);
 		addLine(buffer,"GET /origin-resource HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -127,10 +134,28 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}	
 	
+	public static final IcapMessage createRESPMODWithGetRequestNoBodyIcapMessage() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.RESPMOD,"icap://icap.mimo.ch:1344/reqmod");
+		request.addHeader("Host","icap-server.net");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/origin-resource");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain, image/gif");
+		httpRequest.addHeader("Accept-Encoding","gzip, compress");
+		HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.OK);
+		request.setHttpResponse(httpResponse);
+		httpResponse.addHeader("Date","Mon, 10 Jan 2000 09:52:22 GMT");
+		httpResponse.addHeader("Server","Apache/1.3.6 (Unix)");
+		httpResponse.addHeader("ETag","\"63840-1ab7-378d415b\"");
+		httpResponse.addHeader("Content-Type","text/html");
+		httpResponse.addHeader("Content-Length","51");
+		return request;
+	}
+	
 	public static final void assertCreateRESPMODWithGetRequestNoBody(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
-		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, null-body=296",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=135, null-body=292",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.GET,message.getHttpRequest().getMethod());
 		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());

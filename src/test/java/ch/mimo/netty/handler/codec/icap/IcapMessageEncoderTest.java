@@ -20,11 +20,24 @@ public class IcapMessageEncoderTest extends Assert {
 	}
 	
 	@Test
-	public void encodeREQMODRequestWithoutBody() throws UnsupportedEncodingException {
-		embedder.offer(DataMockery.createRQMODWithGetRequestNoBody());
+	public void encodeOPTIONSRequest() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createOPTIONSRequestIcapMessage());
 		String request = getBufferContent(embedder.poll());
-		assertEquals("encoded request is wrong",getBufferContent(DataMockery.createREQMODWithGetRequestNoBody()),request);
-		System.out.println(request);
+		assertRequest(DataMockery.createOPTIONSRequest(),request);
+	}
+	
+	@Test
+	public void encodeREQMODRequestWithoutBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyIcapMessage());
+		String request = getBufferContent(embedder.poll());
+		assertRequest(DataMockery.createREQMODWithGetRequestNoBody(),request);
+	}
+	
+	@Test
+	public void encodeRESMODWithGetRequestNoBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyIcapMessage());
+		String request = getBufferContent(embedder.poll());
+		assertRequest(DataMockery.createRESPMODWithGetRequestNoBody(),request);
 	}
 	
 	private String getBufferContent(Object object) {
@@ -32,5 +45,9 @@ public class IcapMessageEncoderTest extends Assert {
 		assertTrue("returned object from embedder is not of type ChannelBuffer",object instanceof ChannelBuffer);
 		ChannelBuffer buffer = (ChannelBuffer)object;
 		return buffer.toString(Charset.defaultCharset());
+	}
+	
+	private void assertRequest(ChannelBuffer expected, String request) {
+		assertEquals("encoded request is wrong",getBufferContent(expected),request);
 	}
 }
