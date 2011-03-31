@@ -23,38 +23,41 @@ public class IcapMessageEncoderTest extends Assert {
 	public void encodeOPTIONSRequest() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createOPTIONSRequestIcapMessage());
 		String request = getBufferContent(embedder.poll());
-		assertRequest(DataMockery.createOPTIONSRequest(),request);
+		assertResponse(DataMockery.createOPTIONSRequest(),request);
 	}
 	
 	@Test
 	public void encodeREQMODRequestWithoutBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyIcapMessage());
 		String request = getBufferContent(embedder.poll());
-		assertRequest(DataMockery.createREQMODWithGetRequestNoBody(),request);
+		assertResponse(DataMockery.createREQMODWithGetRequestNoBody(),request);
 	}
 	
 	@Test
 	public void encodeRESMODWithGetRequestNoBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyIcapMessage());
 		String request = getBufferContent(embedder.poll());
-		assertRequest(DataMockery.createRESPMODWithGetRequestNoBody(),request);
+		assertResponse(DataMockery.createRESPMODWithGetRequestNoBody(),request);
 	}
 	
 	@Test
 	public void encodeREQMODWithTwoChunkBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapMessage());
 		String request = getBufferContent(embedder.poll());
-		assertRequest(DataMockery.createREQMODWithTwoChunkBodyAnnouncement(),request);
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyAnnouncement(),request);
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
 		String chunkOne = getBufferContent(embedder.poll());
-		assertRequest(DataMockery.createREQMODWithTowChunkBodyChunkOne(),chunkOne);
+		assertResponse(DataMockery.createREQMODWithTowChunkBodyChunkOne(),chunkOne);
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
 		String chunkTwo = getBufferContent(embedder.poll());
-		assertRequest(DataMockery.createREQMODWithTwoChunkBodyChunkTwo(),chunkTwo);
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkTwo(),chunkTwo);
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree());
 		String chunkThree = getBufferContent(embedder.poll());
-		assertRequest(DataMockery.createREQMODWithTwoChunkBudyChunkThree(),chunkThree);
+		assertResponse(DataMockery.createREQMODWithTwoChunkBudyChunkThree(),chunkThree);
 	}
+	
+	// TODO preview test
+	// TODO preview test with ieof
 	
 	private String getBufferContent(Object object) {
 		assertNotNull("poll returned null",object);
@@ -63,7 +66,7 @@ public class IcapMessageEncoderTest extends Assert {
 		return buffer.toString(Charset.defaultCharset());
 	}
 	
-	private void assertRequest(ChannelBuffer expected, String request) {
+	private void assertResponse(ChannelBuffer expected, String request) {
 		assertEquals("encoded request is wrong",getBufferContent(expected),request);
 	}
 }
