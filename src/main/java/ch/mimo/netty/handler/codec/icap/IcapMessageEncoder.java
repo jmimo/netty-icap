@@ -69,11 +69,33 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
             encapsulated.encode(buffer);
             buffer.writeBytes(httpRequestBuffer);
             buffer.writeBytes(httpResponseBuffer);
-            // TODO how do I know the size of the preview! maybe a ChannelBuffer containing the preview would help here.
             return buffer;
 		} else if(msg instanceof IcapChunk) {
-			// TODO implement chunk encoding
+			ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(channel.getConfig().getBufferFactory());
+			IcapChunk chunk = (IcapChunk)msg;
+			if(chunk.isLast()) {
+				if(chunk.isEarlyTerminated()) {
+					buffer.writeBytes(IcapCodecUtil.NATIVE_IEOF_SEQUENCE);
+					buffer.writeBytes(IcapCodecUtil.CRLF);
+					buffer.writeBytes(IcapCodecUtil.CRLF);
+				} else {
+					buffer.writeByte((byte) '0');
+					buffer.writeBytes(IcapCodecUtil.CRLF);
+					buffer.writeBytes(IcapCodecUtil.CRLF);
+					buffer.writeBytes(IcapCodecUtil.CRLF);
+				}
+			} else {
+				ChannelBuffer chunkBuffer = chunk.getContent();
+				int contentLength = chunkBuffer.readableBytes();
+				// TODO remove literal
+				buffer.writeBytes(Integer.toHexString(contentLength).getBytes("ASCII"));
+				buffer.writeBytes(IcapCodecUtil.CRLF);
+				buffer.writeBytes(chunkBuffer);
+				buffer.writeBytes(IcapCodecUtil.CRLF);
+			}
+			return buffer;
 		}
+		// TODO trailing http headers...
 		return null;
 	}
 

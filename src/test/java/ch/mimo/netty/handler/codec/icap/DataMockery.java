@@ -29,6 +29,8 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
+import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
+
 public final class DataMockery extends Assert {
 
 	private DataMockery() {
@@ -215,7 +217,7 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
-		addLine(buffer,"Encapsulated: req-hdr=0, req-body=170");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
 		addLine(buffer,null);
 		addLine(buffer,"POST / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -230,10 +232,77 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final ChannelBuffer createREQMODWithTwoChunkBodyAnnouncement() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,null);
+		addLine(buffer,"POST / HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain");
+		addLine(buffer,"Accept-Encoding: compress");
+		addLine(buffer,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(buffer,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
+	public static final IcapMessage createREQMODWithTwoChunkBodyIcapMessage() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod");
+		request.addHeader("Host","icap-server.net");
+		request.setBody(EntryName.REQBODY);
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		return request;
+	}
+	
+	public static final IcapChunk createREQMODWithTwoChunkBodyIcapChunkOne() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes("ASCII"));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		return chunk;
+	}
+	
+	public static final ChannelBuffer createREQMODWithTowChunkBodyChunkOne() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addChunk(buffer,"This is data that was returned by an origin server.");
+		return buffer;
+	}
+	
+	public static final IcapChunk createREQMODWithTwoChunkBodyIcapChunkTwo() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("And this the second chunk which contains more information.".getBytes("ASCII"));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		return chunk;
+	}
+	
+	public static final ChannelBuffer createREQMODWithTwoChunkBodyChunkTwo() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addChunk(buffer,"And this the second chunk which contains more information.");
+		return buffer;
+	}
+	
+	public static final IcapChunk createREQMODWithTwoChunkBodyIcapChunkThree() throws UnsupportedEncodingException {
+		IcapChunk chunk = new DefaultIcapChunk(ChannelBuffers.EMPTY_BUFFER);
+		return chunk;
+	}
+	
+	public static final ChannelBuffer createREQMODWithTwoChunkBudyChunkThree() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addChunk(buffer,null);
+		return buffer;
+	}
+	
 	public static final void assertCreateREQMODWithTwoChunkBody(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
-		assertHeaderValue("Encapsulated","req-hdr=0, req-body=170",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=169",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
 		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());

@@ -30,6 +30,9 @@ class IcapCodecUtil {
 	// 0; ieof
 	static Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
 	
+	// TODO find other solution...
+	static byte[] NATIVE_IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102};
+	
     //space ' '
     static final byte SP = 32;
 

@@ -40,6 +40,22 @@ public class IcapMessageEncoderTest extends Assert {
 		assertRequest(DataMockery.createRESPMODWithGetRequestNoBody(),request);
 	}
 	
+	@Test
+	public void encodeREQMODWithTwoChunkBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapMessage());
+		String request = getBufferContent(embedder.poll());
+		assertRequest(DataMockery.createREQMODWithTwoChunkBodyAnnouncement(),request);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
+		String chunkOne = getBufferContent(embedder.poll());
+		assertRequest(DataMockery.createREQMODWithTowChunkBodyChunkOne(),chunkOne);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
+		String chunkTwo = getBufferContent(embedder.poll());
+		assertRequest(DataMockery.createREQMODWithTwoChunkBodyChunkTwo(),chunkTwo);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree());
+		String chunkThree = getBufferContent(embedder.poll());
+		assertRequest(DataMockery.createREQMODWithTwoChunkBudyChunkThree(),chunkThree);
+	}
+	
 	private String getBufferContent(Object object) {
 		assertNotNull("poll returned null",object);
 		assertTrue("returned object from embedder is not of type ChannelBuffer",object instanceof ChannelBuffer);
