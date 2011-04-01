@@ -20,25 +20,13 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.embedder.EncoderEmbedder;
 import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
 public abstract class IcapMessageEncoder extends OneToOneEncoder {
-
-	EncoderEmbedder<HttpRequestEncoder> httpRequestEncoderEmbedder;
-	EncoderEmbedder<HttpResponseEncoder> httpResponseEncoderEmbedder;
-	
-    protected IcapMessageEncoder() {
-        super();
-        httpRequestEncoderEmbedder = new EncoderEmbedder<HttpRequestEncoder>(new HttpRequestEncoder());
-        httpResponseEncoderEmbedder = new EncoderEmbedder<HttpResponseEncoder>(new HttpResponseEncoder());
-    }
 	
 	@Override
 	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {

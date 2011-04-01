@@ -45,8 +45,10 @@ public class ReadIcapHeaderState extends State<Object> {
 		Encapsulated encapsulated = Encapsulated.parseHeader(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
 		
-		if((!encapsulated.containsEntry(EntryName.REQHDR) & !encapsulated.containsEntry(EntryName.RESHDR)) | 
-				icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
+		if(!encapsulated.containsEntry(EntryName.REQHDR) & !encapsulated.containsEntry(EntryName.RESHDR)) {
+			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
+		}
+		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		}
 		return StateReturnValue.createIrrelevantResult();
@@ -56,17 +58,13 @@ public class ReadIcapHeaderState extends State<Object> {
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
-		if(message.getMethod().equals(IcapMethod.OPTIONS) & encapsulated.containsEntry(EntryName.OPTBODY)) {
-			// TODO validate options request with body
-//			if(icapMessageDecoder.message.isPreview() & Integer.parseInt(icapMessageDecoder.message.getHeader("Preview")) > 0) {
-//				return StateEnum.PREVIEW_STATE;
-//			} else {
-//				return StateEnum.READ_CHUNK_SIZE_STATE;
-//			}
-		} else {
-			if(message.getMethod().equals(IcapMethod.OPTIONS)) {
+		if(message.getMethod().equals(IcapMethod.OPTIONS)) {
+			if(encapsulated.containsEntry(EntryName.OPTBODY)) {
+				return StateEnum.READ_CHUNK_SIZE_STATE;
+			} else {
 				return null;
 			}
+		} else {
 			EntryName entry = encapsulated.getNextEntry();
 			if(entry != null) {
 				if(entry.equals(EntryName.REQHDR)) {
@@ -75,7 +73,10 @@ public class ReadIcapHeaderState extends State<Object> {
 				if(entry.equals(EntryName.RESHDR)) {
 					return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
 				}
-				if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
+				if(entry.equals(EntryName.REQBODY)) {
+					return StateEnum.READ_CHUNK_SIZE_STATE;
+				}
+				if(entry.equals(EntryName.RESBODY)) {
 					return StateEnum.READ_CHUNK_SIZE_STATE;
 				}
 			}

@@ -37,11 +37,4 @@ public abstract class State<T extends Object> {
 	 * @return has to return a valid next state. Can be itself.
 	 */
 	public abstract StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, T decisionInformation) throws Exception;
-	
-	public boolean equals(Object object) {
-		if(object != null && object instanceof State<?>) {
-			return object.getClass().getName().equals(this.getClass().getName());
-		}
-		return false;
-	}
 }

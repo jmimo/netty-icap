@@ -47,7 +47,7 @@ public class ReadHttpResponseInitalAndHeadersState extends State<Object> {
 		}
 		Encapsulated encapsulated = icapMessageDecoder.message.getEncapsulatedHeader();
 		encapsulated.setProcessed(encapsulated.getNextEntry());
-		if(encapsulated.getNextEntry() != null & encapsulated.getNextEntry().equals(EntryName.REQHDR)) {
+		if(encapsulated.getNextEntry() != null && encapsulated.getNextEntry().equals(EntryName.REQHDR)) {
 			return StateReturnValue.createIrrelevantResult();
 		}
 		return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
@@ -61,7 +61,10 @@ public class ReadHttpResponseInitalAndHeadersState extends State<Object> {
 			if(entry.equals(EntryName.REQHDR)) {
 				return StateEnum.READ_HTTP_REQUEST_INITIAL_AND_HEADERS;
 			}
-			if(entry.equals(EntryName.REQBODY) | entry.equals(EntryName.RESBODY)) {
+			if(entry.equals(EntryName.REQBODY)) {
+				return StateEnum.READ_CHUNK_SIZE_STATE;
+			}
+			if(entry.equals(EntryName.RESBODY)) {
 				return StateEnum.READ_CHUNK_SIZE_STATE;
 			}
 		}

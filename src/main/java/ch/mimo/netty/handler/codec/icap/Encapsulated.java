@@ -55,7 +55,6 @@ public class Encapsulated {
 		}
 	}
 	
-	private String headerValue;
 	private List<Entry> entries;
 	
 	public Encapsulated() {
@@ -132,7 +131,7 @@ public class Encapsulated {
 	private String[] splitParameter(String parameter) {
 		int offset = parameter.indexOf("=");
 		if(offset <= 0) {
-			throw new Error("Encapsulated header value was not understood [" + headerValue + "]");
+			throw new Error("Encapsulated header value was not understood [" + parameter + "]");
 		}
 		String key = parameter.substring(0,offset);
 		String value = parameter.substring(offset + 1,parameter.length());
@@ -173,7 +172,7 @@ public class Encapsulated {
 		return buffer.readableBytes() - index;
 	}
 	
-	private class Entry implements Comparable<Entry> {
+	private final class Entry implements Comparable<Entry> {
 
 		private EntryName name;
 		private Integer position;
@@ -201,7 +200,7 @@ public class Encapsulated {
 		}
 		
 		@Override
-		public int compareTo(Entry entry) {
+		public int compareTo(Entry entry) {			
 			if(this.name.equals(EntryName.NULLBODY)) {
 				return 1;
 			}
