@@ -56,9 +56,35 @@ public class IcapMessageEncoderTest extends Assert {
 		assertResponse(DataMockery.createREQMODWithTwoChunkBudyChunkThree(),chunkThree);
 	}
 	
-	// TODO preview
-	// TODO preview with ieof
+	@Test
+	public void encodeREQMODWithPreview() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithPreviewAnnouncementIcapMessage());
+		String request = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithPreviewAnnouncement(),request);
+		embedder.offer(DataMockery.createREQMODWithPreviewIcapChunk());
+		String previewChunk = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithPreviewChunk(),previewChunk);
+		embedder.offer(DataMockery.createREQMODWithPreviewLastIcapChunk());
+		String lastChunk = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithPreviewLastChunk(),lastChunk);
+	}
+	
+	@Test
+	public void encodeREQMODWithEarlyTerminatedPreview() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewAnnouncementIcapMessage());
+		String request = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithEarlyTerminatedPreviewAnnouncement(),request);
+		
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewIcapChunk());
+		String previewChunk = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithEarlyTerminatedPreviewChunk(),previewChunk);
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewLastIcapChunk());
+		String lastChunk = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithEarlyTerminatedPreviewLastChunk(),lastChunk);
+	}
+
 	// TODO trailing headers
+	// TODO options request with body
 	
 	private String getBufferContent(Object object) {
 		assertNotNull("poll returned null",object);

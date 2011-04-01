@@ -108,4 +108,6 @@ public class IcapMessageDecoderTest extends Assert {
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewChunk((IcapChunk)embedder.poll());
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewLastChunk((IcapChunk)embedder.poll());
 	}
+	
+	// TODO options request with body
 }
