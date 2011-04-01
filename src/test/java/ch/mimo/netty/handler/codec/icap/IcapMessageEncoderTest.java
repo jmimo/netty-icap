@@ -56,8 +56,9 @@ public class IcapMessageEncoderTest extends Assert {
 		assertResponse(DataMockery.createREQMODWithTwoChunkBudyChunkThree(),chunkThree);
 	}
 	
-	// TODO preview test
-	// TODO preview test with ieof
+	// TODO preview
+	// TODO preview with ieof
+	// TODO trailing headers
 	
 	private String getBufferContent(Object object) {
 		assertNotNull("poll returned null",object);
