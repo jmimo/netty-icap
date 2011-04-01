@@ -73,6 +73,61 @@ public final class DataMockery extends Assert {
 		assertHeaderValue("Encapsulated","null-body=0",message);
 	}
 	
+	public static final ChannelBuffer createOPTIONSRequestWithBody() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"OPTIONS icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(buffer,"Host: icap.google.com:1344");
+		addLine(buffer,"Encapsulated: opt-body=0");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
+	public static final void assertOPTIONSRequestWithBody(IcapMessage message) {
+		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
+		assertEquals("wrong request type",IcapMethod.OPTIONS,message.getMethod());
+		assertHeaderValue("Host","icap.google.com:1344",message);
+		assertHeaderValue("Encapsulated","opt-body=0",message);
+	}
+	
+	public static final IcapMessage createOPTIONSRequestWithBodyIcapMessage() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod");
+		request.addHeader("Host","icap.google.com:1344");
+		request.setBody(EntryName.OPTBODY);
+		return request;
+	}
+	
+	public static final ChannelBuffer createOPTIONSRequestWithBodyBodyChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addChunk(buffer,"This is a options body chunk.");
+		return buffer;
+	}
+	
+	public static final IcapChunk createOPTIONSRequestWithBodyBodyChunkIcapChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is a options body chunk.".getBytes("ASCII"));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		return chunk;
+	}
+	
+	public static void assertOPTIONSRequestWithBodyBodyChunk(IcapChunk chunk) {
+		assertChunk("options body chunk",chunk,"This is a options body chunk.",false);
+	}
+	
+	public static final ChannelBuffer createOPTIONSRequestWithBodyLastChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addChunk(buffer,null);
+		return buffer;
+	}
+	
+	public static final IcapChunk createOPTIONSRequestWithBodyLastChunkIcapChunk() throws UnsupportedEncodingException {
+		IcapChunk chunk = new DefaultIcapChunk(ChannelBuffers.EMPTY_BUFFER);
+		return chunk;
+	}
+	
+	public static final void assertOPTIONSRequestWithBodyLastChunk(IcapChunk chunk) {
+		assertChunk("options last chunk",chunk,null,true);
+	}
+	
 	public static final ChannelBuffer createREQMODWithGetRequestNoBody() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");

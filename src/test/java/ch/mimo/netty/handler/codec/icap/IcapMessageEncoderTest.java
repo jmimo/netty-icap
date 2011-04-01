@@ -40,6 +40,19 @@ public class IcapMessageEncoderTest extends Assert {
 	}
 	
 	@Test
+	public void encodeOPTIONSRequestWithBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createOPTIONSRequestWithBodyIcapMessage());
+		String request = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createOPTIONSRequestWithBody(),request);
+		embedder.offer(DataMockery.createOPTIONSRequestWithBodyBodyChunkIcapChunk());
+		String dataChunk = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createOPTIONSRequestWithBodyBodyChunk(),dataChunk);
+		embedder.offer(DataMockery.createOPTIONSRequestWithBodyLastChunkIcapChunk());
+		String lastChunk = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createOPTIONSRequestWithBodyLastChunk(),lastChunk);
+	}
+	
+	@Test
 	public void encodeREQMODRequestWithoutBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyIcapMessage());
 		String request = getBufferContent(embedder.poll());

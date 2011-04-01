@@ -46,6 +46,20 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
+	public void decodeOPTIONSRequestWithBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createOPTIONSRequestWithBody());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertOPTIONSRequestWithBody(result);
+		embedder.offer(DataMockery.createOPTIONSRequestWithBodyBodyChunk());
+		IcapChunk dataChunk = (IcapChunk)embedder.poll();
+		DataMockery.assertOPTIONSRequestWithBodyBodyChunk(dataChunk);
+		embedder.offer(DataMockery.createOPTIONSRequestWithBodyLastChunk());
+		IcapChunk lastChunk = (IcapChunk)embedder.poll();
+		DataMockery.assertOPTIONSRequestWithBodyLastChunk(lastChunk);
+	}
+	
+	@Test
 	public void decodeREQMODRequestWithNullBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());
 		IcapMessage result = (IcapMessage)embedder.poll();
@@ -111,3 +125,4 @@ public class IcapMessageDecoderTest extends Assert {
 	
 	// TODO options request with body
 }
+
