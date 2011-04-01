@@ -348,9 +348,53 @@ public final class DataMockery extends Assert {
 		return chunk;
 	}
 	
-	public static final ChannelBuffer createREQMODWithTwoChunkBudyChunkThree() throws UnsupportedEncodingException {
+	public static final ChannelBuffer createREQMODWithTwoChunkBodyChunkThree() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addChunk(buffer,null);
+		return buffer;
+	}
+	
+	public static final IcapChunkTrailer createREQMODWithTwoChunkBodyChunkThreeIcapChunkTrailer() throws UnsupportedEncodingException {
+		IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
+		trailer.addHeader("TrailingHeaderKey1","TrailingHeaderValue1");
+		trailer.addHeader("TrailingHeaderKey2","TrailingHeaderValue2");
+		trailer.addHeader("TrailingHeaderKey3","TrailingHeaderValue3");
+		trailer.addHeader("TrailingHeaderKey4","TrailingHeaderValue4");
+		return trailer;
+	}
+	
+	public static final ChannelBuffer createREQMODWithTwoChunkBodyChunkThreeWithTrailer() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"0");
+		addLine(buffer,"TrailingHeaderKey1: TrailingHeaderValue1");
+		addLine(buffer,"TrailingHeaderKey2: TrailingHeaderValue2");
+		addLine(buffer,"TrailingHeaderKey3: TrailingHeaderValue3");
+		addLine(buffer,"TrailingHeaderKey4: TrailingHeaderValue4");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
+	public static final ChannelBuffer createREQMODWithTwoChunkBodyAndTrailingHeaders() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,null);
+		addLine(buffer,"POST / HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain");
+		addLine(buffer,"Accept-Encoding: compress");
+		addLine(buffer,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(buffer,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(buffer,null);
+		addChunk(buffer,"This is data that was returned by an origin server.");
+		addChunk(buffer,"And this the second chunk which contains more information.");
+		addLine(buffer,"0");
+		addLine(buffer,"TrailingHeaderKey1: TrailingHeaderValue1");
+		addLine(buffer,"TrailingHeaderKey2: TrailingHeaderValue2");
+		addLine(buffer,"TrailingHeaderKey3: TrailingHeaderValue3");
+		addLine(buffer,"TrailingHeaderKey4: TrailingHeaderValue4");
+		addLine(buffer,null);
 		return buffer;
 	}
 	
@@ -377,6 +421,14 @@ public final class DataMockery extends Assert {
 	
 	public static final void assertCreateREQMODWithTwoChunkBodyThirdChunk(IcapChunk chunk) {
 		assertChunk("third chunk",chunk,null,true);
+	}
+	
+	public static final void assertCreateREQMODWithTwoChunkBodyTrailingHeaderChunk(IcapChunkTrailer trailer) {
+		assertNotNull("trailer is null",trailer);
+		assertTrailingHeaderValue("TrailingHeaderKey1","TrailingHeaderValue1",trailer);
+		assertTrailingHeaderValue("TrailingHeaderKey2","TrailingHeaderValue2",trailer);
+		assertTrailingHeaderValue("TrailingHeaderKey3","TrailingHeaderValue3",trailer);
+		assertTrailingHeaderValue("TrailingHeaderKey4","TrailingHeaderValue4",trailer);
 	}
 	
 	public static final ChannelBuffer createREQMODWithPreview() throws UnsupportedEncodingException {
@@ -670,6 +722,12 @@ public final class DataMockery extends Assert {
 	
 	private static void assertHeaderValue(String key, String expected, IcapMessage message) {
 		assertNotNull("Message was null",message);
+		assertTrue("Key does not exist [" + key + "]",message.containsHeader(key));
+		assertEquals("The header: " + key + " is invalid",expected,message.getHeader(key));
+	}
+	
+	private static void assertTrailingHeaderValue(String key, String expected, IcapChunkTrailer message) {
+		assertNotNull("Chunk trailer was null",message);
 		assertTrue("Key does not exist [" + key + "]",message.containsHeader(key));
 		assertEquals("The header: " + key + " is invalid",expected,message.getHeader(key));
 	}

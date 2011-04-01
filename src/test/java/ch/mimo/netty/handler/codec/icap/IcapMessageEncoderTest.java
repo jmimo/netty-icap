@@ -79,7 +79,23 @@ public class IcapMessageEncoderTest extends Assert {
 		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkTwo(),chunkTwo);
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree());
 		String chunkThree = getBufferContent(embedder.poll());
-		assertResponse(DataMockery.createREQMODWithTwoChunkBudyChunkThree(),chunkThree);
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkThree(),chunkThree);
+	}
+	
+	@Test
+	public void encodeREQModWithTowChunkBodyAndTrailingHeader() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapMessage());
+		String request = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyAnnouncement(),request);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
+		String chunkOne = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTowChunkBodyChunkOne(),chunkOne);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
+		String chunkTwo = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkTwo(),chunkTwo);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyChunkThreeIcapChunkTrailer());
+		String chunkThree = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkThreeWithTrailer(),chunkThree);
 	}
 	
 	@Test
@@ -108,9 +124,6 @@ public class IcapMessageEncoderTest extends Assert {
 		String lastChunk = getBufferContent(embedder.poll());
 		assertResponse(DataMockery.createREQMODWithEarlyTerminatedPreviewLastChunk(),lastChunk);
 	}
-
-	// TODO trailing headers
-	// TODO options request with body
 	
 	private String getBufferContent(Object object) {
 		assertNotNull("poll returned null",object);

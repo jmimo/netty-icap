@@ -29,8 +29,6 @@ public class ReadChunkSizeState extends State<Integer> {
 		if(chunkSize == -1) {
 			icapMessageDecoder.currentChunkSize = 0;
 			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(true,true),0);
-		} else if(chunkSize == 0){
-			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(icapMessageDecoder.message.isPreview(),false),chunkSize);
 		} else {
 			icapMessageDecoder.currentChunkSize = chunkSize;
 			return StateReturnValue.createIrrelevantResultWithDecisionInformation(chunkSize);

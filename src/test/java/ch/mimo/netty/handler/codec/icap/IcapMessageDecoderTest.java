@@ -95,6 +95,17 @@ public class IcapMessageDecoderTest extends Assert {
 	}
 	
 	@Test
+	public void decodeREQMODRequestWithTwoChunkBodyAndTrailingHeaders() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyAndTrailingHeaders());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertCreateREQMODWithTwoChunkBody(result);
+		DataMockery.assertCreateREQMODWithTwoChunkBodyFirstChunk((IcapChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithTwoChunkBodySecondChunk((IcapChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithTwoChunkBodyTrailingHeaderChunk((IcapChunkTrailer)embedder.poll());
+	}
+	
+	@Test
 	public void decodeREQMODRequestWithPreview() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithPreview());
 		IcapMessage result = (IcapMessage)embedder.poll();
@@ -122,7 +133,5 @@ public class IcapMessageDecoderTest extends Assert {
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewChunk((IcapChunk)embedder.poll());
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewLastChunk((IcapChunk)embedder.poll());
 	}
-	
-	// TODO options request with body
 }
 

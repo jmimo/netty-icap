@@ -24,6 +24,8 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 
 import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
 
+// TODO create super inteface that defines the getHEader and addHeader method in order to simplyfi the parsing
+// effort for IcapMessage, IcapChunkTrailer
 public interface IcapMessage {
 
     /**

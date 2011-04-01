@@ -13,15 +13,10 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
+import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-
-public class DefaultIcapChunkTrailer implements IcapChunkTrailer {
-
+public class DefaultIcapChunkTrailer extends DefaultHttpChunkTrailer implements IcapChunkTrailer {
+	
 	private boolean preview;
 	private boolean earlyTerminated;
 	
@@ -54,65 +49,5 @@ public class DefaultIcapChunkTrailer implements IcapChunkTrailer {
 	@Override
 	public boolean isEarlyTerminated() {
 		return earlyTerminated;
-	}
-
-	@Override
-	public ChannelBuffer getContent() {
-		return ChannelBuffers.EMPTY_BUFFER;
-	}
-
-	@Override
-	public void setContent(ChannelBuffer content) {
-		// NOOP
-	}
-
-	@Override
-	public boolean isLast() {
-		return true;
-	}
-
-	@Override
-	public String getHeader(String name) {
-		return null;
-	}
-
-	@Override
-	public List<String> getHeaders(String name) {
-		return null;
-	}
-
-	@Override
-	public List<Entry<String, String>> getHeaders() {
-		return null;
-	}
-
-	@Override
-	public boolean containsHeader(String name) {
-		return false;
-	}
-
-	@Override
-	public Set<String> getHeaderNames() {
-		return null;
-	}
-
-	@Override
-	public void addHeader(String name, Object value) {
-	}
-
-	@Override
-	public void setHeader(String name, Object value) {	
-	}
-
-	@Override
-	public void setHeader(String name, Iterable<?> values) {
-	}
-
-	@Override
-	public void removeHeader(String name) {
-	}
-
-	@Override
-	public void clearHeaders() {
 	}
 }

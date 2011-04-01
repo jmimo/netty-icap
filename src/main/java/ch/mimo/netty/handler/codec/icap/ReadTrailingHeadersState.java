@@ -16,7 +16,6 @@ package ch.mimo.netty.handler.codec.icap;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 
@@ -29,10 +28,11 @@ public class ReadTrailingHeadersState extends State<Object> {
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		SizeDelimiter sizeDelimiter = new SizeDelimiter(icapMessageDecoder.maxHttpHeaderSize);
+		boolean preview = icapMessageDecoder.message.isPreview();
         String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
         String lastHeader = null;
         if (line.length() != 0) {
-            HttpChunkTrailer trailer = new DefaultHttpChunkTrailer();
+            HttpChunkTrailer trailer = new DefaultIcapChunkTrailer(preview,false);
             do {
                 char firstChar = line.charAt(0);
                 if (lastHeader != null && (firstChar == ' ' || firstChar == '\t')) {
@@ -60,7 +60,7 @@ public class ReadTrailingHeadersState extends State<Object> {
 
             return StateReturnValue.createRelevantResult(trailer);
         }
-        return StateReturnValue.createRelevantResult(new DefaultIcapChunkTrailer());
+        return StateReturnValue.createRelevantResult(new DefaultIcapChunkTrailer(preview,false));
 	}
 
 	@Override
