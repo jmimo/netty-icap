@@ -25,6 +25,11 @@ import org.junit.Test;
 public class EncapsulatedTest extends Assert {
 
 	@Test
+	public void testIcapMessageElementEnumNullValueHandling() {
+		assertNull("value was not null as expected",IcapMessageElementEnum.fromString(null));
+	}
+	
+	@Test
 	public void testSimpleValueParsing() {
 		String parameter = "req-hdr=0, res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
