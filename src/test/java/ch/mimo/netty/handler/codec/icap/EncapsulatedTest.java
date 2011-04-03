@@ -22,43 +22,41 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
 
-import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
-
 public class EncapsulatedTest extends Assert {
 
 	@Test
 	public void testSimpleValueParsing() {
 		String parameter = "req-hdr=0, res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
-		assertTrue("req-hdr value is missing",encapsulated.containsEntry(EntryName.REQHDR));
-		assertTrue("res-hdr value is missing",encapsulated.containsEntry(EntryName.RESHDR));
-		assertTrue("req-body value is missing",encapsulated.containsEntry(EntryName.REQBODY));
+		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
+		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
+		assertTrue("req-body value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQBODY));
 	}
 	
 	@Test
 	public void testWhitespaceGap() {
 		String parameter = "req-hdr=0,  res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
-		assertTrue("req-hdr value is missing",encapsulated.containsEntry(EntryName.REQHDR));
-		assertTrue("res-hdr value is missing",encapsulated.containsEntry(EntryName.RESHDR));
-		assertTrue("req-body value is missing",encapsulated.containsEntry(EntryName.REQBODY));
+		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
+		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
+		assertTrue("req-body value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQBODY));
 	}
 	
 	@Test
 	public void testIteratorWithWrongSequence() {
 		String parameter = "res-hdr=45, req-hdr=0, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
-		assertTrue("req-hdr value is missing",encapsulated.containsEntry(EntryName.REQHDR));
-		assertTrue("res-hdr value is missing",encapsulated.containsEntry(EntryName.RESHDR));
-		assertTrue("req-body value is missing",encapsulated.containsEntry(EntryName.REQBODY));
-		EntryName reqhdr = encapsulated.getNextEntry();
-		assertEquals("req-hdr was expected",EntryName.REQHDR,reqhdr);
+		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
+		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
+		assertTrue("req-body value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQBODY));
+		IcapMessageElementEnum reqhdr = encapsulated.getNextEntry();
+		assertEquals("req-hdr was expected",IcapMessageElementEnum.REQHDR,reqhdr);
 		encapsulated.setProcessed(reqhdr);
-		EntryName reshdr = encapsulated.getNextEntry();
-		assertEquals("res-hdr was expected",EntryName.RESHDR,reshdr);
+		IcapMessageElementEnum reshdr = encapsulated.getNextEntry();
+		assertEquals("res-hdr was expected",IcapMessageElementEnum.RESHDR,reshdr);
 		encapsulated.setProcessed(reshdr);
-		EntryName reqbody = encapsulated.getNextEntry();
-		assertEquals("reqbody was expected",EntryName.REQBODY,reqbody);
+		IcapMessageElementEnum reqbody = encapsulated.getNextEntry();
+		assertEquals("reqbody was expected",IcapMessageElementEnum.REQBODY,reqbody);
 		encapsulated.setProcessed(reqbody);
 		assertNull("null was expected after last entry is processed",encapsulated.getNextEntry());
 	}
@@ -79,9 +77,9 @@ public class EncapsulatedTest extends Assert {
 	public void testEncodeEncapsulatedHeader() {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		Encapsulated encapsulated = new Encapsulated();
-		encapsulated.addEntry(EntryName.REQHDR,0);
-		encapsulated.addEntry(EntryName.RESHDR,123);
-		encapsulated.addEntry(EntryName.REQBODY,270);
+		encapsulated.addEntry(IcapMessageElementEnum.REQHDR,0);
+		encapsulated.addEntry(IcapMessageElementEnum.RESHDR,123);
+		encapsulated.addEntry(IcapMessageElementEnum.REQBODY,270);
 		try {
 			assertEquals("amount of bytes written was wrong",54,encapsulated.encode(buffer));
 		} catch (UnsupportedEncodingException e) {
@@ -95,9 +93,9 @@ public class EncapsulatedTest extends Assert {
 	public void testEncodeEncapsulatedHeaderWithOdering() {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		Encapsulated encapsulated = new Encapsulated();
-		encapsulated.addEntry(EntryName.REQBODY,270);
-		encapsulated.addEntry(EntryName.RESHDR,123);
-		encapsulated.addEntry(EntryName.REQHDR,0);
+		encapsulated.addEntry(IcapMessageElementEnum.REQBODY,270);
+		encapsulated.addEntry(IcapMessageElementEnum.RESHDR,123);
+		encapsulated.addEntry(IcapMessageElementEnum.REQHDR,0);
 
 		try {
 			assertEquals("amount of bytes written was wrong",54,encapsulated.encode(buffer));
@@ -112,9 +110,9 @@ public class EncapsulatedTest extends Assert {
 	public void testEncodeEncapsulatedHeaderWithNullBody() {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		Encapsulated encapsulated = new Encapsulated();
-		encapsulated.addEntry(EntryName.NULLBODY,270);
-		encapsulated.addEntry(EntryName.RESHDR,123);
-		encapsulated.addEntry(EntryName.REQHDR,0);
+		encapsulated.addEntry(IcapMessageElementEnum.NULLBODY,270);
+		encapsulated.addEntry(IcapMessageElementEnum.RESHDR,123);
+		encapsulated.addEntry(IcapMessageElementEnum.REQHDR,0);
 
 		try {
 			assertEquals("amount of bytes written was wrong",55,encapsulated.encode(buffer));
@@ -129,9 +127,9 @@ public class EncapsulatedTest extends Assert {
 	public void testEncodeEncapsulatedHeaderWithNullBodyThatHasZeroValue() {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		Encapsulated encapsulated = new Encapsulated();
-		encapsulated.addEntry(EntryName.NULLBODY,0);
-		encapsulated.addEntry(EntryName.RESHDR,123);
-		encapsulated.addEntry(EntryName.REQHDR,0);
+		encapsulated.addEntry(IcapMessageElementEnum.NULLBODY,0);
+		encapsulated.addEntry(IcapMessageElementEnum.RESHDR,123);
+		encapsulated.addEntry(IcapMessageElementEnum.REQHDR,0);
 
 		try {
 			assertEquals("amount of bytes written was wrong",53,encapsulated.encode(buffer));

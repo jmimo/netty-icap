@@ -21,8 +21,6 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
-
 public class ReadHttpResponseInitalAndHeadersState extends State<Object> {
 
 	@Override
@@ -47,7 +45,7 @@ public class ReadHttpResponseInitalAndHeadersState extends State<Object> {
 		}
 		Encapsulated encapsulated = icapMessageDecoder.message.getEncapsulatedHeader();
 		encapsulated.setProcessed(encapsulated.getNextEntry());
-		if(encapsulated.getNextEntry() != null && encapsulated.getNextEntry().equals(EntryName.REQHDR)) {
+		if(encapsulated.getNextEntry() != null && encapsulated.getNextEntry().equals(IcapMessageElementEnum.REQHDR)) {
 			return StateReturnValue.createIrrelevantResult();
 		}
 		return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
@@ -56,15 +54,15 @@ public class ReadHttpResponseInitalAndHeadersState extends State<Object> {
 	@Override
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
 		Encapsulated encapsulated = icapMessageDecoder.message.getEncapsulatedHeader();
-		EntryName entry = encapsulated.getNextEntry();
+		IcapMessageElementEnum entry = encapsulated.getNextEntry();
 		if(entry != null) {
-			if(entry.equals(EntryName.REQHDR)) {
+			if(entry.equals(IcapMessageElementEnum.REQHDR)) {
 				return StateEnum.READ_HTTP_REQUEST_INITIAL_AND_HEADERS;
 			}
-			if(entry.equals(EntryName.REQBODY)) {
+			if(entry.equals(IcapMessageElementEnum.REQBODY)) {
 				return StateEnum.READ_CHUNK_SIZE_STATE;
 			}
-			if(entry.equals(EntryName.RESBODY)) {
+			if(entry.equals(IcapMessageElementEnum.RESBODY)) {
 				return StateEnum.READ_CHUNK_SIZE_STATE;
 			}
 		}

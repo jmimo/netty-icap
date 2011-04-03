@@ -24,8 +24,6 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
-import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
-
 public abstract class IcapMessageEncoder extends OneToOneEncoder {
 	
 	@Override
@@ -40,19 +38,19 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
             int index = 0;
             Encapsulated encapsulated = new Encapsulated();
             if(httpRequestBuffer.readableBytes() > 0) {
-            	encapsulated.addEntry(EntryName.REQHDR,index);
+            	encapsulated.addEntry(IcapMessageElementEnum.REQHDR,index);
             	index += httpRequestBuffer.readableBytes();
             	httpRequestBuffer.writeBytes(IcapCodecUtil.CRLF);
             }
             if(httpResponseBuffer.readableBytes() > 0) {
-            	encapsulated.addEntry(EntryName.RESHDR,index);
+            	encapsulated.addEntry(IcapMessageElementEnum.RESHDR,index);
             	index += httpResponseBuffer.readableBytes();
             	httpResponseBuffer.writeBytes(IcapCodecUtil.CRLF);
             }
             if(message.getBody() != null) {
             	encapsulated.addEntry(message.getBody(),index);
             } else {
-            	encapsulated.addEntry(EntryName.NULLBODY,index);
+            	encapsulated.addEntry(IcapMessageElementEnum.NULLBODY,index);
             }
             encapsulated.encode(buffer);
             buffer.writeBytes(httpRequestBuffer);

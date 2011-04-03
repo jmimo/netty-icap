@@ -24,8 +24,6 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.internal.StringUtil;
 
-import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
-
 
 public abstract class DefaultIcapMessage implements IcapMessage {
 	
@@ -38,7 +36,7 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
 	
-	private EntryName body;
+	private IcapMessageElementEnum body;
 	
 	public DefaultIcapMessage(HttpVersion version) {
 		setProtocolVersion(version);
@@ -191,11 +189,11 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 		return containsHeader("Preview");
 	}
 	
-	public void setBody(EntryName body) {
+	public void setBody(IcapMessageElementEnum body) {
 		this.body = body;
 	}
 
-	public EntryName getBody() {
+	public IcapMessageElementEnum getBody() {
 		return body;
 	}
 	

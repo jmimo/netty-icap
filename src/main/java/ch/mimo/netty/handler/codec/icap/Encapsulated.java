@@ -24,37 +24,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public class Encapsulated {
 	
-	public static enum EntryName {
-		// TODO remove literals
-		REQHDR("req-hdr"),
-		RESHDR("res-hdr"),
-		REQBODY("req-body"),
-		RESBODY("res-body"),
-		OPTBODY("opt-body"),
-		NULLBODY("null-body");
-		
-		private String value;
-		
-		EntryName(String value) {
-			this.value = value;
-		}
-		
-		public String getValue() {
-			return value;
-		}
-		
-		public static EntryName fromString(String value) {
-			if(value != null) {
-				for(EntryName entryName : EntryName.values()) {
-					if(value.equalsIgnoreCase(entryName.getValue())) {
-						return entryName;
-					}
-				}
-			}
-			return null;
-		}
-	}
-	
 	private List<Entry> entries;
 	
 	public Encapsulated() {
@@ -67,7 +36,7 @@ public class Encapsulated {
 		return encapsulated;
 	}
 	
-	public boolean containsEntry(EntryName entity) {
+	public boolean containsEntry(IcapMessageElementEnum entity) {
 		for(Entry entry : entries) {
 			if(entry.getName().equals(entity)) {
 				return true;
@@ -82,7 +51,7 @@ public class Encapsulated {
 //					containsEntry(EntryName.OPTBODY);
 //	}
 	
-	public EntryName getNextEntry() {
+	public IcapMessageElementEnum getNextEntry() {
 		for(Entry entry : entries) {
 			if(!entry.isProcessed()) {
 				return entry.getName();
@@ -91,12 +60,12 @@ public class Encapsulated {
 		return null;
 	}
 	
-	public void setProcessed(EntryName entryName) {
+	public void setProcessed(IcapMessageElementEnum entryName) {
 		Entry entry = getEntryByName(entryName);
 		entry.setIsProcessed();
 	}
 	
-	public void addEntry(EntryName name, int position) {
+	public void addEntry(IcapMessageElementEnum name, int position) {
 		Entry entry = new Entry(name,position);
 		entries.add(entry);
 	}
@@ -119,7 +88,7 @@ public class Encapsulated {
 				String[] parameter = splitParameter(parameterString.trim());
 				try {
 					int value = Integer.parseInt(parameter[1]);
-					entries.add(new Entry(EntryName.fromString(parameter[0]),value));
+					entries.add(new Entry(IcapMessageElementEnum.fromString(parameter[0]),value));
 				} catch(NumberFormatException nfe) {
 					throw new Error("the Encapsulated header value [" + parameter[1] + "] for the key [" + parameter[0] + "] is not a number");
 				}
@@ -141,7 +110,7 @@ public class Encapsulated {
 		return new String[]{key.trim(),value};
 	}
 	
-	private Entry getEntryByName(EntryName entryName) {
+	private Entry getEntryByName(IcapMessageElementEnum entryName) {
 		for(Entry entry : entries) {
 			if(entry.getName().equals(entryName)) {
 				return entry;
@@ -165,25 +134,23 @@ public class Encapsulated {
 				buffer.writeBytes(new byte[]{',',IcapCodecUtil.SP});
 			}
 		}
-        buffer.writeByte(IcapCodecUtil.CR);
-        buffer.writeByte(IcapCodecUtil.LF);
-        buffer.writeByte(IcapCodecUtil.CR);
-        buffer.writeByte(IcapCodecUtil.LF);
+        buffer.writeBytes(IcapCodecUtil.CRLF);
+        buffer.writeBytes(IcapCodecUtil.CRLF);
 		return buffer.readableBytes() - index;
 	}
 	
 	private final class Entry implements Comparable<Entry> {
 
-		private EntryName name;
+		private IcapMessageElementEnum name;
 		private Integer position;
 		private boolean processed;
 		
-		public Entry(EntryName name, Integer position) {
+		public Entry(IcapMessageElementEnum name, Integer position) {
 			this.name = name;
 			this.position = position;
 		}
 		
-		public EntryName getName() {
+		public IcapMessageElementEnum getName() {
 			return name;
 		}
 		
@@ -201,7 +168,7 @@ public class Encapsulated {
 		
 		@Override
 		public int compareTo(Entry entry) {			
-			if(this.name.equals(EntryName.NULLBODY)) {
+			if(this.name.equals(IcapMessageElementEnum.NULLBODY)) {
 				return 1;
 			}
 			return this.position.compareTo(entry.position);

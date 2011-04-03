@@ -17,8 +17,6 @@ import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import ch.mimo.netty.handler.codec.icap.Encapsulated.EntryName;
-
 public class ReadIcapHeaderState extends State<Object> {
 
 	@Override
@@ -45,7 +43,7 @@ public class ReadIcapHeaderState extends State<Object> {
 		Encapsulated encapsulated = Encapsulated.parseHeader(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
 		
-		if(!encapsulated.containsEntry(EntryName.REQHDR) & !encapsulated.containsEntry(EntryName.RESHDR)) {
+		if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		}
 		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
@@ -59,24 +57,24 @@ public class ReadIcapHeaderState extends State<Object> {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
 		if(message.getMethod().equals(IcapMethod.OPTIONS)) {
-			if(encapsulated.containsEntry(EntryName.OPTBODY)) {
+			if(encapsulated.containsEntry(IcapMessageElementEnum.OPTBODY)) {
 				return StateEnum.READ_CHUNK_SIZE_STATE;
 			} else {
 				return null;
 			}
 		} else {
-			EntryName entry = encapsulated.getNextEntry();
+			IcapMessageElementEnum entry = encapsulated.getNextEntry();
 			if(entry != null) {
-				if(entry.equals(EntryName.REQHDR)) {
+				if(entry.equals(IcapMessageElementEnum.REQHDR)) {
 					return StateEnum.READ_HTTP_REQUEST_INITIAL_AND_HEADERS;
 				}
-				if(entry.equals(EntryName.RESHDR)) {
+				if(entry.equals(IcapMessageElementEnum.RESHDR)) {
 					return StateEnum.READ_HTTP_RESPONSE_INITIAL_AND_HEADERS;
 				}
-				if(entry.equals(EntryName.REQBODY)) {
+				if(entry.equals(IcapMessageElementEnum.REQBODY)) {
 					return StateEnum.READ_CHUNK_SIZE_STATE;
 				}
-				if(entry.equals(EntryName.RESBODY)) {
+				if(entry.equals(IcapMessageElementEnum.RESBODY)) {
 					return StateEnum.READ_CHUNK_SIZE_STATE;
 				}
 			}
