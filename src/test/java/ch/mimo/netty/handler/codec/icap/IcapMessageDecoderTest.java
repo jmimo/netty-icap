@@ -29,6 +29,47 @@ public class IcapMessageDecoderTest extends Assert {
 		embedder = new DecoderEmbedder<Object>(new IcapRequestDecoder());
 	}
 	
+	@Test 
+	public void testConstructorValueValidation() {
+		boolean error = false;
+		try {
+			new IcapRequestDecoder(0,1,1,1);
+		} catch(IllegalArgumentException iage) {
+			error = true;
+		}
+		assertTrue("No exception was thrown for the maxInitialLength validation",error);
+		error = false;
+		try {
+			new IcapRequestDecoder(1,0,1,1);
+		} catch(IllegalArgumentException iage) {
+			error = true;
+		}
+		assertTrue("No exception was thrown for the maxIcapHeaderSize validation",error);
+		error = false;
+		error = false;
+		try {
+			new IcapRequestDecoder(1,1,0,1);
+		} catch(IllegalArgumentException iage) {
+			error = true;
+		}
+		assertTrue("No exception was thrown for the maxHttpHeaderSize validation",error);
+		error = false;
+		error = false;
+		try {
+			new IcapRequestDecoder(1,1,1,0);
+		} catch(IllegalArgumentException iage) {
+			error = true;
+		}
+		assertTrue("No exception was thrown for the maxChunkSize validation",error);
+		error = false;
+		try {
+			new IcapRequestDecoder(1,1,1,1);
+		} catch(IllegalArgumentException iage) {
+			error = true;
+		}
+		assertFalse("All input values are greater null but exception occured",error);
+	}
+	
 	@Test
 	public void decodeOPTIONRequestTest() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createOPTIONSRequest());

@@ -33,6 +33,14 @@ public class IcapMessageEncoderTest extends Assert {
 	}
 	
 	@Test
+	public void testEncoderWithUnknownObject() {
+		embedder.offer(new String());
+		assertNull("poll should return null",embedder.poll());
+	}
+	
+	// TODO write test to force unsupported encoding exceptions while encoding
+	
+	@Test
 	public void encodeOPTIONSRequest() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createOPTIONSRequestIcapMessage());
 		String request = getBufferContent(embedder.poll());

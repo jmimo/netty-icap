@@ -49,7 +49,10 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
         if (maxIcapHeaderSize <= 0) {
             throw new IllegalArgumentException("maxIcapHeaderSize must be a positive integer: " + maxIcapHeaderSize);
         }
-        if (maxChunkSize < 0) {
+        if(maxHttpHeaderSize <= 0) {
+        	throw new IllegalArgumentException("maxHttpHeaderSize must be a positive integer: " + maxIcapHeaderSize);
+        }
+        if (maxChunkSize <= 0) {
             throw new IllegalArgumentException("maxChunkSize must be a positive integer: " + maxChunkSize);
         }
         this.maxInitialLineLength = maxInitialLineLength;
