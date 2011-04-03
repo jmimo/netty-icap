@@ -119,11 +119,6 @@ public interface IcapMessage {
     boolean containsHttpRequest();
     
     /**
-     * @return true if a http request body was delivered.
-     */
-    boolean containsHttpRequestBody();
-    
-    /**
      * @return the actual http request instance @see {@link HttpRequest}
      */
 	HttpRequest getHttpRequest();
@@ -134,11 +129,6 @@ public interface IcapMessage {
 	 * @return true if a http response was delivered.
 	 */
 	boolean containsHttpResponse();
-	
-	/**
-	 * @return return true if a http response body was delivered.
-	 */
-	boolean containsHttpResponseBody();
 	
 	/**
 	 * @return the actual http response instance @see {@link HttpResponse}
@@ -158,8 +148,6 @@ public interface IcapMessage {
 	void setEncapsulatedHeader(Encapsulated encapsulated);
 	
 	Encapsulated getEncapsulatedHeader();
-	
-	boolean isPreview();
 	
 	void setBody(IcapMessageElementEnum body);
 

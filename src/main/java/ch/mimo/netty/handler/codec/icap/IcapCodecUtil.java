@@ -28,10 +28,12 @@ import org.jboss.netty.util.CharsetUtil;
 class IcapCodecUtil {
 	
 	// 0; ieof
-	static Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
+	static final Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
 	
 	// TODO find other solution...
-	static byte[] NATIVE_IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102};
+	static final byte[] NATIVE_IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102};
+	
+	static final String IEOF_SEQUENCE_STRING = "0; ieof";
 	
     //space ' '
     static final byte SP = 32;
@@ -77,6 +79,15 @@ class IcapCodecUtil {
     static final byte DOUBLE_QUOTE = '"';
 
     static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
+    
+    static final Charset ASCII_CHARSET = Charset.forName("ASCII");
+    
+    static final String ENCAPSULATION_ELEMENT_REQHDR = "req-hdr";
+    static final String ENCAPSULATION_ELEMENT_RESHDR = "res-hdr";
+    static final String ENCAPSULATION_ELEMENT_REQBODY = "req-body";
+    static final String ENCAPSULATION_ELEMENT_RESBODY = "res-body";
+    static final String ENCAPSULATION_ELEMENT_OPTBODY = "opt-body";
+    static final String ENCAPSULATION_ELEMENT_NULLBODY = "null-body";
     
     private IcapCodecUtil() {
         super();

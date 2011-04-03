@@ -28,7 +28,7 @@ public class ReadTrailingHeadersState extends State<Object> {
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		SizeDelimiter sizeDelimiter = new SizeDelimiter(icapMessageDecoder.maxHttpHeaderSize);
-		boolean preview = icapMessageDecoder.message.isPreview();
+		boolean preview = icapMessageDecoder.message.isPreviewMessage();
         String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
         String lastHeader = null;
         if (line.length() != 0) {

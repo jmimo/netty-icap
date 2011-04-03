@@ -120,8 +120,7 @@ public final class IcapDecoderUtil {
 	
     public static int getChunkSize(String hex) {
         hex = hex.trim();
-        // TODO literal this
-        if(hex.equals("0; ieof")) {
+        if(hex.equals(IcapCodecUtil.IEOF_SEQUENCE_STRING)) {
         	return -1;
         }
         for (int i = 0; i < hex.length(); i ++) {

@@ -78,8 +78,7 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 			} else {
 				ChannelBuffer chunkBuffer = chunk.getContent();
 				int contentLength = chunkBuffer.readableBytes();
-				// TODO remove literal
-				buffer.writeBytes(Integer.toHexString(contentLength).getBytes("ASCII"));
+				buffer.writeBytes(Integer.toHexString(contentLength).getBytes(IcapCodecUtil.ASCII_CHARSET));
 				buffer.writeBytes(IcapCodecUtil.CRLF);
 				buffer.writeBytes(chunkBuffer);
 				buffer.writeBytes(IcapCodecUtil.CRLF);
@@ -94,12 +93,11 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 	private ChannelBuffer encodeHttpRequestHeader(HttpRequest httpRequest) throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		if(httpRequest != null) {
-			// TODO replace ASCII literal
-			buffer.writeBytes(httpRequest.getMethod().toString().getBytes("ASCII"));
+			buffer.writeBytes(httpRequest.getMethod().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeByte(IcapCodecUtil.SP);
-			buffer.writeBytes(httpRequest.getUri().getBytes("ASCII"));
+			buffer.writeBytes(httpRequest.getUri().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeByte(IcapCodecUtil.SP);
-			buffer.writeBytes(httpRequest.getProtocolVersion().toString().getBytes("ASCII"));
+			buffer.writeBytes(httpRequest.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeBytes(IcapCodecUtil.CRLF);
 	        try {
 	            for (Map.Entry<String, String> h: httpRequest.getHeaders()) {
@@ -115,10 +113,9 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 	private ChannelBuffer encodeHttpResponseHeader(HttpResponse httpResponse) throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		if(httpResponse != null) {
-			// TODO replace ASCII literal
-			buffer.writeBytes(httpResponse.getProtocolVersion().toString().getBytes("ASCII"));
+			buffer.writeBytes(httpResponse.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeByte(IcapCodecUtil.SP);
-			buffer.writeBytes(httpResponse.getStatus().toString().getBytes("ASCII"));
+			buffer.writeBytes(httpResponse.getStatus().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeBytes(IcapCodecUtil.CRLF);
 	        try {
 	            for (Map.Entry<String, String> h: httpResponse.getHeaders()) {
@@ -157,11 +154,10 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
     
     // TODO return the length
     private void encodeHeader(ChannelBuffer buf, String header, String value) throws UnsupportedEncodingException {
-    	// TODO replace ASCII literal
-		buf.writeBytes(header.getBytes("ASCII"));
+		buf.writeBytes(header.getBytes(IcapCodecUtil.ASCII_CHARSET));
 		buf.writeByte(IcapCodecUtil.COLON);
 		buf.writeByte(IcapCodecUtil.SP);
-		buf.writeBytes(value.getBytes("ASCII"));
+		buf.writeBytes(value.getBytes(IcapCodecUtil.ASCII_CHARSET));
 		buf.writeBytes(IcapCodecUtil.CRLF);
     }
 }

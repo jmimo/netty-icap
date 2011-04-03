@@ -122,14 +122,13 @@ public class Encapsulated {
 	public int encode(ChannelBuffer buffer) throws UnsupportedEncodingException {
 		int index = buffer.readableBytes();
 		Collections.sort(entries);
-		// TODO remove literal
-		buffer.writeBytes("Encapsulated: ".getBytes("ASCII"));
+		buffer.writeBytes("Encapsulated: ".getBytes(IcapCodecUtil.ASCII_CHARSET));
 		Iterator<Entry> entryIterator = entries.iterator();
 		while(entryIterator.hasNext()) {
 			Entry entry = entryIterator.next();
-			buffer.writeBytes(entry.getName().getValue().getBytes("ASCII"));
-			buffer.writeBytes("=".getBytes("ASCII"));
-			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes("ASCII"));
+			buffer.writeBytes(entry.getName().getValue().getBytes(IcapCodecUtil.ASCII_CHARSET));
+			buffer.writeBytes("=".getBytes(IcapCodecUtil.ASCII_CHARSET));
+			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes(IcapCodecUtil.ASCII_CHARSET));
 			if(entryIterator.hasNext()) {
 				buffer.writeBytes(new byte[]{',',IcapCodecUtil.SP});
 			}

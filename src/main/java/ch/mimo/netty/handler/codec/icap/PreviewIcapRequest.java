@@ -25,17 +25,16 @@ public class PreviewIcapRequest extends DefaultIcapRequest implements IcapReques
 	
 	public PreviewIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri) {
 		super(icapVersion,method,uri);
-		// TODO remove literal
-		super.addHeader("Preview","0");
+		super.addHeader(IcapHeaders.Names.PREVIEW,"0");
 		previewChunks = new ArrayList<IcapChunk>();
 	}
 
 	@Override
 	public void addPreviewChunk(IcapChunk chunk) {
-		int preview = Integer.parseInt(super.getHeader("Preview"));
+		int preview = Integer.parseInt(super.getHeader(IcapHeaders.Names.PREVIEW));
 		preview += chunk.getContent().readableBytes();
-		super.removeHeader("Preview");
-		super.addHeader("Preview",Integer.toString(preview));
+		super.removeHeader(IcapHeaders.Names.PREVIEW);
+		super.addHeader(IcapHeaders.Names.PREVIEW,Integer.toString(preview));
 		previewChunks.add(chunk);
 	}
 

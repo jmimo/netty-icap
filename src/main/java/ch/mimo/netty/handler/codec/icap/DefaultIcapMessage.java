@@ -110,21 +110,8 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 	}
 
 	@Override
-	public boolean isPreviewMessage() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean containsHttpRequest() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean containsHttpRequestBody() {
-		// TODO Auto-generated method stub
-		return false;
+		return httpRequest != null;
 	}
 
 	@Override
@@ -139,14 +126,7 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 
 	@Override
 	public boolean containsHttpResponse() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean containsHttpResponseBody() {
-		// TODO Auto-generated method stub
-		return false;
+		return httpResponse != null;
 	}
 
 	@Override
@@ -184,9 +164,9 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 		return encapsulated;
 	}
 	
-	public boolean isPreview() {
-		// TODO remove literal
-		return containsHeader("Preview");
+	@Override
+	public boolean isPreviewMessage() {
+		return containsHeader(IcapHeaders.Names.PREVIEW);
 	}
 	
 	public void setBody(IcapMessageElementEnum body) {
@@ -217,10 +197,9 @@ public abstract class DefaultIcapMessage implements IcapMessage {
         	buf.append(httpResponse.toString());
         }
         
-        if(isPreview()) {
+        if(isPreviewMessage()) {
         	buf.append("--- Preview ---");
-        	// TODO remove literal
-        	buf.append("Preview size: " + getHeader("Preview"));
+        	buf.append("Preview size: " + getHeader(IcapHeaders.Names.PREVIEW));
         }
         
         return buf.toString();

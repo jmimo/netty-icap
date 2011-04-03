@@ -2,13 +2,12 @@ package ch.mimo.netty.handler.codec.icap;
 
 
 public enum IcapMessageElementEnum {
-	// TODO remove literals
-	REQHDR("req-hdr"),
-	RESHDR("res-hdr"),
-	REQBODY("req-body"),
-	RESBODY("res-body"),
-	OPTBODY("opt-body"),
-	NULLBODY("null-body");
+	REQHDR(IcapCodecUtil.ENCAPSULATION_ELEMENT_REQHDR),
+	RESHDR(IcapCodecUtil.ENCAPSULATION_ELEMENT_RESHDR),
+	REQBODY(IcapCodecUtil.ENCAPSULATION_ELEMENT_REQBODY),
+	RESBODY(IcapCodecUtil.ENCAPSULATION_ELEMENT_RESBODY),
+	OPTBODY(IcapCodecUtil.ENCAPSULATION_ELEMENT_OPTBODY),
+	NULLBODY(IcapCodecUtil.ENCAPSULATION_ELEMENT_NULLBODY);
 	
 	private String value;
 	

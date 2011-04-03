@@ -24,15 +24,13 @@ public class IcapRequestEncoder extends IcapMessageEncoder {
 	@Override
 	protected int encodeInitialLine(ChannelBuffer buffer, IcapMessage message) throws Exception {
 		IcapMessage request = (IcapMessage) message;
-		// TODO replace ASCII literal
 		int index = buffer.readableBytes();
-        buffer.writeBytes(request.getMethod().toString().getBytes("ASCII"));
+        buffer.writeBytes(request.getMethod().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
         buffer.writeByte(IcapCodecUtil.SP);
-        buffer.writeBytes(request.getUri().getBytes("ASCII"));
+        buffer.writeBytes(request.getUri().getBytes(IcapCodecUtil.ASCII_CHARSET));
         buffer.writeByte(IcapCodecUtil.SP);
-        buffer.writeBytes(request.getProtocolVersion().toString().getBytes("ASCII"));
-        buffer.writeByte(IcapCodecUtil.CR);
-        buffer.writeByte(IcapCodecUtil.LF);
+        buffer.writeBytes(request.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
+        buffer.writeBytes(IcapCodecUtil.CRLF);
         return buffer.readableBytes() - index;
 	}
 
