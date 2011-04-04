@@ -696,6 +696,11 @@ public final class DataMockery extends Assert {
 		assertFalse("preview chunk states that it is early terminated",chunk.isEarlyTerminated());
 	}
 	
+	public static final IcapResponse create100ContinueResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.CONTINUE);
+		return response;
+	}
+	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {
 		if(value == null) {
 			buffer.writeBytes(IcapCodecUtil.CRLF);

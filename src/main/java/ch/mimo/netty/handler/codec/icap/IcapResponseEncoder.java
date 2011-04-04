@@ -18,9 +18,13 @@ import org.jboss.netty.buffer.ChannelBuffer;
 public class IcapResponseEncoder extends IcapMessageEncoder {
 
 	@Override
-	protected int encodeInitialLine(ChannelBuffer buf, IcapMessage message) {
-		// TODO Auto-generated method stub
-		return 0;
+	protected int encodeInitialLine(ChannelBuffer buffer, IcapMessage message) {
+		IcapResponse request = (IcapResponse)message;
+		int index = buffer.readableBytes();
+		buffer.writeBytes(request.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
+        buffer.writeByte(IcapCodecUtil.SP);
+        request.getIcapResponseStatus().toResponseInitialLineValue(buffer);
+        buffer.writeBytes(IcapCodecUtil.CRLF);
+        return buffer.readableBytes() - index;
 	}
-
 }
