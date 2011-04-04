@@ -1,15 +1,12 @@
 package ch.mimo.netty.handler.codec.icap;
 
-import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.embedder.EncoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.framework.Assert;
-
-public class IcapResponseEncoderTest extends Assert {
+public class IcapResponseEncoderTest extends AbstractEncoderTest {
 
 	private EncoderEmbedder<Object> embedder;
 	
@@ -19,17 +16,9 @@ public class IcapResponseEncoderTest extends Assert {
 	}
 	
 	@Test
-	public void encode100ContinueResponse() {
-		embedder.offer(DataMockery.create100ContinueResponse());
+	public void encode100ContinueResponse() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.create100ContinueIcapResponse());
 		String response = getBufferContent(embedder.poll());
-		System.out.println(response);
-	}
-	
-	// TODO make abstract class with utilites for testing
-	private String getBufferContent(Object object) {
-		assertNotNull("poll returned null",object);
-		assertTrue("returned object from embedder is not of type ChannelBuffer",object instanceof ChannelBuffer);
-		ChannelBuffer buffer = (ChannelBuffer)object;
-		return buffer.toString(Charset.defaultCharset());
+		assertResponse(DataMockery.create100ContinueResponse(),response);
 	}
 }

@@ -14,16 +14,12 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
-import junit.framework.Assert;
-
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.embedder.EncoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IcapMessageEncoderTest extends Assert {
+public class IcapMessageEncoderTest extends AbstractEncoderTest {
 
 	private EncoderEmbedder<Object> embedder;
 	
@@ -131,16 +127,5 @@ public class IcapMessageEncoderTest extends Assert {
 		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewLastIcapChunk());
 		String lastChunk = getBufferContent(embedder.poll());
 		assertResponse(DataMockery.createREQMODWithEarlyTerminatedPreviewLastChunk(),lastChunk);
-	}
-	
-	private String getBufferContent(Object object) {
-		assertNotNull("poll returned null",object);
-		assertTrue("returned object from embedder is not of type ChannelBuffer",object instanceof ChannelBuffer);
-		ChannelBuffer buffer = (ChannelBuffer)object;
-		return buffer.toString(Charset.defaultCharset());
-	}
-	
-	private void assertResponse(ChannelBuffer expected, String request) {
-		assertEquals("encoded request is wrong",getBufferContent(expected),request);
 	}
 }

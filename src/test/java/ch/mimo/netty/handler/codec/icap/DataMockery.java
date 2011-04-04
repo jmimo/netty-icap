@@ -696,9 +696,17 @@ public final class DataMockery extends Assert {
 		assertFalse("preview chunk states that it is early terminated",chunk.isEarlyTerminated());
 	}
 	
-	public static final IcapResponse create100ContinueResponse() {
+	public static final IcapResponse create100ContinueIcapResponse() {
 		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.CONTINUE);
 		return response;
+	}
+	
+	public static final ChannelBuffer create100ContinueResponse() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 Continue 100");
+		addLine(buffer,"Encapsulated: null-body=0");
+		addLine(buffer,null);
+		return buffer;
 	}
 	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {
