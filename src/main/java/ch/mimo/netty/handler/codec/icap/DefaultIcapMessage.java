@@ -44,7 +44,7 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 	}
 	
     public DefaultIcapMessage(HttpVersion icapVersion, HttpMethod method, String uri) {
-        this(icapVersion);
+    	this(icapVersion);
         setMethod(method);
         setUri(uri);
     }
@@ -76,16 +76,19 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 
 	@Override
 	public void addHeader(String name, Object value) {
+		validateHeader(name);
 		icapHeaders.addHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Object value) {
+		validateHeader(name);
 		icapHeaders.setHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Iterable<?> values) {
+		validateHeader(name);
 		icapHeaders.setHeader(name,values);
 	}
 
@@ -176,6 +179,8 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 	public IcapMessageElementEnum getBody() {
 		return body;
 	}
+	
+	protected abstract void validateHeader(String name) throws IllegalArgumentException;
 	
     @Override
     public String toString() {

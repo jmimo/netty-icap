@@ -60,8 +60,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapMessage createOPTIONSRequestIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod");
-		request.addHeader("Host","icap.google.com:1344");
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod","icap.google.com:1344");
 		return request;
 	}
 	
@@ -172,8 +171,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapMessage createOPTIONSRequestWithBodyIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod");
-		request.addHeader("Host","icap.google.com:1344");
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod","icap.google.com:1344");
 		request.setBody(IcapMessageElementEnum.OPTBODY);
 		return request;
 	}
@@ -227,8 +225,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapRequest createREQMODWithGetRequestNoBodyIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod");
-		request.addHeader("Host","icap-server.net");
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/");
 		request.setHttpRequest(httpRequest);
 		httpRequest.addHeader("Host","www.origin-server.com");
@@ -274,8 +271,7 @@ public final class DataMockery extends Assert {
 	}	
 	
 	public static final IcapMessage createRESPMODWithGetRequestNoBodyIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.RESPMOD,"icap://icap.mimo.ch:1344/reqmod");
-		request.addHeader("Host","icap-server.net");
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.RESPMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/origin-resource");
 		request.setHttpRequest(httpRequest);
 		httpRequest.addHeader("Host","www.origin-server.com");
@@ -386,8 +382,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapMessage createREQMODWithTwoChunkBodyIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod");
-		request.addHeader("Host","icap-server.net");
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		request.setBody(IcapMessageElementEnum.REQBODY);
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
 		request.setHttpRequest(httpRequest);
@@ -550,8 +545,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapMessage createREQMODWithPreviewAnnouncementIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod");
-		request.addHeader("Host","icap-server.net");
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		request.addHeader("Preview","51");
 		request.setBody(IcapMessageElementEnum.REQBODY);
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
@@ -638,8 +632,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapMessage createREQMODWithEarlyTerminatedPreviewAnnouncementIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod");
-		request.addHeader("Host","icap-server.net");
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		request.addHeader("Preview","151");
 		request.setBody(IcapMessageElementEnum.REQBODY);
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");

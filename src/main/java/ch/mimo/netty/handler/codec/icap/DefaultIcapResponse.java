@@ -6,10 +6,6 @@ public class DefaultIcapResponse extends DefaultIcapMessage implements IcapRespo
 
 	private IcapResponseStatus status;
 	
-	public DefaultIcapResponse(HttpVersion version) {
-		super(version);
-	}
-	
 	public DefaultIcapResponse(HttpVersion version, IcapResponseStatus status) {
 		super(version);
 		this.status = status;
@@ -23,6 +19,11 @@ public class DefaultIcapResponse extends DefaultIcapMessage implements IcapRespo
 	@Override
 	public IcapResponseStatus getIcapResponseStatus() {
 		return status;
+	}
+
+	@Override
+	protected void validateHeader(String name) throws IllegalArgumentException {
+		// NOOP
 	}
 
 }

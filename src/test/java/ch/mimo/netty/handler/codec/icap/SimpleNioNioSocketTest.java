@@ -43,7 +43,7 @@ public class SimpleNioNioSocketTest extends AbstractSocketTest {
 	public void runTest() {
 		
 		try {
-			super.runDecoderTest(new Handler(),new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"/bla/bla"));
+			super.runDecoderTest(new Handler(),new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"/bla/bla","icap-server.net"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

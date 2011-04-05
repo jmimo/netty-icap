@@ -13,13 +13,21 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
 public class DefaultIcapRequest extends DefaultIcapMessage implements IcapRequest {
 	
-	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri) {
+	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri, String host) {
 		super(icapVersion,method,uri);
+		addHeader(IcapHeaders.Names.HOST,host);
 	}
 
+	@Override
+	protected void validateHeader(String name) throws IllegalArgumentException {
+		if(name.equalsIgnoreCase(HttpHeaders.Names.TRANSFER_ENCODING)) {
+			throw new IllegalArgumentException("The header [" + name + "] is not allowed in a ICAP request");
+		}
+	}
 }
