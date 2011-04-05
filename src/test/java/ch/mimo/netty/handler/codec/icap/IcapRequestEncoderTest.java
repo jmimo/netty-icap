@@ -60,6 +60,7 @@ public class IcapRequestEncoderTest extends AbstractEncoderTest {
 	public void encodeREQMODRequestWithoutBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyIcapMessage());
 		String request = getBufferContent(embedder.poll());
+		doOutput(request);
 		assertResponse(DataMockery.createREQMODWithGetRequestNoBody(),request);
 	}
 	
@@ -67,6 +68,7 @@ public class IcapRequestEncoderTest extends AbstractEncoderTest {
 	public void encodeRESMODWithGetRequestNoBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyIcapMessage());
 		String request = getBufferContent(embedder.poll());
+		doOutput(request);
 		assertResponse(DataMockery.createRESPMODWithGetRequestNoBody(),request);
 	}
 	

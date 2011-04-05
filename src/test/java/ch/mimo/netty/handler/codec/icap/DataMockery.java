@@ -214,7 +214,7 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
-		addLine(buffer,"Encapsulated: req-hdr=0, null-body=168");
+		addLine(buffer,"Encapsulated: req-hdr=0, null-body=170");
 		addLine(buffer,null);
 		addLine(buffer,"GET / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -242,7 +242,7 @@ public final class DataMockery extends Assert {
 	public static final void assertCreateREQMODWithGetRequestNoBody(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
-		assertHeaderValue("Encapsulated","req-hdr=0, null-body=168",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, null-body=170",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.GET,message.getHttpRequest().getMethod());
 		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
@@ -256,7 +256,7 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"RESPMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
-		addLine(buffer,"Encapsulated: req-hdr=0, res-hdr=135, null-body=292");
+		addLine(buffer,"Encapsulated: req-hdr=0, res-hdr=137, null-body=296");
 		addLine(buffer,null);
 		addLine(buffer,"GET /origin-resource HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -294,7 +294,7 @@ public final class DataMockery extends Assert {
 	public static final void assertCreateRESPMODWithGetRequestNoBody(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
-		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=135, null-body=292",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, null-body=296",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.GET,message.getHttpRequest().getMethod());
 		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
@@ -373,7 +373,7 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
-		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=171");
 		addLine(buffer,null);
 		addLine(buffer,"POST / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -537,7 +537,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
 		addLine(buffer,"Preview: 51");
-		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=171");
 		addLine(buffer,null);
 		addLine(buffer,"POST / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -685,7 +685,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
 		addLine(buffer,"Preview: 151");
-		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=171");
 		addLine(buffer,null);
 		addLine(buffer,"POST / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");

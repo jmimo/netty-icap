@@ -39,13 +39,13 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
             Encapsulated encapsulated = new Encapsulated();
             if(httpRequestBuffer.readableBytes() > 0) {
             	encapsulated.addEntry(IcapMessageElementEnum.REQHDR,index);
-            	index += httpRequestBuffer.readableBytes();
             	httpRequestBuffer.writeBytes(IcapCodecUtil.CRLF);
+            	index += httpRequestBuffer.readableBytes();
             }
             if(httpResponseBuffer.readableBytes() > 0) {
             	encapsulated.addEntry(IcapMessageElementEnum.RESHDR,index);
-            	index += httpResponseBuffer.readableBytes();
             	httpResponseBuffer.writeBytes(IcapCodecUtil.CRLF);
+            	index += httpResponseBuffer.readableBytes();
             }
             if(message.getBody() != null) {
             	encapsulated.addEntry(message.getBody(),index);
