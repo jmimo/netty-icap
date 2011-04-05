@@ -80,6 +80,90 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final IcapResponse createOPTIONSIcapResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Methods","REQMOD RESPMOD");
+		response.addHeader("Service","Joggels icap server 1.0");
+		response.addHeader("ISTag","5BDEEEA9-12E4-2");
+		response.addHeader("Max-Connections","100");
+		response.addHeader("Options-TTL","1000");
+		response.addHeader("Allow","204");
+		response.addHeader("Preview","1024");
+		return response;
+	}
+	
+	public static final ChannelBuffer createOPTIONSResponse() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 200 OK");
+		addLine(buffer,"Methods: REQMOD RESPMOD");
+		addLine(buffer,"Service: Joggels icap server 1.0");
+		addLine(buffer,"ISTag: 5BDEEEA9-12E4-2");
+		addLine(buffer,"Max-Connections: 100");
+		addLine(buffer,"Options-TTL: 1000");
+		addLine(buffer,"Allow: 204");
+		addLine(buffer,"Preview: 1024");
+		addLine(buffer,"Encapsulated: null-body=0");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
+	public static final IcapResponse createOPTIONSIcapResponseWithBody() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Methods","REQMOD RESPMOD");
+		response.addHeader("Service","Joggels icap server 1.0");
+		response.addHeader("ISTag","5BDEEEA9-12E4-2");
+		response.addHeader("Max-Connections","100");
+		response.addHeader("Options-TTL","1000");
+		response.addHeader("Allow","204");
+		response.addHeader("Preview","1024");
+		response.addHeader("Opt-body-type","Simple-text");
+		response.setBody(IcapMessageElementEnum.OPTBODY);
+		return response;
+	}
+	
+	public static final ChannelBuffer createOPTIONSResponseWithBody() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 200 OK");
+		addLine(buffer,"Methods: REQMOD RESPMOD");
+		addLine(buffer,"Service: Joggels icap server 1.0");
+		addLine(buffer,"ISTag: 5BDEEEA9-12E4-2");
+		addLine(buffer,"Max-Connections: 100");
+		addLine(buffer,"Options-TTL: 1000");
+		addLine(buffer,"Allow: 204");
+		addLine(buffer,"Preview: 1024");
+		addLine(buffer,"Opt-body-type: Simple-text");
+		addLine(buffer,"Encapsulated: opt-body=0");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
+	public static final IcapChunk createOPTIONSIcapChunk() {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is a sample Options response body text".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		return chunk;
+	}
+	
+	public static final ChannelBuffer createOPTIONSChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"2b");
+		addLine(buffer,"This is a sample Options response body text");
+		return buffer;
+	}
+	
+	public static final IcapChunk createOPTIONSLastIcapChunk() {
+		IcapChunk chunk = new DefaultIcapChunk(ChannelBuffers.EMPTY_BUFFER);
+		return chunk;
+	}
+	
+	public static final ChannelBuffer createOPTIONSLastChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"0");
+		addLine(buffer,null);
+		addLine(buffer,null);
+		return buffer;
+	}
+	
 	public static final void assertOPTIONSRequestWithBody(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertEquals("wrong request type",IcapMethod.OPTIONS,message.getMethod());
@@ -703,7 +787,7 @@ public final class DataMockery extends Assert {
 	
 	public static final ChannelBuffer create100ContinueResponse() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		addLine(buffer,"ICAP/1.0 Continue 100");
+		addLine(buffer,"ICAP/1.0 100 Continue");
 		addLine(buffer,"Encapsulated: null-body=0");
 		addLine(buffer,null);
 		return buffer;

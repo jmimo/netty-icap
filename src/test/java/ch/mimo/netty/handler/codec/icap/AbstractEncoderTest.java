@@ -4,9 +4,7 @@ import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import junit.framework.Assert;
-
-public abstract class AbstractEncoderTest extends Assert {
+public abstract class AbstractEncoderTest extends AbstractIcapTest {
 
 	protected String getBufferContent(Object object) {
 		assertNotNull("poll returned null",object);
