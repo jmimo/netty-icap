@@ -79,7 +79,5 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 		return null;
 	}
 	
-	public abstract boolean isDecodingRequest();
-	
 	protected abstract IcapMessage createMessage(String[] initialLine);
 }

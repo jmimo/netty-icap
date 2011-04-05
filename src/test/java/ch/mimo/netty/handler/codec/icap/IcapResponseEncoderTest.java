@@ -46,4 +46,36 @@ public class IcapResponseEncoderTest extends AbstractEncoderTest {
 		doOutput(lastChunk);
 		assertResponse(DataMockery.createOPTIONSLastChunk(),lastChunk);
 	}
+	
+	@Test
+	public void encodeREQMODResponseWithoutBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyIcapResponse());
+		String response = getBufferContent(embedder.poll());
+		doOutput(response);
+		assertResponse(DataMockery.createREQMODWithGetRequestResponse(),response);
+	}
+	
+	@Test
+	public void encodeRESPMODResponseWithoutBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyIcapResponse());
+		String response = getBufferContent(embedder.poll());
+		doOutput(response);
+		assertResponse(DataMockery.createRESPMODWithGetRequestNoBodyResponse(),response);
+	}
+	
+	@Test
+	public void encodeREQMODResponseWithTwoChunkBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapResponse());
+		String response = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyResponse(),response);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
+		String chunk1 = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTowChunkBodyChunkOne(),chunk1);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
+		String chunk2 = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkTwo(),chunk2);
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree());
+		String chunk3 = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkThree(),chunk3);
+	}
 }

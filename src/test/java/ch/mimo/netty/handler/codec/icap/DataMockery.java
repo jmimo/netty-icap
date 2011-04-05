@@ -249,6 +249,37 @@ public final class DataMockery extends Assert {
 		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",message.getHttpRequest());
 	}
 	
+	public static final IcapResponse createREQMODWithGetRequestNoBodyIcapResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Host","icap-server.net");
+		response.addHeader("ISTag","Serial-0815");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/");
+		response.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		return response;
+	}
+	
+	public static final ChannelBuffer createREQMODWithGetRequestResponse() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 200 OK");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"ISTag: Serial-0815");
+		addLine(buffer,"Encapsulated: req-hdr=0, null-body=170");
+		addLine(buffer,null);
+		addLine(buffer,"GET / HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain");
+		addLine(buffer,"Accept-Encoding: compress");
+		addLine(buffer,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(buffer,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
 	public static final ChannelBuffer createRESPMODWithGetRequestNoBody() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"RESPMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
@@ -303,6 +334,47 @@ public final class DataMockery extends Assert {
 		assertHttpMessageHeaderValue("ETag","\"63840-1ab7-378d415b\"",message.getHttpResponse());
 		assertHttpMessageHeaderValue("Content-Type","text/html",message.getHttpResponse());
 		assertHttpMessageHeaderValue("Content-Length","51",message.getHttpResponse());
+	}
+	
+	public static final IcapResponse createRESPMODWithGetRequestNoBodyIcapResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Host","icap-server.net");
+		response.addHeader("ISTag","Serial-0815");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/origin-resource");
+		response.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain, image/gif");
+		httpRequest.addHeader("Accept-Encoding","gzip, compress");
+		HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.OK);
+		response.setHttpResponse(httpResponse);
+		httpResponse.addHeader("Date","Mon, 10 Jan 2000 09:52:22 GMT");
+		httpResponse.addHeader("Server","Apache/1.3.6 (Unix)");
+		httpResponse.addHeader("ETag","\"63840-1ab7-378d415b\"");
+		httpResponse.addHeader("Content-Type","text/html");
+		httpResponse.addHeader("Content-Length","51");
+		return response;
+	}
+	
+	public static final ChannelBuffer createRESPMODWithGetRequestNoBodyResponse() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 200 OK");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"ISTag: Serial-0815");
+		addLine(buffer,"Encapsulated: req-hdr=0, res-hdr=137, null-body=296");
+		addLine(buffer,null);
+		addLine(buffer,"GET /origin-resource HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain, image/gif");
+		addLine(buffer,"Accept-Encoding: gzip, compress");
+		addLine(buffer,null);
+		addLine(buffer,"HTTP/1.1 200 OK");
+		addLine(buffer,"Date: Mon, 10 Jan 2000 09:52:22 GMT");
+		addLine(buffer,"Server: Apache/1.3.6 (Unix)");
+		addLine(buffer,"ETag: \"63840-1ab7-378d415b\"");
+		addLine(buffer,"Content-Type: text/html");
+		addLine(buffer,"Content-Length: 51");
+		addLine(buffer,null);
+		return buffer;
 	}
 	
 	
@@ -506,6 +578,38 @@ public final class DataMockery extends Assert {
 		assertTrailingHeaderValue("TrailingHeaderKey2","TrailingHeaderValue2",trailer);
 		assertTrailingHeaderValue("TrailingHeaderKey3","TrailingHeaderValue3",trailer);
 		assertTrailingHeaderValue("TrailingHeaderKey4","TrailingHeaderValue4",trailer);
+	}
+	
+	public static final IcapResponse createREQMODWithTwoChunkBodyIcapResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Host","icap-server.net");
+		response.addHeader("ISTag","Serial-0815");
+		response.setBody(IcapMessageElementEnum.REQBODY);
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
+		response.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		return response;
+	}
+	
+	public static final ChannelBuffer createREQMODWithTwoChunkBodyResponse() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 200 OK");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"ISTag: Serial-0815");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=171");
+		addLine(buffer,null);
+		addLine(buffer,"POST / HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain");
+		addLine(buffer,"Accept-Encoding: compress");
+		addLine(buffer,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(buffer,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(buffer,null);
+		return buffer;
 	}
 	
 	public static final ChannelBuffer createREQMODWithPreview() throws UnsupportedEncodingException {
