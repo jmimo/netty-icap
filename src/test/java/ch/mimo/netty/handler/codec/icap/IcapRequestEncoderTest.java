@@ -19,7 +19,7 @@ import org.jboss.netty.handler.codec.embedder.EncoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IcapMessageEncoderTest extends AbstractEncoderTest {
+public class IcapRequestEncoderTest extends AbstractEncoderTest {
 
 	private EncoderEmbedder<Object> embedder;
 	

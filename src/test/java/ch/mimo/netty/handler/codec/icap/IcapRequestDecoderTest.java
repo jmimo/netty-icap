@@ -20,7 +20,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IcapMessageDecoderTest extends Assert {
+public class IcapRequestDecoderTest extends Assert {
 
 	private DecoderEmbedder<Object> embedder;
 	
