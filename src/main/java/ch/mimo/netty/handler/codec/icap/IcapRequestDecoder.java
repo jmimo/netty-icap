@@ -28,4 +28,9 @@ public class IcapRequestDecoder extends IcapMessageDecoder {
 	protected IcapRequest createMessage(String[] initialLine) {
 		return new DefaultIcapRequest(IcapVersion.valueOf(initialLine[2]),IcapMethod.valueOf(initialLine[0]),initialLine[1],"");
 	}
+
+	@Override
+	public boolean isDecodingResponse() {
+		return false;
+	}
 }

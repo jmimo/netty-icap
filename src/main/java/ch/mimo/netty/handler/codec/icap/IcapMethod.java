@@ -21,6 +21,11 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 public final class IcapMethod {
 	
 	/**
+	 * Is used as identifier when decoding any response.
+	 */
+	static final HttpMethod RESPONSE = new HttpMethod("RESPONSE"); 
+	
+	/**
 	 * Request Modification
 	 */
 	public static final HttpMethod REQMOD = new HttpMethod("REQMOD");

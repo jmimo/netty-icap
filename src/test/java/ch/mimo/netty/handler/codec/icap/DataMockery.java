@@ -106,6 +106,19 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final void assertOPTIONSResponse(IcapResponse response) {
+		assertEquals("wrong protocol version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
+		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getIcapResponseStatus());
+		assertHeaderValue("Methods","REQMOD RESPMOD",response);
+		assertHeaderValue("Service","Joggels icap server 1.0",response);
+		assertHeaderValue("ISTag","5BDEEEA9-12E4-2",response);
+		assertHeaderValue("Max-Connections","100",response);
+		assertHeaderValue("Options-TTL","1000",response);
+		assertHeaderValue("Allow","204",response);
+		assertHeaderValue("Preview","1024",response);
+		assertHeaderValue("Encapsulated","null-body=0",response);
+	}
+	
 	public static final IcapResponse createOPTIONSIcapResponseWithBody() {
 		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
 		response.addHeader("Methods","REQMOD RESPMOD");
@@ -280,6 +293,24 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final void assertREQMODWithGetRequestResponse(IcapResponse response) {
+		assertEquals("wrong protocol version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
+		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getIcapResponseStatus());
+		assertHeaderValue("Host","icap-server.net",response);
+		assertHeaderValue("ISTag","Serial-0815",response);
+		assertHeaderValue("Encapsulated","req-hdr=0, null-body=170",response);
+		HttpRequest httpRequest = response.getHttpRequest();
+		assertNotNull("http request was null",httpRequest);
+		assertEquals("http request was of wrong type",HttpMethod.GET,httpRequest.getMethod());
+		assertEquals("http request was of wrong version",HttpVersion.HTTP_1_1,httpRequest.getProtocolVersion());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",httpRequest);
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain",httpRequest);
+		assertHttpMessageHeaderValue("Accept-Encoding","compress",httpRequest);
+		assertHttpMessageHeaderValue("Cookie","ff39fk3jur@4ii0e02i",httpRequest);
+		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",httpRequest);
+
+	}
+	
 	public static final ChannelBuffer createRESPMODWithGetRequestNoBody() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"RESPMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
@@ -377,6 +408,30 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final void assertRESPMODWithGetRequestNoBodyResponse(IcapResponse response) {
+		assertEquals("wrong protocol version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
+		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getIcapResponseStatus());
+		assertHeaderValue("Host","icap-server.net",response);
+		assertHeaderValue("ISTag","Serial-0815",response);
+		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, null-body=296",response);
+		HttpRequest httpRequest = response.getHttpRequest();
+		assertNotNull("http request was null",httpRequest);
+		assertEquals("http request was of wrong type",HttpMethod.GET,httpRequest.getMethod());
+		assertEquals("http request was of wrong version",HttpVersion.HTTP_1_1,httpRequest.getProtocolVersion());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",httpRequest);
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain, image/gif",httpRequest);
+		assertHttpMessageHeaderValue("Accept-Encoding","gzip, compress",httpRequest);
+		HttpResponse httpResponse = response.getHttpResponse();
+		assertNotNull("http response was null",httpResponse);
+		assertEquals("http response was of wrong version",HttpVersion.HTTP_1_1,httpResponse.getProtocolVersion());
+		assertEquals("http response status was wrong",HttpResponseStatus.OK,httpResponse.getStatus());
+		assertHttpMessageHeaderValue("Date","Mon, 10 Jan 2000 09:52:22 GMT",httpResponse);
+		assertHttpMessageHeaderValue("Server","Apache/1.3.6 (Unix)",httpResponse);
+		assertHttpMessageHeaderValue("ETag","\"63840-1ab7-378d415b\"",httpResponse);
+		assertHttpMessageHeaderValue("Content-Type","text/html",httpResponse);
+		assertHttpMessageHeaderValue("Content-Length","51",httpResponse);
+	}
+	
 	
 	public static final ChannelBuffer createRESPMODWithGetRequestNoBodyAndReverseRequestAlignement() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
@@ -435,6 +490,39 @@ public final class DataMockery extends Assert {
 		addChunk(buffer,"And this the second chunk which contains more information.");
 		addChunk(buffer,null);
 		return buffer;
+	}
+	
+	public static final ChannelBuffer createREQMODWithImplicitTwoChunkBodyResponse() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 200 OK");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,null);
+		addLine(buffer,"POST / HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain");
+		addLine(buffer,"Accept-Encoding: compress");
+		addLine(buffer,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(buffer,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(buffer,null);
+		addChunk(buffer,"This is data that was returned by an origin server.");
+		addChunk(buffer,"And this the second chunk which contains more information.");
+		addChunk(buffer,null);
+		return buffer;
+	}
+	
+	public static final void assertCreateREQMODWithImplicitTwoChunkBodyResponse(IcapResponse message) {
+		assertEquals("response was of wrong version",IcapVersion.ICAP_1_0,message.getProtocolVersion());
+		assertEquals("response had wrong code",IcapResponseStatus.OK,message.getIcapResponseStatus());
+		assertHeaderValue("Host","icap-server.net",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=169",message);
+		assertNotNull("http request was null",message.getHttpRequest());
+		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept-Encoding","compress",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Cookie","ff39fk3jur@4ii0e02i",message.getHttpRequest());
+		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",message.getHttpRequest());
 	}
 	
 	public static final ChannelBuffer createREQMODWithTwoChunkBodyAnnouncement() throws UnsupportedEncodingException {
