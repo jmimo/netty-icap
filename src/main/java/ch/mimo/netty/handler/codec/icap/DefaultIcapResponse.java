@@ -12,12 +12,12 @@ public class DefaultIcapResponse extends DefaultIcapMessage implements IcapRespo
 	}
 
 	@Override
-	public void setIcapResponseStatus(IcapResponseStatus status) {
+	public void setStatus(IcapResponseStatus status) {
 		this.status = status;
 	}
 
 	@Override
-	public IcapResponseStatus getIcapResponseStatus() {
+	public IcapResponseStatus getStatus() {
 		return status;
 	}
 

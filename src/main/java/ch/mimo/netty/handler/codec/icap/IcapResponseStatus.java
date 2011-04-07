@@ -32,6 +32,4 @@ public enum IcapResponseStatus {
 		}
 		throw new IllegalArgumentException("Unknown Icap response code [" + code + "]");
 	}
-	
-	// TODO add equals method
 }

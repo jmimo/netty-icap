@@ -108,7 +108,7 @@ public final class DataMockery extends Assert {
 	
 	public static final void assertOPTIONSResponse(IcapResponse response) {
 		assertEquals("wrong protocol version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
-		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getIcapResponseStatus());
+		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getStatus());
 		assertHeaderValue("Methods","REQMOD RESPMOD",response);
 		assertHeaderValue("Service","Joggels icap server 1.0",response);
 		assertHeaderValue("ISTag","5BDEEEA9-12E4-2",response);
@@ -295,7 +295,7 @@ public final class DataMockery extends Assert {
 	
 	public static final void assertREQMODWithGetRequestResponse(IcapResponse response) {
 		assertEquals("wrong protocol version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
-		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getIcapResponseStatus());
+		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getStatus());
 		assertHeaderValue("Host","icap-server.net",response);
 		assertHeaderValue("ISTag","Serial-0815",response);
 		assertHeaderValue("Encapsulated","req-hdr=0, null-body=170",response);
@@ -410,7 +410,7 @@ public final class DataMockery extends Assert {
 	
 	public static final void assertRESPMODWithGetRequestNoBodyResponse(IcapResponse response) {
 		assertEquals("wrong protocol version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
-		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getIcapResponseStatus());
+		assertEquals("response code not as expected",IcapResponseStatus.OK,response.getStatus());
 		assertHeaderValue("Host","icap-server.net",response);
 		assertHeaderValue("ISTag","Serial-0815",response);
 		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, null-body=296",response);
@@ -513,7 +513,7 @@ public final class DataMockery extends Assert {
 	
 	public static final void assertCreateREQMODWithImplicitTwoChunkBodyResponse(IcapResponse message) {
 		assertEquals("response was of wrong version",IcapVersion.ICAP_1_0,message.getProtocolVersion());
-		assertEquals("response had wrong code",IcapResponseStatus.OK,message.getIcapResponseStatus());
+		assertEquals("response had wrong code",IcapResponseStatus.OK,message.getStatus());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, req-body=169",message);
 		assertNotNull("http request was null",message.getHttpRequest());
@@ -954,7 +954,6 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final ChannelBuffer createRESPMODWithGetRequestAndPreviewResponse() throws UnsupportedEncodingException {
-		// TODO
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"ICAP/1.0 200 OK");
 		addLine(buffer,"Host: icap-server.net");
@@ -979,9 +978,8 @@ public final class DataMockery extends Assert {
 	}	
 	
 	public static final void assertCreateRESPMODWithGetRequestAndPreviewResponse(IcapResponse message) {
-		// TODO
 		assertEquals("wrong response version",IcapVersion.ICAP_1_0,message.getProtocolVersion());
-		assertEquals("wrong resonse status",IcapResponseStatus.OK,message.getIcapResponseStatus());
+		assertEquals("wrong resonse status",IcapResponseStatus.OK,message.getStatus());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, res-body=296",message);
 		assertHeaderValue("Preview","51",message);
