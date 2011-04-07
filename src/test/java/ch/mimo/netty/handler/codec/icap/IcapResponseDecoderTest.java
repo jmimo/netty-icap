@@ -53,5 +53,17 @@ public class IcapResponseDecoderTest extends AbstractIcapTest {
 		DataMockery.assertCreateREQMODWithTwoChunkBodyThirdChunk(chunk3);
 	}
 	
-	// TODO create RESPMOD with body response test
+	@Test 
+	public void decodeRESPMODWithGetRequestAndPreview() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewResponse());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		doOutput(response.toString());
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewResponse(response);
+		IcapChunk previewChunk = (IcapChunk)embedder.poll();
+		doOutput(previewChunk.toString());
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewChunk(previewChunk);
+		IcapChunk lastChunk = (IcapChunk)embedder.poll();
+		doOutput(lastChunk.toString());
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewLastChunk(lastChunk);
+	}
 }

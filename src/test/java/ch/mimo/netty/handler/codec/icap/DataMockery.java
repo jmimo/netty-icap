@@ -952,6 +952,52 @@ public final class DataMockery extends Assert {
 		assertHttpMessageHeaderValue("Content-Type","text/html",message.getHttpResponse());
 		assertHttpMessageHeaderValue("Content-Length","151",message.getHttpResponse());
 	}
+	
+	public static final ChannelBuffer createRESPMODWithGetRequestAndPreviewResponse() throws UnsupportedEncodingException {
+		// TODO
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 200 OK");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"Encapsulated: req-hdr=0, res-hdr=137, res-body=296");
+		addLine(buffer,"Preview: 51");
+		addLine(buffer,null);
+		addLine(buffer,"GET /origin-resource HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain, image/gif");
+		addLine(buffer,"Accept-Encoding: gzip, compress");
+		addLine(buffer,null);
+		addLine(buffer,"HTTP/1.1 200 OK");
+		addLine(buffer,"Date: Mon, 10 Jan 2000 09:52:22 GMT");
+		addLine(buffer,"Server: Apache/1.3.6 (Unix)");
+		addLine(buffer,"ETag: \"63840-1ab7-378d415b\"");
+		addLine(buffer,"Content-Type: text/html");
+		addLine(buffer,"Content-Length: 151");
+		addLine(buffer,null);
+		addChunk(buffer,"This is data that was returned by an origin server.");
+		addChunk(buffer,null);
+		return buffer;
+	}	
+	
+	public static final void assertCreateRESPMODWithGetRequestAndPreviewResponse(IcapResponse message) {
+		// TODO
+		assertEquals("wrong response version",IcapVersion.ICAP_1_0,message.getProtocolVersion());
+		assertEquals("wrong resonse status",IcapResponseStatus.OK,message.getIcapResponseStatus());
+		assertHeaderValue("Host","icap-server.net",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, res-body=296",message);
+		assertHeaderValue("Preview","51",message);
+		assertNotNull("http request was null",message.getHttpRequest());
+		assertEquals("http request method was wrong",HttpMethod.GET,message.getHttpRequest().getMethod());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain, image/gif",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept-Encoding","gzip, compress",message.getHttpRequest());
+		assertNotNull("http response was null",message.getHttpResponse());
+		assertEquals("http response status was wrong",HttpResponseStatus.OK,message.getHttpResponse().getStatus());
+		assertHttpMessageHeaderValue("Date","Mon, 10 Jan 2000 09:52:22 GMT",message.getHttpResponse());
+		assertHttpMessageHeaderValue("Server","Apache/1.3.6 (Unix)",message.getHttpResponse());
+		assertHttpMessageHeaderValue("ETag","\"63840-1ab7-378d415b\"",message.getHttpResponse());
+		assertHttpMessageHeaderValue("Content-Type","text/html",message.getHttpResponse());
+		assertHttpMessageHeaderValue("Content-Length","151",message.getHttpResponse());
+	}
 
 	public static final void assertCreateRESPMODWithGetRequestAndPreviewChunk(IcapChunk chunk) {
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
