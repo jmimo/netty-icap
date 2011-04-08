@@ -11,7 +11,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package ch.mimo.netty.handler.codec.icap;
+package ch.mimo.netty.handler.codec.icap.socket;
 
 import java.util.concurrent.Executor;
 
@@ -21,6 +21,10 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.junit.Test;
+
+import ch.mimo.netty.handler.codec.icap.DataMockery;
+import ch.mimo.netty.handler.codec.icap.IcapRequest;
+import ch.mimo.netty.handler.codec.icap.IcapResponse;
 
 public class SimpleNioNioSocketTest extends AbstractSocketTest {
 
@@ -33,27 +37,28 @@ public class SimpleNioNioSocketTest extends AbstractSocketTest {
 	protected ChannelFactory newClientSocketChannelFactory(Executor executor) {
 		 return new NioClientSocketChannelFactory(executor, executor);
 	}
-
+	
 	@Test
-	public void dummyTest() {
-		assertTrue(true);
+	public void sendOPTIONSRequest() {
+		runDecoderTest(new ServerHandler(),new ClientHandler(),DataMockery.createOPTIONSIcapRequest());
 	}
 	
-//	@Test
-	public void runTest() {
-		
-		try {
-			super.runDecoderTest(new Handler(),new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"/bla/bla","icap-server.net"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private class ServerHandler extends AbstractMessageHandler {
+
+		@Override
+		public void doMessageReceived(ChannelHandlerContext context, MessageEvent event) {
+			IcapRequest request = (IcapRequest)event.getMessage();
+			DataMockery.assertCreateOPTIONSRequest(request);
+			context.getChannel().write(DataMockery.createOPTIONSIcapResponse());
+		}	
 	}
 	
-	private class Handler extends TestMessageHandler {
+	private class ClientHandler extends AbstractMessageHandler {
 
 		@Override
 		public void doMessageReceived(ChannelHandlerContext context, MessageEvent event) throws Exception {
-			// TODO Auto-generated method stub
+			IcapResponse response = (IcapResponse)event.getMessage();
+			System.out.println(response.toString());
 		}
 		
 	}

@@ -11,7 +11,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package ch.mimo.netty.handler.codec.icap;
+package ch.mimo.netty.handler.codec.icap.socket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -24,16 +24,19 @@ import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.codec.string.StringEncoder;
 import org.jboss.netty.util.internal.ExecutorUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+
+import ch.mimo.netty.handler.codec.icap.IcapMessage;
+import ch.mimo.netty.handler.codec.icap.IcapRequestDecoder;
+import ch.mimo.netty.handler.codec.icap.IcapRequestEncoder;
+import ch.mimo.netty.handler.codec.icap.IcapResponseDecoder;
+import ch.mimo.netty.handler.codec.icap.IcapResponseEncoder;
 
 
 public abstract class AbstractSocketTest extends Assert {
@@ -53,14 +56,16 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
-    public void runDecoderTest(SimpleChannelUpstreamHandler handler, IcapMessage message) throws Exception {
+    public void runDecoderTest(MessageHandler serverHandler, MessageHandler clientHandler, IcapMessage message) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
     
         serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
-        serverBootstrap.getPipeline().addAfter("decoder","handler",handler);
-        // TODO add client message encoder();
-        //clientBootstrap.getPipeline().addLast("encoder",new IcapMessageEncoder());
+        serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
+        serverBootstrap.getPipeline().addAfter("decoder","handler",serverHandler);
+        clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
+        clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+        clientBootstrap.getPipeline().addAfter("decoder","handler",clientHandler);
         
         int port = findUsablePort();
         Channel channel = serverBootstrap.bind( new InetSocketAddress("Localhost",port));
@@ -70,7 +75,13 @@ public abstract class AbstractSocketTest extends Assert {
 
         Channel clientChannel = channelFuture.getChannel();
         
-        clientChannel.write(message);
+        ChannelFuture requestFuture = clientChannel.write(message);
+        assertTrue(requestFuture.awaitUninterruptibly().isSuccess());
+        
+        
+        serverHandler.close();
+        clientHandler.close();
+        channel.close().awaitUninterruptibly();
     }
     
     private int findUsablePort() {
@@ -82,9 +93,11 @@ public abstract class AbstractSocketTest extends Assert {
 				socket.bind(new InetSocketAddress("localhost",port));
 				socket.close();
 			} catch (UnknownHostException e) {
-				// NOOP
+				e.printStackTrace();
+				fail("unknown host exception");
 			} catch (IOException e) {
-				// NOOP
+				e.printStackTrace();
+				fail("general io exception");
 			}
 			return port;
     	}

@@ -11,21 +11,46 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package ch.mimo.netty.handler.codec.icap;
+package ch.mimo.netty.handler.codec.icap.socket;
 
+import junit.framework.Assert;
+
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
-public abstract class TestMessageHandler extends SimpleChannelUpstreamHandler {
+public abstract class AbstractMessageHandler extends SimpleChannelUpstreamHandler implements MessageHandler {
 
 	// TODO add constructor that takes a Assertion interface which can be
 	// implemented against in order to assert a certain message.
 	// TODO behavior like the possibility to send a 100 continue
+
+	private volatile Channel channel;
 	
+	
+	@Override
+	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+		super.channelOpen(ctx, e);
+		this.channel = ctx.getChannel();
+	}
+
 	@Override
 	public final void messageReceived(ChannelHandlerContext context, MessageEvent event) throws Exception {
 		doMessageReceived(context,event);
+	}
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+		super.exceptionCaught(ctx, e);
+		e.getCause().printStackTrace();
+		Assert.fail("error while processing message");
+	}
+	
+	public void close() {
+		this.channel.close().awaitUninterruptibly();
 	}
 
 	public abstract void doMessageReceived(ChannelHandlerContext context, MessageEvent event) throws Exception;

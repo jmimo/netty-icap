@@ -38,7 +38,7 @@ public class IcapRequestEncoderTest extends AbstractEncoderTest {
 	
 	@Test
 	public void encodeOPTIONSRequest() throws UnsupportedEncodingException {
-		embedder.offer(DataMockery.createOPTIONSRequestIcapMessage());
+		embedder.offer(DataMockery.createOPTIONSIcapRequest());
 		String request = getBufferContent(embedder.poll());
 		assertResponse(DataMockery.createOPTIONSRequest(),request);
 	}

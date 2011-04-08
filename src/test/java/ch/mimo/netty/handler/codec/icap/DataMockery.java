@@ -59,7 +59,7 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
-	public static final IcapMessage createOPTIONSRequestIcapMessage() {
+	public static final IcapRequest createOPTIONSIcapRequest() {
 		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod","icap.google.com:1344");
 		return request;
 	}
