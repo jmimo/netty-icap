@@ -13,11 +13,9 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap.socket;
 
-import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +25,8 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.SimpleChannelDownstreamHandler;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.util.internal.ExecutorUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,6 +43,28 @@ public abstract class AbstractSocketTest extends Assert {
 	
 	private static ExecutorService executor;
 	
+    private static final InetAddress LOCALHOST;
+
+    static {
+        InetAddress localhost = null;
+        try {
+            localhost = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            try {
+                localhost = InetAddress.getByAddress(new byte[] { 127, 0, 0, 1 });
+            } catch (UnknownHostException e1) {
+                try {
+                    localhost = InetAddress.getByAddress(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 });
+                } catch (UnknownHostException e2) {
+                    System.err.println("Failed to get the localhost.");
+                    e2.printStackTrace();
+                }
+            }
+        }
+
+        LOCALHOST = localhost;
+    }
+	
 	@BeforeClass
 	public static void init() {
 		executor = Executors.newCachedThreadPool();
@@ -56,21 +78,27 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
-    public void runDecoderTest(MessageHandler serverHandler, MessageHandler clientHandler, IcapMessage message) {
+    public void runDecoderTest(SimpleChannelUpstreamHandler serverHandler, SimpleChannelDownstreamHandler clientHandler, IcapMessage message) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
     
         serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
-        serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
-        serverBootstrap.getPipeline().addAfter("decoder","handler",serverHandler);
+      	serverBootstrap.getPipeline().addAfter("decoder","handler",serverHandler);
+      	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
+      	
+        
         clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
-        clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
-        clientBootstrap.getPipeline().addAfter("decoder","handler",clientHandler);
+//        clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+//        clientBootstrap.getPipeline().addAfter("decoder","handler",clientHandler);
         
-        int port = findUsablePort();
-        Channel channel = serverBootstrap.bind( new InetSocketAddress("Localhost",port));
+//        int port = findUsablePort();
+//        int port = 14567;
+//        Channel channel = serverBootstrap.bind( new InetSocketAddress("Localhost",port));
         
-        ChannelFuture channelFuture = clientBootstrap.connect(new InetSocketAddress("localhost",port));
+        Channel serverChannel = serverBootstrap.bind(new InetSocketAddress(0));
+        int port = ((InetSocketAddress)serverChannel.getLocalAddress()).getPort();
+        
+        ChannelFuture channelFuture = clientBootstrap.connect(new InetSocketAddress(LOCALHOST,port));
         assertTrue(channelFuture.awaitUninterruptibly().isSuccess());
 
         Channel clientChannel = channelFuture.getChannel();
@@ -79,29 +107,35 @@ public abstract class AbstractSocketTest extends Assert {
         assertTrue(requestFuture.awaitUninterruptibly().isSuccess());
         
         
-        serverHandler.close();
-        clientHandler.close();
-        channel.close().awaitUninterruptibly();
+        ((AbstractServerHandler)serverHandler).close();
+        serverChannel.close().awaitUninterruptibly();
     }
     
-    private int findUsablePort() {
-    	Random rand = new Random();
-    	while(true) {
-    		int port = rand.nextInt(4000);
-	    	try {
-				Socket socket = new Socket();
-				socket.bind(new InetSocketAddress("localhost",port));
-				socket.close();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-				fail("unknown host exception");
-			} catch (IOException e) {
-				e.printStackTrace();
-				fail("general io exception");
-			}
-			return port;
-    	}
-    }
+//    private int findUsablePort() {
+//    	Random rand = new Random();
+//    	while(true) {
+//    		int port = rand.nextInt(4000);
+//    		Socket socket = null;
+//	    	try {
+//				socket = new Socket();
+//				socket.bind(new InetSocketAddress("localhost",port));
+//			} catch (UnknownHostException e) {
+//				continue;
+//			} catch (IOException e) {
+//				continue;
+//			} finally {
+//				if(socket != null) {
+//					try {
+//						socket.close();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//						fail("general io exception");
+//					}
+//				}
+//			}
+//			return port;
+//    	}
+//    }
 /*
 
     private static final Random random = new Random();

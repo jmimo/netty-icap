@@ -22,7 +22,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
-public abstract class AbstractMessageHandler extends SimpleChannelUpstreamHandler implements MessageHandler {
+public abstract class AbstractServerHandler extends SimpleChannelUpstreamHandler {
 
 	// TODO add constructor that takes a Assertion interface which can be
 	// implemented against in order to assert a certain message.
