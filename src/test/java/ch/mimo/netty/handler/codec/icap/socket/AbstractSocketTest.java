@@ -25,7 +25,6 @@ import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.SimpleChannelDownstreamHandler;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.util.internal.ExecutorUtil;
 import org.junit.AfterClass;
@@ -78,22 +77,18 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
-    public void runDecoderTest(SimpleChannelUpstreamHandler serverHandler, SimpleChannelUpstreamHandler clientHandler, IcapMessage message) {
+    public void runDecoderTest(Handler serverHandler, Handler clientHandler, IcapMessage message) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
     
         serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
       	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
-      	serverBootstrap.getPipeline().addLast("handler",serverHandler);
+      	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
       	
         
         clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
         clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
-        clientBootstrap.getPipeline().addLast("handler",clientHandler);
-        
-//        int port = findUsablePort();
-//        int port = 14567;
-//        Channel channel = serverBootstrap.bind( new InetSocketAddress("Localhost",port));
+        clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
         
         Channel serverChannel = serverBootstrap.bind(new InetSocketAddress(0));
         int port = ((InetSocketAddress)serverChannel.getLocalAddress()).getPort();
@@ -106,178 +101,40 @@ public abstract class AbstractSocketTest extends Assert {
         ChannelFuture requestFuture = clientChannel.write(message);
         assertTrue(requestFuture.awaitUninterruptibly().isSuccess());
         
+        while(!clientHandler.isProcessed()) {
+        	if(clientHandler.hasException()) {
+        		break;
+        	}
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                // NOOP
+            }        	
+        }
         
-        ((AbstractServerHandler)serverHandler).close();
-        ((AbstractServerHandler)clientHandler).close();
+        while(!serverHandler.isProcessed()) {
+        	if(serverHandler.hasException()) {
+        		break;
+        	}
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                // NOOP
+            }  
+        }
+        
+        serverHandler.close();
+        clientHandler.close();
         serverChannel.close().awaitUninterruptibly();
-    }
-    
-//    private int findUsablePort() {
-//    	Random rand = new Random();
-//    	while(true) {
-//    		int port = rand.nextInt(4000);
-//    		Socket socket = null;
-//	    	try {
-//				socket = new Socket();
-//				socket.bind(new InetSocketAddress("localhost",port));
-//			} catch (UnknownHostException e) {
-//				continue;
-//			} catch (IOException e) {
-//				continue;
-//			} finally {
-//				if(socket != null) {
-//					try {
-//						socket.close();
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//						fail("general io exception");
-//					}
-//				}
-//			}
-//			return port;
-//    	}
-//    }
-/*
-
-    private static final Random random = new Random();
-    static final byte[] data = new byte[1048576];
-
-    private static ExecutorService executor;
-
-    static {
-        random.nextBytes(data);
-    }
-
-    @BeforeClass
-    public static void init() {
-        executor = Executors.newCachedThreadPool();
-    }
-
-    @AfterClass
-    public static void destroy() {
-        ExecutorUtil.terminate(executor);
-    }
-
-    protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
-    protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
-
-    @Test
-    public void testFixedLengthEcho() throws Throwable {
-        ServerBootstrap sb = new ServerBootstrap(newServerSocketChannelFactory(executor));
-        ClientBootstrap cb = new ClientBootstrap(newClientSocketChannelFactory(executor));
-
-        EchoHandler sh = new EchoHandler();
-        EchoHandler ch = new EchoHandler();
-
-        sb.getPipeline().addLast("decoder", new FixedLengthFrameDecoder(1024));
-        sb.getPipeline().addAfter("decoder", "handler", sh);
-        cb.getPipeline().addLast("decoder", new FixedLengthFrameDecoder(1024));
-        cb.getPipeline().addAfter("decoder", "handler", ch);
-
-        Channel sc = sb.bind(new InetSocketAddress(0));
-        int port = ((InetSocketAddress) sc.getLocalAddress()).getPort();
-
-        ChannelFuture ccf = cb.connect(new InetSocketAddress(TestUtil.getLocalHost(), port));
-        assertTrue(ccf.awaitUninterruptibly().isSuccess());
-
-        Channel cc = ccf.getChannel();
-        for (int i = 0; i < data.length;) {
-            int length = Math.min(random.nextInt(1024 * 3), data.length - i);
-            cc.write(ChannelBuffers.wrappedBuffer(data, i, length));
-            i += length;
+        
+        if(serverHandler.hasException()) {
+        	serverHandler.getExceptionCause().printStackTrace();
+        	fail("Server Handler has experienced an exception");
         }
-
-        while (ch.counter < data.length) {
-            if (sh.exception.get() != null) {
-                break;
-            }
-            if (ch.exception.get() != null) {
-                break;
-            }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                // Ignore.
-            }
-        }
-
-        while (sh.counter < data.length) {
-            if (sh.exception.get() != null) {
-                break;
-            }
-            if (ch.exception.get() != null) {
-                break;
-            }
-
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                // Ignore.
-            }
-        }
-
-        sh.channel.close().awaitUninterruptibly();
-        ch.channel.close().awaitUninterruptibly();
-        sc.close().awaitUninterruptibly();
-
-        if (sh.exception.get() != null && !(sh.exception.get() instanceof IOException)) {
-            throw sh.exception.get();
-        }
-        if (ch.exception.get() != null && !(ch.exception.get() instanceof IOException)) {
-            throw ch.exception.get();
-        }
-        if (sh.exception.get() != null) {
-            throw sh.exception.get();
-        }
-        if (ch.exception.get() != null) {
-            throw ch.exception.get();
+        
+        if(clientHandler.hasException()) {
+        	clientHandler.getExceptionCause().printStackTrace();
+        	fail("Server Handler has experienced an exception");
         }
     }
-
-    private class EchoHandler extends SimpleChannelUpstreamHandler {
-        volatile Channel channel;
-        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        volatile int counter;
-
-        EchoHandler() {
-            super();
-        }
-
-        @Override
-        public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
-                throws Exception {
-            channel = e.getChannel();
-        }
-
-        @Override
-        public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-                throws Exception {
-            ChannelBuffer m = (ChannelBuffer) e.getMessage();
-            assertEquals(1024, m.readableBytes());
-
-            byte[] actual = new byte[m.readableBytes()];
-            m.getBytes(0, actual);
-
-            int lastIdx = counter;
-            for (int i = 0; i < actual.length; i ++) {
-                assertEquals(data[i + lastIdx], actual[i]);
-            }
-
-            if (channel.getParent() != null) {
-                channel.write(m);
-            }
-
-            counter += actual.length;
-        }
-
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-                throws Exception {
-            if (exception.compareAndSet(null, e.getCause())) {
-                e.getChannel().close();
-            }
-        }
-    }
- */
 }

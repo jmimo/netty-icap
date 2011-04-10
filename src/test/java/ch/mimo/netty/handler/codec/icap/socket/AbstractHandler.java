@@ -13,8 +13,6 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap.socket;
 
-import junit.framework.Assert;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -22,13 +20,17 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
-public abstract class AbstractServerHandler extends SimpleChannelUpstreamHandler {
+public abstract class AbstractHandler extends SimpleChannelUpstreamHandler implements Handler {
 
 	// TODO add constructor that takes a Assertion interface which can be
 	// implemented against in order to assert a certain message.
 	// TODO behavior like the possibility to send a 100 continue
 
-	private volatile Channel channel;
+	private Channel channel;
+	private boolean processed;
+	private boolean exception;
+	
+	private Throwable cause;
 	
 	
 	@Override
@@ -39,19 +41,31 @@ public abstract class AbstractServerHandler extends SimpleChannelUpstreamHandler
 
 	@Override
 	public final void messageReceived(ChannelHandlerContext context, MessageEvent event) throws Exception {
-		doMessageReceived(context,event);
+		processed = doMessageReceived(context,event,channel);
 	}
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
 		super.exceptionCaught(ctx, e);
-		e.getCause().printStackTrace();
-		Assert.fail("error while processing message");
+		cause = e.getCause();
+		exception = true;
 	}
 	
 	public void close() {
 		this.channel.close().awaitUninterruptibly();
 	}
+	
+	public boolean isProcessed() {
+		return processed;
+	}
+	
+	public boolean hasException() {
+		return exception;
+	}
+	
+	public Throwable getExceptionCause() {
+		return cause;
+	}
 
-	public abstract void doMessageReceived(ChannelHandlerContext context, MessageEvent event) throws Exception;
+	public abstract boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception;
 }

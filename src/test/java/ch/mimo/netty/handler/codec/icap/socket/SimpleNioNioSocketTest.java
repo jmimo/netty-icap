@@ -15,8 +15,8 @@ package ch.mimo.netty.handler.codec.icap.socket;
 
 import java.util.concurrent.Executor;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -41,38 +41,25 @@ public class SimpleNioNioSocketTest extends AbstractSocketTest {
 	
 	@Test
 	public void sendOPTIONSRequest() {
-		runDecoderTest(new ServerHandler(),new ClientHandler(),DataMockery.createOPTIONSIcapRequest());
-	}
-	
-	private class ServerHandler extends AbstractServerHandler {
-
-		@Override
-		public void doMessageReceived(ChannelHandlerContext context, MessageEvent event) {
-			IcapRequest request = (IcapRequest)event.getMessage();
-			DataMockery.assertCreateOPTIONSRequest(request);
-			ChannelFuture channelFuture = context.getChannel().write(DataMockery.createOPTIONSIcapResponse());
-//			channelFuture.addListener(ChannelFutureListener.CLOSE);
-		}	
-	}
-	
-	private class ClientHandler extends AbstractServerHandler {
-
-		@Override
-		public void doMessageReceived(ChannelHandlerContext context, MessageEvent event) throws Exception {
-			IcapResponse response = (IcapResponse)event.getMessage();
-			DataMockery.assertOPTIONSResponse(response);
-		}
+		Handler serverHandler = new AbstractHandler() {
+			@Override
+			public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+				IcapRequest request = (IcapRequest)event.getMessage();
+				DataMockery.assertCreateOPTIONSRequest(request);
+				channel.write(DataMockery.createOPTIONSIcapResponse());
+				return true;
+			}
+		};
 		
+		Handler clientHandler = new AbstractHandler() {
+			@Override
+			public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+				IcapResponse response = (IcapResponse)event.getMessage();
+				DataMockery.assertOPTIONSResponse(response);
+				return true;
+			}
+		};
+		runDecoderTest(serverHandler,clientHandler,DataMockery.createOPTIONSIcapRequest());
 	}
-	
-//	private class ClientHandler extends AbstractClientHandler {
-//
-//		@Override
-//		public void doMessageReceived(ChannelHandlerContext context, ChannelEvent event) throws Exception {
-////			IcapResponse response = (IcapResponse)event.getMessage();
-////			System.out.println(response.toString());
-//		}
-//
-//	}
 }
 
