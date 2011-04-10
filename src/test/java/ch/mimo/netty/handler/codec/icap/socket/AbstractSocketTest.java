@@ -78,18 +78,18 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
-    public void runDecoderTest(SimpleChannelUpstreamHandler serverHandler, SimpleChannelDownstreamHandler clientHandler, IcapMessage message) {
+    public void runDecoderTest(SimpleChannelUpstreamHandler serverHandler, SimpleChannelUpstreamHandler clientHandler, IcapMessage message) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
     
         serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
-      	serverBootstrap.getPipeline().addAfter("decoder","handler",serverHandler);
       	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
+      	serverBootstrap.getPipeline().addLast("handler",serverHandler);
       	
         
         clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
-//        clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
-//        clientBootstrap.getPipeline().addAfter("decoder","handler",clientHandler);
+        clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+        clientBootstrap.getPipeline().addLast("handler",clientHandler);
         
 //        int port = findUsablePort();
 //        int port = 14567;
@@ -108,6 +108,7 @@ public abstract class AbstractSocketTest extends Assert {
         
         
         ((AbstractServerHandler)serverHandler).close();
+        ((AbstractServerHandler)clientHandler).close();
         serverChannel.close().awaitUninterruptibly();
     }
     

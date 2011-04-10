@@ -15,8 +15,8 @@ package ch.mimo.netty.handler.codec.icap.socket;
 
 import java.util.concurrent.Executor;
 
-import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import ch.mimo.netty.handler.codec.icap.DataMockery;
 import ch.mimo.netty.handler.codec.icap.IcapRequest;
+import ch.mimo.netty.handler.codec.icap.IcapResponse;
 
 public class SimpleNioNioSocketTest extends AbstractSocketTest {
 
@@ -49,19 +50,29 @@ public class SimpleNioNioSocketTest extends AbstractSocketTest {
 		public void doMessageReceived(ChannelHandlerContext context, MessageEvent event) {
 			IcapRequest request = (IcapRequest)event.getMessage();
 			DataMockery.assertCreateOPTIONSRequest(request);
-//			ChannelFuture channelFuture = event.getChannel().write(DataMockery.createOPTIONSIcapResponse());
+			ChannelFuture channelFuture = context.getChannel().write(DataMockery.createOPTIONSIcapResponse());
 //			channelFuture.addListener(ChannelFutureListener.CLOSE);
 		}	
 	}
 	
-	private class ClientHandler extends AbstractClientHandler {
+	private class ClientHandler extends AbstractServerHandler {
 
 		@Override
-		public void doMessageReceived(ChannelHandlerContext context, ChannelEvent event) throws Exception {
-//			IcapResponse response = (IcapResponse)event.getMessage();
-//			System.out.println(response.toString());
+		public void doMessageReceived(ChannelHandlerContext context, MessageEvent event) throws Exception {
+			IcapResponse response = (IcapResponse)event.getMessage();
+			DataMockery.assertOPTIONSResponse(response);
 		}
-
+		
 	}
+	
+//	private class ClientHandler extends AbstractClientHandler {
+//
+//		@Override
+//		public void doMessageReceived(ChannelHandlerContext context, ChannelEvent event) throws Exception {
+////			IcapResponse response = (IcapResponse)event.getMessage();
+////			System.out.println(response.toString());
+//		}
+//
+//	}
 }
 
