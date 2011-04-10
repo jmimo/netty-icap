@@ -13,31 +13,16 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap.socket;
 
-import java.util.concurrent.Executor;
-
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.junit.Test;
 
 import ch.mimo.netty.handler.codec.icap.DataMockery;
 import ch.mimo.netty.handler.codec.icap.IcapRequest;
 import ch.mimo.netty.handler.codec.icap.IcapResponse;
 
-public class SimpleNioNioSocketTest extends AbstractSocketTest {
-
-	@Override
-	protected ChannelFactory newServerSocketChannelFactory(Executor executor) {
-		return new NioServerSocketChannelFactory(executor, executor);
-	}
-
-	@Override
-	protected ChannelFactory newClientSocketChannelFactory(Executor executor) {
-		 return new NioClientSocketChannelFactory(executor, executor);
-	}
+public abstract class SocketTests extends AbstractSocketTest {
 	
 	@Test
 	public void sendOPTIONSRequest() {
