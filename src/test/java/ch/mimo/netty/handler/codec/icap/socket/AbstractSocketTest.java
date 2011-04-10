@@ -26,6 +26,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.util.internal.ExecutorUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -80,12 +81,16 @@ public abstract class AbstractSocketTest extends Assert {
     public void runDecoderTest(Handler serverHandler, Handler clientHandler, IcapMessage message) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
-    
+        
+        // TODO think about logging handlers here
+        
+//        serverBootstrap.getPipeline().addLast("logging",new LoggingHandler());
         serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
       	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
       	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
       	
         
+//      	clientBootstrap.getPipeline().addLast("logging",new LoggingHandler());
         clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
         clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
         clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
