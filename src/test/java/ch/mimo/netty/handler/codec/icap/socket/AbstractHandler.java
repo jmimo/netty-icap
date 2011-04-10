@@ -22,10 +22,6 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 public abstract class AbstractHandler extends SimpleChannelUpstreamHandler implements Handler {
 
-	// TODO add constructor that takes a Assertion interface which can be
-	// implemented against in order to assert a certain message.
-	// TODO behavior like the possibility to send a 100 continue
-
 	private Channel channel;
 	private boolean processed;
 	private boolean exception;

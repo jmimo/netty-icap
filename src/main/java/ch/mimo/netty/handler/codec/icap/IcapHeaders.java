@@ -88,7 +88,7 @@ public final class IcapHeaders {
 	}
 	
 //	public static final class Values {
-//		// TODO add preview and Encapsulation values.
+//		// TODO add known header values.
 //	}
 
     private static final int BUCKET_SIZE = 17;
