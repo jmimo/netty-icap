@@ -5,7 +5,6 @@ import java.util.concurrent.Executor;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.junit.Test;
 
 public class NioNioSocketTest extends SocketTests {
 

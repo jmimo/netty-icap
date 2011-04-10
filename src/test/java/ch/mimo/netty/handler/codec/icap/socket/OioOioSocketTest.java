@@ -5,7 +5,6 @@ import java.util.concurrent.Executor;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
-import org.junit.Test;
 
 public class OioOioSocketTest extends SocketTests {
 
