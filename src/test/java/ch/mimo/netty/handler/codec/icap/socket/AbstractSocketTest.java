@@ -26,13 +26,11 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.util.internal.ExecutorUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
-import ch.mimo.netty.handler.codec.icap.IcapMessage;
 import ch.mimo.netty.handler.codec.icap.IcapRequestDecoder;
 import ch.mimo.netty.handler.codec.icap.IcapRequestEncoder;
 import ch.mimo.netty.handler.codec.icap.IcapResponseDecoder;
