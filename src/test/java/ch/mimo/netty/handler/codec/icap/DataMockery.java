@@ -477,7 +477,7 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
-		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=171");
 		addLine(buffer,null);
 		addLine(buffer,"POST / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -615,7 +615,7 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
-		addLine(buffer,"Encapsulated: req-hdr=0, req-body=169");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=171");
 		addLine(buffer,null);
 		addLine(buffer,"POST / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -638,7 +638,7 @@ public final class DataMockery extends Assert {
 	public static final void assertCreateREQMODWithTwoChunkBody(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
-		assertHeaderValue("Encapsulated","req-hdr=0, req-body=169",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=171",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
 		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
@@ -681,6 +681,19 @@ public final class DataMockery extends Assert {
 		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
 		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
 		return response;
+	}
+	
+	public static final void assertREQMODWithTwoChunkBodyResponse(IcapResponse response) {
+		assertHeaderValue("Host","icap-server.net",response);
+		assertHeaderValue("ISTag","Serial-0815",response);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=171",response);
+		assertNotNull("http request was null",response.getHttpRequest());
+		assertEquals("http request method was wrong",HttpMethod.POST,response.getHttpRequest().getMethod());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",response.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain",response.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept-Encoding","compress",response.getHttpRequest());
+		assertHttpMessageHeaderValue("Cookie","ff39fk3jur@4ii0e02i",response.getHttpRequest());
+		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",response.getHttpRequest());
 	}
 	
 	public static final ChannelBuffer createREQMODWithTwoChunkBodyResponse() throws UnsupportedEncodingException {

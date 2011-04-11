@@ -78,7 +78,7 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
-    public void runDecoderTest(Handler serverHandler, Handler clientHandler, IcapMessage message) {
+    public void runDecoderTest(Handler serverHandler, Handler clientHandler, Object[] messages) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
         
@@ -103,8 +103,10 @@ public abstract class AbstractSocketTest extends Assert {
 
         Channel clientChannel = channelFuture.getChannel();
         
-        ChannelFuture requestFuture = clientChannel.write(message);
-        assertTrue(requestFuture.awaitUninterruptibly().isSuccess());
+        for(Object message : messages) {
+        	ChannelFuture requestFuture = clientChannel.write(message);
+        	assertTrue(requestFuture.awaitUninterruptibly().isSuccess());
+        }
         
         while(!clientHandler.isProcessed()) {
         	if(clientHandler.hasException()) {
