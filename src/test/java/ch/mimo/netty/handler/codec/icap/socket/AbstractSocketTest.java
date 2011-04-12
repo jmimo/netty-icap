@@ -31,10 +31,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
+import ch.mimo.netty.handler.codec.icap.IcapClientCodec;
 import ch.mimo.netty.handler.codec.icap.IcapRequestDecoder;
 import ch.mimo.netty.handler.codec.icap.IcapRequestEncoder;
 import ch.mimo.netty.handler.codec.icap.IcapResponseDecoder;
 import ch.mimo.netty.handler.codec.icap.IcapResponseEncoder;
+import ch.mimo.netty.handler.codec.icap.IcapServerCodec;
 
 
 public abstract class AbstractSocketTest extends Assert {
@@ -76,22 +78,15 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
-    public void runDecoderTest(Handler serverHandler, Handler clientHandler, Object[] messages) {
+    protected void runSocketTest(Handler serverHandler, Handler clientHandler, Object[] messages, boolean useCodec) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
         
-        // TODO think about logging handlers here
-        
-//        serverBootstrap.getPipeline().addLast("logging",new LoggingHandler());
-        serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
-      	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
-      	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
-      	
-        
-//      	clientBootstrap.getPipeline().addLast("logging",new LoggingHandler());
-        clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
-        clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
-        clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
+        if(useCodec) {
+        	setupCodecPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+        } else {
+        	setupClassicPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+        }
         
         Channel serverChannel = serverBootstrap.bind(new InetSocketAddress(0));
         int port = ((InetSocketAddress)serverChannel.getLocalAddress()).getPort();
@@ -141,5 +136,29 @@ public abstract class AbstractSocketTest extends Assert {
         	clientHandler.getExceptionCause().printStackTrace();
         	fail("Server Handler has experienced an exception");
         }
+    }
+    
+    protected void setupClassicPipline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+        // TODO think about logging handlers here
+        
+//      serverBootstrap.getPipeline().addLast("logging",new LoggingHandler());
+    	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
+    	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
+    	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
+    	
+      
+//    	clientBootstrap.getPipeline().addLast("logging",new LoggingHandler());
+    	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
+      	// TODO handler that let's the data trickle to the other side so that the receiver will be forced to re-read.
+      	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+      	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
+    }
+    
+    protected void setupCodecPipline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+    	serverBootstrap.getPipeline().addLast("codec",new IcapServerCodec());
+    	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
+    	
+    	clientBootstrap.getPipeline().addLast("codec",new IcapClientCodec());
+    	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
 }

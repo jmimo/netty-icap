@@ -48,7 +48,8 @@ public abstract class SocketTests extends AbstractSocketTest {
 			}
 		};
 		
-		runDecoderTest(serverHandler,clientHandler,new Object[]{DataMockery.createOPTIONSIcapRequest()});
+		runSocketTest(serverHandler,clientHandler,new Object[]{DataMockery.createOPTIONSIcapRequest()},false);
+		runSocketTest(serverHandler,clientHandler,new Object[]{DataMockery.createOPTIONSIcapRequest()},true);
 	}
 	
 	@Test
@@ -74,7 +75,8 @@ public abstract class SocketTests extends AbstractSocketTest {
 			}
 		};
 		
-		runDecoderTest(serverHandler,clientHandler,new Object[]{DataMockery.createRESPMODWithGetRequestNoBodyIcapMessage()});
+		runSocketTest(serverHandler,clientHandler,new Object[]{DataMockery.createRESPMODWithGetRequestNoBodyIcapMessage()},false);
+		runSocketTest(serverHandler,clientHandler,new Object[]{DataMockery.createRESPMODWithGetRequestNoBodyIcapMessage()},true);
 	}
 	
 	@Test
@@ -145,9 +147,12 @@ public abstract class SocketTests extends AbstractSocketTest {
 			}
 		};
 		
-		runDecoderTest(serverHandler,clientHandler,new Object[]{DataMockery.createREQMODWithTwoChunkBodyIcapMessage(),
+		runSocketTest(serverHandler,clientHandler,new Object[]{DataMockery.createREQMODWithTwoChunkBodyIcapMessage(),
 				DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne(),DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo(),
-				DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree()});
+				DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree()},false);
+		runSocketTest(serverHandler,clientHandler,new Object[]{DataMockery.createREQMODWithTwoChunkBodyIcapMessage(),
+				DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne(),DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo(),
+				DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree()},true);
 	}
 }
 
