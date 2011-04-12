@@ -41,6 +41,12 @@ import ch.mimo.netty.handler.codec.icap.IcapServerCodec;
 
 public abstract class AbstractSocketTest extends Assert {
 	
+	public enum PipelineType {
+		CLASSIC,
+		CODEC,
+		TRICKLE
+	}
+	
 	private static ExecutorService executor;
 	
     private static final InetAddress LOCALHOST;
@@ -78,15 +84,25 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
-    protected void runSocketTest(Handler serverHandler, Handler clientHandler, Object[] messages, boolean useCodec) {
+    protected void runSocketTest(Handler serverHandler, Handler clientHandler, Object[] messages, PipelineType pipelineType) {
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
         
-        if(useCodec) {
-        	setupCodecPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
-        } else {
-        	setupClassicPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
-        }
+        switch (pipelineType) {
+		case CLASSIC:
+			setupClassicPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			break;
+
+		case CODEC:
+			setupCodecPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			break;
+		case TRICKLE:
+			setupTricklePipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			break;
+		default:
+			setupClassicPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			break;
+		}
         
         Channel serverChannel = serverBootstrap.bind(new InetSocketAddress(0));
         int port = ((InetSocketAddress)serverChannel.getLocalAddress()).getPort();
@@ -139,17 +155,11 @@ public abstract class AbstractSocketTest extends Assert {
     }
     
     protected void setupClassicPipline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
-        // TODO think about logging handlers here
-        
-//      serverBootstrap.getPipeline().addLast("logging",new LoggingHandler());
     	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
     	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
-    	
-      
-//    	clientBootstrap.getPipeline().addLast("logging",new LoggingHandler());
+
     	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
-      	// TODO handler that let's the data trickle to the other side so that the receiver will be forced to re-read.
       	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
       	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
@@ -160,5 +170,17 @@ public abstract class AbstractSocketTest extends Assert {
     	
     	clientBootstrap.getPipeline().addLast("codec",new IcapClientCodec());
     	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
+    }
+    
+    protected void setupTricklePipline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+    	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
+    	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
+    	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
+
+    	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
+    	// TODO activate again
+//    	clientBootstrap.getPipeline().addLast("trickle",new TrickleDownstreamHandler(500));
+      	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+      	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
 }
