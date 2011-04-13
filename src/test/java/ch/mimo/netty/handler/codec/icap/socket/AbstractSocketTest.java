@@ -29,6 +29,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.util.internal.ExecutorUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import ch.mimo.netty.handler.codec.icap.IcapClientCodec;
@@ -40,6 +41,10 @@ import ch.mimo.netty.handler.codec.icap.IcapServerCodec;
 
 
 public abstract class AbstractSocketTest extends Assert {
+	
+	protected boolean runTrickleTests;
+	
+	private static final String RUN_TRICKLE_TESTS = "run.trickle.tests";
 	
 	public enum PipelineType {
 		CLASSIC,
@@ -81,10 +86,19 @@ public abstract class AbstractSocketTest extends Assert {
 		ExecutorUtil.terminate(executor);
 	}
 	
+	@Before
+	public void evaluateRunTrickleTests() {
+		runTrickleTests = Boolean.valueOf(System.getProperty(RUN_TRICKLE_TESTS));
+	}
+	
     protected abstract ChannelFactory newServerSocketChannelFactory(Executor executor);
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
     protected void runSocketTest(Handler serverHandler, Handler clientHandler, Object[] messages, PipelineType pipelineType) {
+    	if(!runTrickleTests) {
+    		assertTrue(true);
+    		return;
+    	}
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
         
@@ -178,8 +192,7 @@ public abstract class AbstractSocketTest extends Assert {
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
 
     	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
-    	// TODO activate again
-//    	clientBootstrap.getPipeline().addLast("trickle",new TrickleDownstreamHandler(500));
+    	clientBootstrap.getPipeline().addBefore("encoder","trickle",new TrickleDownstreamHandler(100,3));
       	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
       	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
