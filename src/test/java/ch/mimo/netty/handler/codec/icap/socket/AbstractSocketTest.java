@@ -192,7 +192,7 @@ public abstract class AbstractSocketTest extends Assert {
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
 
     	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
-    	clientBootstrap.getPipeline().addBefore("encoder","trickle",new TrickleDownstreamHandler(100,3));
+    	clientBootstrap.getPipeline().addBefore("encoder","trickle",new TrickleDownstreamHandler(20,3));
       	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
       	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
