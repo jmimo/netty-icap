@@ -1,5 +1,6 @@
 package ch.mimo.netty.handler.codec.icap;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
@@ -19,21 +20,43 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
  */
 public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 
+	private IcapMessage message;
+	
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
     	Object msg = e.getMessage();
     	if(msg instanceof IcapMessage) {
-    		IcapMessage message = (IcapMessage)msg;
-    		// TODO validate the messages equality and if the message is a new one distroy the context.
-    		if(message.getBody() == null | message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
-    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
-    		} else if(message.isPreviewMessage()) {
-    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
-    		} else {
-    			// TODO add the to be received body into the respective http message
-    		}
+    		IcapMessage currentMessage = (IcapMessage)msg;
+    		message = currentMessage;
     	} else if(msg instanceof IcapChunk) {
-    		// TODO add the to be received body into the respective http message
+    		IcapChunk chunk = (IcapChunk)msg;
+    		if(chunk.isLast()) {
+    			// TODO handle trailing headers
+    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
+    			message = null;
+    		} else {
+	    		ChannelBuffer chunkBuffer = chunk.getContent();
+	    		// TODO consider max length of content.
+	    		if(message == null || (message.getBody() == null | message.getBody().equals(IcapMessageElementEnum.NULLBODY))) {
+	    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
+	    		} else {
+	    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
+	    				if(message.getHttpRequest() != null) {
+	    					message.getHttpRequest().getContent().writeBytes(chunkBuffer);
+	    				} else {
+	    					// no http request found but body marker indicates that the body is of this type.
+	    				}
+	    			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
+	    				if(message.getHttpResponse() != null) {
+	    					message.getHttpResponse().getContent().writeBytes(chunkBuffer);
+	    				} else {
+	    					// no http response found but body marker indicates that the body is of this type.
+	    				}
+	    			} else {
+	    				// invalid body marker found.
+	    			}
+	    		}
+    		}
     	} else {
     		ctx.sendUpstream(e);
     	}

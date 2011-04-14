@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import ch.mimo.netty.handler.codec.icap.IcapChunkAggregator;
 import ch.mimo.netty.handler.codec.icap.IcapClientCodec;
 import ch.mimo.netty.handler.codec.icap.IcapRequestDecoder;
 import ch.mimo.netty.handler.codec.icap.IcapRequestEncoder;
@@ -49,6 +50,7 @@ public abstract class AbstractSocketTest extends Assert {
 	public enum PipelineType {
 		CLASSIC,
 		CODEC,
+		AGGREGATOR,
 		TRICKLE
 	}
 	
@@ -104,17 +106,19 @@ public abstract class AbstractSocketTest extends Assert {
         
         switch (pipelineType) {
 		case CLASSIC:
-			setupClassicPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			setupClassicPipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
 			break;
-
+		case AGGREGATOR:
+			setupClassicPipelineWithChunkAggregator(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			break;
 		case CODEC:
-			setupCodecPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			setupCodecPipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
 			break;
 		case TRICKLE:
-			setupTricklePipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			setupTricklePipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
 			break;
 		default:
-			setupClassicPipline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			setupClassicPipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
 			break;
 		}
         
@@ -168,7 +172,7 @@ public abstract class AbstractSocketTest extends Assert {
         }
     }
     
-    protected void setupClassicPipline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+    protected void setupClassicPipeline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
     	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
     	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
@@ -178,7 +182,18 @@ public abstract class AbstractSocketTest extends Assert {
       	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
     
-    protected void setupCodecPipline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+    protected void setupClassicPipelineWithChunkAggregator(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+    	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
+    	serverBootstrap.getPipeline().addLast("chunkAggregator",new IcapChunkAggregator());
+    	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
+    	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
+
+    	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
+      	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+      	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
+    }
+    
+    protected void setupCodecPipeline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
     	serverBootstrap.getPipeline().addLast("codec",new IcapServerCodec());
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
     	
@@ -186,7 +201,7 @@ public abstract class AbstractSocketTest extends Assert {
     	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
     
-    protected void setupTricklePipline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+    protected void setupTricklePipeline(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
     	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
     	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);

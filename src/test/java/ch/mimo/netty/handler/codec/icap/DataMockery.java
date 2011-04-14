@@ -763,6 +763,16 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
+	public static final IcapMessage createREQMODWithPreviewAnnouncement204ResponseIcapMessage() {
+		return new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.NO_CONTENT);
+	}
+	
+	public static final void assertCreateREQMODWithPreviewAnnouncement204Response(IcapResponse response) {
+		assertNotNull("response was null",response);
+		assertEquals("wrong icap version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
+		assertEquals("wrong response status",IcapResponseStatus.NO_CONTENT,response.getStatus());
+	}
+	
 	public static final IcapChunk createREQMODWithPreviewIcapChunk() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		buffer.writeBytes("This is data that was returned by an origin server.".getBytes("ASCII"));

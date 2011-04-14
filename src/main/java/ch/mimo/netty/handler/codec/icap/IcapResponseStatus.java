@@ -4,7 +4,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public enum IcapResponseStatus {
 	CONTINUE(100,"Continue"),
-	OK(200,"OK");
+	OK(200,"OK"),
+	NO_CONTENT(204,"No Content");
 	
 	private String status;
 	private int code;

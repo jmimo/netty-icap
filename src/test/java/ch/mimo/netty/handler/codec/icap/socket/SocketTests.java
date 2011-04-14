@@ -15,6 +15,7 @@ package ch.mimo.netty.handler.codec.icap.socket;
 
 import java.io.UnsupportedEncodingException;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
@@ -138,6 +139,29 @@ public abstract class SocketTests extends AbstractSocketTest {
 		}
 	}
 	
+	private class SendREQMODWithTwoBodyChunkWithChunkAggregatorInPipelineServerHandler extends AbstractHandler {
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapRequest) {
+				IcapRequest request = (IcapRequest)event.getMessage();
+				DataMockery.assertCreateREQMODWithTwoChunkBody(request);
+				ChannelBuffer contentBuffer = request.getHttpRequest().getContent();
+				String body = contentBuffer.toString();
+				StringBuilder builder = new StringBuilder();
+				builder.append("This is data that was returned by an origin server.");
+				builder.append("And this the second chunk which contains more information.");
+				assertEquals("The body content was wrong",builder.toString(),body);
+				channel.write(DataMockery.createREQMODWithTwoChunkBodyIcapResponse());
+				channel.write(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
+				channel.write(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
+				channel.write(DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree());
+				return true;
+			}
+			return false;
+		}
+	}
+	
 	private class SendREQMODWithTwoBodyChunkClientHandler extends AbstractHandler {
 		boolean responseMessage = false;
 		boolean firstChunk = false;
@@ -180,6 +204,17 @@ public abstract class SocketTests extends AbstractSocketTest {
 		}
 	}
 	
+	private void sendREQMODWithTwoBodyChunkWithChunkAggregatorInPipeline() {
+		try {
+			runSocketTest(new SendREQMODWithTwoBodyChunkWithChunkAggregatorInPipelineServerHandler(),new SendREQMODWithTwoBodyChunkClientHandler(),new Object[]{DataMockery.createREQMODWithTwoChunkBodyIcapMessage(),
+					DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne(),DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo(),
+					DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree()},PipelineType.AGGREGATOR);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			fail("encoding error");
+		}
+	}
+	
 	@Test
 	public void sendREQMODWithTwoBodyChunkThroughClassicPipeline() {
 		sendREQMODWithTwoBodyChunk(PipelineType.CLASSIC);
@@ -194,5 +229,114 @@ public abstract class SocketTests extends AbstractSocketTest {
 	public void sendREQMODWithTwoBodyChunkThroughTricklePipeline() {
 		sendREQMODWithTwoBodyChunk(PipelineType.TRICKLE);
 	}
+	
+	@Test
+	public void sendREQMODWithTowBodyChunkThroughChunkAggregatorPipeline() {
+		sendREQMODWithTwoBodyChunkWithChunkAggregatorInPipeline();
+	}
+	
+	private class SendREQMODWithPreviewServerHandler extends AbstractHandler {
+		boolean requestMessage = false;
+		boolean firstChunk = false;
+		boolean secondChunk = false;
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapRequest) {
+				IcapRequest request = (IcapRequest)event.getMessage();
+				DataMockery.assertCreateREQMODWithPreview(request);
+				requestMessage = true;
+			} else if(msg instanceof IcapChunk) {
+				IcapChunk chunk = (IcapChunk)msg;
+				if(!firstChunk) {
+					DataMockery.assertCreateREQMODWithPreviewChunk(chunk);
+					firstChunk = true;
+				} else if(firstChunk & !secondChunk) {
+					DataMockery.assertCreateREQMODWithPreviewChunkLastChunk(chunk);
+					channel.write(DataMockery.createREQMODWithPreviewAnnouncement204ResponseIcapMessage());
+					secondChunk = true;
+				} 
+			} else {
+				fail("unexpected msg instance [" + msg.getClass().getCanonicalName() + "]");
+			}
+			return requestMessage & firstChunk & secondChunk;
+		}
+	}
+	
+	private class SendREQMODWithPreviewAggregatorServerHandler extends AbstractHandler {
+
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapRequest) {
+				IcapRequest request = (IcapRequest)event.getMessage();
+				DataMockery.assertCreateREQMODWithPreview(request);
+				ChannelBuffer requestBodyBuffer = request.getHttpRequest().getContent();
+				String body = requestBodyBuffer.toString();
+				StringBuilder builder = new StringBuilder();
+				builder.append("This is data that was returned by an origin server.");
+				assertEquals("The body content was wrong",builder.toString(),body);
+				channel.write(DataMockery.createREQMODWithPreviewAnnouncement204ResponseIcapMessage());
+			} else {
+				fail("unexpected msg instance [" + msg.getClass().getCanonicalName() + "]");
+			}
+			return false;
+		}
+		
+	}
+	
+	private class SendREQMODWithPreviewClientHandler extends AbstractHandler {
+
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapResponse) {
+				IcapResponse response = (IcapResponse)msg;
+				DataMockery.assertCreateREQMODWithPreviewAnnouncement204Response(response);
+			} else {
+				fail("unexpected msg instance [" + msg.getClass().getCanonicalName() + "]");
+			}
+			return true;
+		}
+	}
+	
+	private void sendREQMODWithPreview(PipelineType type) {
+		try {
+		runSocketTest(new SendREQMODWithPreviewServerHandler(),new SendREQMODWithPreviewClientHandler(),new Object[]{DataMockery.createREQMODWithPreviewAnnouncementIcapMessage(),
+			DataMockery.createREQMODWithPreviewIcapChunk(),DataMockery.createREQMODWithPreviewLastIcapChunk()},type);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			fail("encoding error");
+		}
+	}
+	
+	@Test
+	public void sendREQMODWithPreviewThroughClassicPipeline() {
+		sendREQMODWithPreview(PipelineType.CLASSIC);
+	}
+	
+	@Test
+	public void sendREQMODWithPreviewThroughCodecPipeline() {
+		sendREQMODWithPreview(PipelineType.CODEC);
+	}
+	
+	@Test
+	public void sendREQMODWithPreviewThroughTricklePipeline() {
+		sendREQMODWithPreview(PipelineType.TRICKLE);
+	}
+	
+	@Test
+	public void sendREQMODWithPreviewThroughAggregatorPipleline() {
+		try {
+			runSocketTest(new SendREQMODWithPreviewAggregatorServerHandler(),new SendREQMODWithPreviewClientHandler(),new Object[]{DataMockery.createREQMODWithPreviewAnnouncementIcapMessage(),
+				DataMockery.createREQMODWithPreviewIcapChunk(),DataMockery.createREQMODWithPreviewLastIcapChunk()},PipelineType.AGGREGATOR);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				fail("encoding error");
+			}
+	}
+	
+	// TODO Test preview early terminated with the chunk aggregator
+	// TODO Test preview with 100 Continue and chunk aggregator
 }
 
