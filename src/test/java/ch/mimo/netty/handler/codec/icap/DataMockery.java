@@ -249,7 +249,21 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
+	public static final IcapRequest createREQMODWithGetRequestNoBodyAndEncapsulationHeaderIcapMessage() {
+		IcapRequest request = createREQMODWithGetRequestNoBodyIcapMessage();
+		request.addHeader("Encapsulated","req-hdr=0, null-body=170");
+		return request;
+	}
+	
+	public static final IcapRequest createREQMODWithGetRequestNoBodyAndEncapsulationHeaderAndNullBodySetIcapMessage() {
+		IcapRequest request = createREQMODWithGetRequestNoBodyIcapMessage();
+		request.addHeader("Encapsulated","req-hdr=0, null-body=170");
+		request.setBody(IcapMessageElementEnum.NULLBODY);
+		return request;
+	}
+	
 	public static final void assertCreateREQMODWithGetRequestNoBody(IcapMessage message) {
+		assertNotNull("the request was null",message);
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, null-body=170",message);

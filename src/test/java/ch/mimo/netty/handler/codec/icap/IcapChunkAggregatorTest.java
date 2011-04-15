@@ -20,7 +20,38 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		embedder.offer("The ultimate answer is 42");
 	}
 	
-	// TODO test with no body (with null-body & without null-body header)
+	@Test
+	public void aggregatorREQMODWithGetRequestWithoutChunks() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyAndEncapsulationHeaderIcapMessage());
+		IcapMessage request = (IcapMessage)embedder.poll();
+		DataMockery.assertCreateREQMODWithGetRequestNoBody(request);
+	}
+	
+	@Test
+	public void aggregatorREQMODWithGetRequestWithoutChunksAndNullBodySet() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyAndEncapsulationHeaderAndNullBodySetIcapMessage());
+		IcapMessage request = (IcapMessage)embedder.poll();
+		DataMockery.assertCreateREQMODWithGetRequestNoBody(request);
+	}
+	
+	@Test
+	public void aggregatorChunkOnlyTest() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunk());
+		IcapChunk chunk = (IcapChunk)embedder.poll();
+		assertNotNull("no chunk received from pipeline",chunk);
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewChunk(chunk);
+	}
+	
+	@Test
+	public void aggregatorMessageWithoutBodyFollowedByBodyChunk() {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyAndEncapsulationHeaderIcapMessage());
+		IcapMessage request = (IcapMessage)embedder.poll();
+		DataMockery.assertCreateREQMODWithGetRequestNoBody(request);
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunk());
+		IcapChunk chunk = (IcapChunk)embedder.poll();
+		assertNotNull("no chunk received from pipeline",chunk);
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewChunk(chunk);
+	}
 	
 	@Test
 	public void aggregateREQMODRequestWithChunks() throws UnsupportedEncodingException {
@@ -50,3 +81,4 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		assertEquals("The body content was wrong",builder.toString(),body);
 	}
 }
+

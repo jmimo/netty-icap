@@ -29,6 +29,11 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     	if(msg instanceof IcapMessage) {
     		IcapMessage currentMessage = (IcapMessage)msg;
     		message = currentMessage;
+    		if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
+    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
+    			message = null;
+    			return;
+    		}
     	} else if(msg instanceof IcapChunk) {
     		IcapChunk chunk = (IcapChunk)msg;
     		if(chunk.isLast()) {
@@ -40,8 +45,6 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 	    		// TODO consider max length of content.
 	    		if(message == null) {
 	    			ctx.sendUpstream(e);
-	    		} else if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
-	    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
 	    		} else {
 	    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
 	    				if(message.getHttpRequest() != null) {
@@ -59,10 +62,10 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 	    					}
 	    					message.getHttpResponse().getContent().writeBytes(chunkBuffer);
 	    				} else {
-	    					// no http response found but body marker indicates that the body is of this type.
+	    					// TODO handle: no http response found but body marker indicates that the body is of this type.
 	    				}
 	    			} else {
-	    				// invalid body marker found.
+	    				// TODO handle: invalid body marker found.
 	    			}
 	    		}
     		}
