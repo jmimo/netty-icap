@@ -1,6 +1,7 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
@@ -37,17 +38,25 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     		} else {
 	    		ChannelBuffer chunkBuffer = chunk.getContent();
 	    		// TODO consider max length of content.
-	    		if(message == null || (message.getBody() == null | message.getBody().equals(IcapMessageElementEnum.NULLBODY))) {
+	    		if(message == null) {
+	    			ctx.sendUpstream(e);
+	    		} else if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
 	    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
 	    		} else {
 	    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
 	    				if(message.getHttpRequest() != null) {
+	    					if(message.getHttpRequest().getContent().readableBytes() <= 0) {
+	    						message.getHttpRequest().setContent(ChannelBuffers.dynamicBuffer());
+	    					}
 	    					message.getHttpRequest().getContent().writeBytes(chunkBuffer);
 	    				} else {
 	    					// no http request found but body marker indicates that the body is of this type.
 	    				}
 	    			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
 	    				if(message.getHttpResponse() != null) {
+	    					if(message.getHttpResponse().getContent().readableBytes() <= 0) {
+	    						message.getHttpResponse().setContent(ChannelBuffers.dynamicBuffer());
+	    					}
 	    					message.getHttpResponse().getContent().writeBytes(chunkBuffer);
 	    				} else {
 	    					// no http response found but body marker indicates that the body is of this type.

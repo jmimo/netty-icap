@@ -554,6 +554,20 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
+	public static final IcapMessage createREQMODWithTwoChunkBodyAndEncapsulationHeaderIcapMessage() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
+		request.setBody(IcapMessageElementEnum.REQBODY);
+		request.addHeader("Encapsulated","req-hdr=0, req-body=171");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		return request;
+	}
+	
 	public static final IcapChunk createREQMODWithTwoChunkBodyIcapChunkOne() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		buffer.writeBytes("This is data that was returned by an origin server.".getBytes("ASCII"));
@@ -956,6 +970,41 @@ public final class DataMockery extends Assert {
 		addChunk(buffer,null);
 		return buffer;
 	}	
+	
+	public static final IcapRequest createRESPMODWithGetRequestAndPreviewIncludingEncapsulationHeaderIcapRequest() {
+		// TODO
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.RESPMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
+		request.addHeader("Encapsulated","req-hdr=0, res-hdr=137, res-body=296");
+		request.addHeader("Preview","51");
+		request.setBody(IcapMessageElementEnum.RESBODY);
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/origin-resource");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain, image/gif");
+		httpRequest.addHeader("Accept-Encoding","gzip, compress");
+		HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.OK);
+		request.setHttpResponse(httpResponse);
+		httpResponse.addHeader("Date","Mon, 10 Jan 2000 09:52:22 GMT");
+		httpResponse.addHeader("Server","Apache/1.3.6 (Unix)");
+		httpResponse.addHeader("ETag","\"63840-1ab7-378d415b\"");
+		httpResponse.addHeader("Content-Type","text/html");
+		httpResponse.addHeader("Content-Length","151");
+		return request;
+	}
+	
+	public static final IcapChunk createRESPMODWithGetRequestAndPreviewIcapChunk() {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		chunk.setIsPreviewChunk();
+		return chunk;
+	}
+	
+	public static final IcapChunk crateRESPMODWithGetRequestAndPreviewLastIcapChunk() {
+		IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
+		trailer.setIsPreviewChunk();
+		return trailer;
+	}
 	
 	public static final void assertCreateRESPMODWithGetRequestAndPreview(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
