@@ -342,39 +342,39 @@ public abstract class SocketTests extends AbstractSocketTest {
 	}
 	
 	private class SendREQMODWithPreviewAndReturn100ContinueServerHandler extends AbstractHandler {
-			boolean requestMessage = false;
-			boolean firstChunk = false;
-			boolean secondChunk = false;
-			boolean thirdChunk = false;
-			boolean fourthChunk = false;
-			@Override
-			public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
-				Object msg = event.getMessage();
-				if(msg instanceof IcapRequest) {
-					IcapRequest request = (IcapRequest)event.getMessage();
-					DataMockery.assertCreateREQMODWithPreview(request);
-					requestMessage = true;
-				} else if(msg instanceof IcapChunk) {
-					IcapChunk chunk = (IcapChunk)msg;
-					if(!firstChunk) {
-						DataMockery.assertCreateREQMODWithPreviewChunk(chunk);
-						firstChunk = true;
-					} else if(firstChunk & !secondChunk) {
-						DataMockery.assertCreateREQMODWithPreviewChunkLastChunk(chunk);
-						channel.write(DataMockery.createREQMODWithPreviewAnnouncement100ContinueIcapMessage());
-						secondChunk = true;
-					} else if(firstChunk & secondChunk & !thirdChunk) {
-						DataMockery.assertCreateREQMODWithPreview100ContinueChunk(chunk);
-						thirdChunk = true;
-					} else if(firstChunk & secondChunk & thirdChunk & !fourthChunk) {
-						assertTrue("chunk is of wrong type",chunk instanceof IcapChunkTrailer);
-						fourthChunk = true;
-					}
-				} else {
-					fail("unexpected msg instance [" + msg.getClass().getCanonicalName() + "]");
+		boolean requestMessage = false;
+		boolean firstChunk = false;
+		boolean secondChunk = false;
+		boolean thirdChunk = false;
+		boolean fourthChunk = false;
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapRequest) {
+				IcapRequest request = (IcapRequest)event.getMessage();
+				DataMockery.assertCreateREQMODWithPreview(request);
+				requestMessage = true;
+			} else if(msg instanceof IcapChunk) {
+				IcapChunk chunk = (IcapChunk)msg;
+				if(!firstChunk) {
+					DataMockery.assertCreateREQMODWithPreviewChunk(chunk);
+					firstChunk = true;
+				} else if(firstChunk & !secondChunk) {
+					DataMockery.assertCreateREQMODWithPreviewChunkLastChunk(chunk);
+					channel.write(DataMockery.createREQMODWithPreviewAnnouncement100ContinueIcapMessage());
+					secondChunk = true;
+				} else if(firstChunk & secondChunk & !thirdChunk) {
+					DataMockery.assertCreateREQMODWithPreview100ContinueChunk(chunk);
+					thirdChunk = true;
+				} else if(firstChunk & secondChunk & thirdChunk & !fourthChunk) {
+					assertTrue("chunk is of wrong type",chunk instanceof IcapChunkTrailer);
+					fourthChunk = true;
 				}
-				return requestMessage & firstChunk & secondChunk & thirdChunk & fourthChunk;
+			} else {
+				fail("unexpected msg instance [" + msg.getClass().getCanonicalName() + "]");
 			}
+			return requestMessage & firstChunk & secondChunk & thirdChunk & fourthChunk;
+		}
 	}
 	
 	private class SendREQMODWithPreviewAndReturn100ContinueClientHandler extends AbstractHandler {

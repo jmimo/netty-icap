@@ -130,6 +130,9 @@ public final class IcapDecoderUtil {
                 break;
             }
         }
+//        if(hex != null && hex.length() == 0) {
+//        	return -2;
+//        }
         return Integer.parseInt(hex, 16);
     }
 	

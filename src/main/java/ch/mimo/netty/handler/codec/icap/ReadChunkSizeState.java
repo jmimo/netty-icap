@@ -21,8 +21,9 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 		READ_CHUNK,
 		READ_HUGE_CHUNK_IN_SMALER_CHUNKS,
 		READ_TRAILING_HEADERS,
-		IS_PREVIEW,
-		IS_LAST_CHUNK
+		IS_LAST_PREVIEW_CHUNK,
+		IS_LAST_CHUNK,
+		IRRELEVANT
 	}
 	
 	public ReadChunkSizeState(String name) {
@@ -40,11 +41,18 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 		icapMessageDecoder.currentChunkSize = chunkSize;
 		if(chunkSize == -1) {
 			icapMessageDecoder.currentChunkSize = 0;
-			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(true,true),DecisionState.IS_PREVIEW);
-		} else if(chunkSize == 0) { 
+			IcapDecoderUtil.readLine(buffer,Integer.MAX_VALUE);
+			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(true,true),DecisionState.IS_LAST_PREVIEW_CHUNK);
+		} else if(chunkSize == -2) {
+			return StateReturnValue.createIrrelevantResultWithDecisionInformation(DecisionState.IRRELEVANT);
+		} else if(chunkSize == 0) {
 			byte previewByte = buffer.getByte(buffer.readerIndex() + 1);
 			if(previewByte == IcapCodecUtil.CR | previewByte == IcapCodecUtil.LF) {
-				return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(icapMessageDecoder.message.isPreviewMessage(),false),DecisionState.IS_LAST_CHUNK);
+				if(icapMessageDecoder.message.isPreviewMessage()) {
+					return StateReturnValue.createIrrelevantResultWithDecisionInformation(DecisionState.IS_LAST_PREVIEW_CHUNK);
+				} else {
+					return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(icapMessageDecoder.message.isPreviewMessage(),false),DecisionState.IS_LAST_CHUNK);
+				}
 			} else {
 				return StateReturnValue.createIrrelevantResultWithDecisionInformation(DecisionState.READ_TRAILING_HEADERS);
 			}
@@ -72,13 +80,16 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 			returnValue = StateEnum.READ_TRAILING_HEADERS_STATE;
 			break;
 		case IS_LAST_CHUNK:
-			// NOOP
+			returnValue = StateEnum.SKIP_CONTROL_CHARS;
 			break;
-		case IS_PREVIEW:
-			// NOOP
+		case IS_LAST_PREVIEW_CHUNK:
+			returnValue = StateEnum.READ_CHUNK_SIZE_STATE;
+			break;
+		case IRRELEVANT:
+			returnValue = StateEnum.READ_CHUNK_SIZE_STATE;
 			break;
 		default:
-			// NOOP
+			returnValue = StateEnum.READ_CHUNK_SIZE_STATE;
 			break;
 		}
 		return returnValue;

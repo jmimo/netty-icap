@@ -28,10 +28,10 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.util.internal.ExecutorUtil;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import ch.mimo.netty.handler.codec.icap.AbstractJDKLoggerPreparation;
 import ch.mimo.netty.handler.codec.icap.IcapChunkAggregator;
 import ch.mimo.netty.handler.codec.icap.IcapClientCodec;
 import ch.mimo.netty.handler.codec.icap.IcapRequestDecoder;
@@ -41,7 +41,7 @@ import ch.mimo.netty.handler.codec.icap.IcapResponseEncoder;
 import ch.mimo.netty.handler.codec.icap.IcapServerCodec;
 
 
-public abstract class AbstractSocketTest extends Assert {
+public abstract class AbstractSocketTest extends AbstractJDKLoggerPreparation {
 	
 	protected boolean runTrickleTests;
 	

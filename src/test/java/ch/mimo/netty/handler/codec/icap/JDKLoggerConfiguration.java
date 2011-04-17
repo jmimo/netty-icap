@@ -19,7 +19,7 @@ public class JDKLoggerConfiguration {
 	    this.logManager = LogManager.getLogManager();
 	    this.rootLogger = Logger.getLogger("");
 
-	    configure( );
+	    configure();
 	}
 
 	private final void configure() {
@@ -28,8 +28,8 @@ public class JDKLoggerConfiguration {
 			defaultHandler.setLevel(Level.ALL);
 			rootLogger.setLevel(Level.ALL);
 		} else {
-			defaultHandler.setLevel(Level.WARNING);
-			rootLogger.setLevel(Level.WARNING);
+			defaultHandler.setLevel(Level.ALL);
+			rootLogger.setLevel(Level.ALL);
 		}
 		rootLogger.addHandler(defaultHandler);
 		logManager.addLogger(rootLogger);

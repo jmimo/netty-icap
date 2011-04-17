@@ -73,7 +73,7 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 					buffer.writeByte((byte) '0');
 					buffer.writeBytes(IcapCodecUtil.CRLF);
 					buffer.writeBytes(IcapCodecUtil.CRLF);
-					buffer.writeBytes(IcapCodecUtil.CRLF);
+//					buffer.writeBytes(IcapCodecUtil.CRLF);
 				}
 			} else {
 				ChannelBuffer chunkBuffer = chunk.getContent();

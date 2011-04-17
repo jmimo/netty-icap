@@ -172,7 +172,6 @@ public final class DataMockery extends Assert {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"0");
 		addLine(buffer,null);
-		addLine(buffer,null);
 		return buffer;
 	}
 	
@@ -786,7 +785,7 @@ public final class DataMockery extends Assert {
 		return new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.NO_CONTENT);
 	}
 	
-	public static final IcapMessage createREQMODWithPreviewAnnouncement100ContinueIcapMessage() {
+	public static final IcapResponse createREQMODWithPreviewAnnouncement100ContinueIcapMessage() {
 		return new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.CONTINUE);
 	}
 	

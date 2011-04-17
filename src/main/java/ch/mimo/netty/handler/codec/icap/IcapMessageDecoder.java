@@ -23,7 +23,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 
 public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 
-	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(ChunkedWriteHandler.class);
+	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapMessageDecoder.class);
 	
     protected final int maxInitialLineLength;
     protected final int maxIcapHeaderSize;
@@ -69,6 +69,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, StateEnum stateEnumValue) throws Exception {
+		buffer = new AnaylsisChannelBuffer(buffer);
 		State state = stateEnumValue.getState();
 		LOG.debug("Executing state [" + state + ']');
 		state.onEntry(buffer,this);
@@ -80,10 +81,6 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 		// TODO re-reading
 		if(nextState != null) {
 			checkpoint(nextState);
-		} else {
-			message = null;
-			currentChunkSize = 0;
-			checkpoint(StateEnum.SKIP_CONTROL_CHARS);
 		}
 		if(returnValue.isRelevant()) {
 			return returnValue.getValue();
