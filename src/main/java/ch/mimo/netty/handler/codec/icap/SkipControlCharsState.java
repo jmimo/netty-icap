@@ -18,7 +18,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public class SkipControlCharsState extends State<Object> {
 
-	public SkipControlCharsState() {
+	public SkipControlCharsState(String name) {
+		super(name);
 	}
 
 	@Override

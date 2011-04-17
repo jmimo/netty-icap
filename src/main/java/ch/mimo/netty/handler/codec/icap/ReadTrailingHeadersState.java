@@ -21,6 +21,10 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 public class ReadTrailingHeadersState extends State<Object> {
 
+	public ReadTrailingHeadersState(String name) {
+		super(name);
+	}
+	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 	}

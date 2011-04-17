@@ -18,6 +18,10 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public class ReadChunkState extends State<Object> {
 	
+	public ReadChunkState(String name) {
+		super(name);
+	}
+	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 	}

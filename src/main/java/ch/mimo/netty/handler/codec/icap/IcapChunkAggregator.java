@@ -29,45 +29,60 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     	if(msg instanceof IcapMessage) {
     		IcapMessage currentMessage = (IcapMessage)msg;
     		message = currentMessage;
+    		// TODO Encapsulation header MUST tell wheter there is a body expected or not.
     		if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
     			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     			message = null;
     			return;
     		}
+    	} else if(msg instanceof IcapChunkTrailer) {
+    		if(message == null) {
+    			ctx.sendUpstream(e);
+    		} else {
+    			IcapChunkTrailer trailer = (IcapChunkTrailer)msg;
+    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
+    				for(String name : trailer.getHeaderNames()) {
+    					message.getHttpRequest().addHeader(name,trailer.getHeader(name));
+    				}
+    			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
+    				for(String name : trailer.getHeaderNames()) {
+    					message.getHttpResponse().addHeader(name,trailer.getHeader(name));
+    				}
+    			}
+    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
+    		}
     	} else if(msg instanceof IcapChunk) {
     		IcapChunk chunk = (IcapChunk)msg;
-    		if(chunk.isLast()) {
+    		if(message == null) {
+    			ctx.sendUpstream(e);
+    		} else if(chunk.isLast()) {
     			// TODO handle trailing headers
     			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     			message = null;
     		} else {
 	    		ChannelBuffer chunkBuffer = chunk.getContent();
 	    		// TODO consider max length of content.
-	    		if(message == null) {
-	    			ctx.sendUpstream(e);
-	    		} else {
-	    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
-	    				if(message.getHttpRequest() != null) {
-	    					if(message.getHttpRequest().getContent().readableBytes() <= 0) {
-	    						message.getHttpRequest().setContent(ChannelBuffers.dynamicBuffer());
-	    					}
-	    					message.getHttpRequest().getContent().writeBytes(chunkBuffer);
-	    				} else {
-	    					// no http request found but body marker indicates that the body is of this type.
-	    				}
-	    			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
-	    				if(message.getHttpResponse() != null) {
-	    					if(message.getHttpResponse().getContent().readableBytes() <= 0) {
-	    						message.getHttpResponse().setContent(ChannelBuffers.dynamicBuffer());
-	    					}
-	    					message.getHttpResponse().getContent().writeBytes(chunkBuffer);
-	    				} else {
-	    					// TODO handle: no http response found but body marker indicates that the body is of this type.
-	    				}
-	    			} else {
-	    				// TODO handle: invalid body marker found.
-	    			}
-	    		}
+    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
+    				if(message.getHttpRequest() != null) {
+    					if(message.getHttpRequest().getContent().readableBytes() <= 0) {
+    						message.getHttpRequest().setContent(ChannelBuffers.dynamicBuffer());
+    					}
+    					message.getHttpRequest().getContent().writeBytes(chunkBuffer);
+    				} else {
+    					// no http request found but body marker indicates that the body is of this type.
+    				}
+    			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
+    				if(message.getHttpResponse() != null) {
+    					if(message.getHttpResponse().getContent().readableBytes() <= 0) {
+    						message.getHttpResponse().setContent(ChannelBuffers.dynamicBuffer());
+    					}
+    					message.getHttpResponse().getContent().writeBytes(chunkBuffer);
+    				} else {
+    					// TODO handle: no http response found but body marker indicates that the body is of this type.
+    				}
+    			} else {
+    				// TODO handle: invalid body marker found.
+    			}
     		}
     	} else {
     		ctx.sendUpstream(e);

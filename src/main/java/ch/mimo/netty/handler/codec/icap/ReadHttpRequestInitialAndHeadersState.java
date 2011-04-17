@@ -23,6 +23,10 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 
 public class ReadHttpRequestInitialAndHeadersState extends State<Object> {
 
+	public ReadHttpRequestInitialAndHeadersState(String name) {
+		super(name);
+	}
+	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		if(icapMessageDecoder.message == null) {

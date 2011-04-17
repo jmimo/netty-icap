@@ -17,9 +17,14 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
+import org.jboss.netty.handler.stream.ChunkedWriteHandler;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 
 public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 
+	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(ChunkedWriteHandler.class);
+	
     protected final int maxInitialLineLength;
     protected final int maxIcapHeaderSize;
     protected final int maxHttpHeaderSize;
@@ -65,14 +70,21 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, StateEnum stateEnumValue) throws Exception {
 		State state = stateEnumValue.getState();
+		LOG.debug("Executing state [" + state + ']');
 		state.onEntry(buffer,this);
 		StateReturnValue returnValue = state.execute(buffer,this);
+		LOG.debug("Return value from state [" + state + "] = [" + returnValue + "]");
 		StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
+		LOG.debug("Next State [" + nextState + "]");
 		// TODO set checkpoint only if required. see preview chunk reading
 		// TODO re-reading
 		if(nextState != null) {
 			checkpoint(nextState);
-		} 
+		} else {
+			message = null;
+			currentChunkSize = 0;
+			checkpoint(StateEnum.SKIP_CONTROL_CHARS);
+		}
 		if(returnValue.isRelevant()) {
 			return returnValue.getValue();
 		}

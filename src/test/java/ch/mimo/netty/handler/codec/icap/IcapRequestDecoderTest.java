@@ -16,11 +16,10 @@ package ch.mimo.netty.handler.codec.icap;
 import java.io.UnsupportedEncodingException;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IcapRequestDecoderTest extends Assert {
+public class IcapRequestDecoderTest extends AbstractIcapTest {
 
 	private DecoderEmbedder<Object> embedder;
 	
@@ -148,6 +147,16 @@ public class IcapRequestDecoderTest extends Assert {
 	
 	@Test
 	public void decodeREQMODRequestWithPreview() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithPreview());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertCreateREQMODWithPreview(result);
+		DataMockery.assertCreateREQMODWithPreviewChunk((IcapChunk)embedder.poll());
+		DataMockery.assertCreateREQMODWithPreviewChunkLastChunk((IcapChunk)embedder.poll());
+	}
+	
+	@Test
+	public void decodeREQMODRequestWithPreviewExpectingChunkTrailer() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithPreview());
 		IcapMessage result = (IcapMessage)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);

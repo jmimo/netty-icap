@@ -66,6 +66,8 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		builder.append("This is data that was returned by an origin server.");
 		builder.append("And this the second chunk which contains more information.");
 		assertEquals("The body content was wrong",builder.toString(),body);
+		Object object = embedder.peek();
+		assertNull("still something there",object);
 	}
 	
 	@Test
@@ -79,6 +81,8 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		StringBuilder builder = new StringBuilder();
 		builder.append("This is data that was returned by an origin server.");
 		assertEquals("The body content was wrong",builder.toString(),body);
+		Object object = embedder.peek();
+		assertNull("still something there",object);
 	}
 }
 

@@ -18,7 +18,10 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public abstract class State<T extends Object> {
 	
-	public State() {
+	private String name;
+	
+	public State(String name) {
+		this.name = name;
 	}
 	
 	/**
@@ -37,4 +40,8 @@ public abstract class State<T extends Object> {
 	 * @return has to return a valid next state. Can be itself.
 	 */
 	public abstract StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, T decisionInformation) throws Exception;
+
+	public String toString() {
+		return name;
+	}
 }

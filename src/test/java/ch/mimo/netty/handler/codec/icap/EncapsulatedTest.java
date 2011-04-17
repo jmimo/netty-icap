@@ -33,6 +33,7 @@ public class EncapsulatedTest extends Assert {
 	public void testSimpleValueParsing() {
 		String parameter = "req-hdr=0, res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
 		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
 		assertTrue("req-body value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQBODY));
@@ -42,6 +43,7 @@ public class EncapsulatedTest extends Assert {
 	public void testWhitespaceGap() {
 		String parameter = "req-hdr=0,  res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
 		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
 		assertTrue("req-body value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQBODY));
@@ -51,6 +53,7 @@ public class EncapsulatedTest extends Assert {
 	public void testIteratorWithWrongSequence() {
 		String parameter = "res-hdr=45, req-hdr=0, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
 		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
 		assertTrue("req-body value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQBODY));
@@ -92,6 +95,7 @@ public class EncapsulatedTest extends Assert {
 			fail("Encapsualted encoding failed");
 		}
 		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, req-body=270\r\n\r\n",buffer.toString(Charset.defaultCharset()));
+		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 	}
 	
 	@Test
@@ -109,6 +113,7 @@ public class EncapsulatedTest extends Assert {
 			fail("Encapsualted encoding failed");
 		}
 		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, req-body=270\r\n\r\n",buffer.toString(Charset.defaultCharset()));
+		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 	}
 	
 	@Test
@@ -126,6 +131,7 @@ public class EncapsulatedTest extends Assert {
 			fail("Encapsualted encoding failed");
 		}
 		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, null-body=270\r\n\r\n",buffer.toString(Charset.defaultCharset()));
+		assertEquals("wrong body element found",IcapMessageElementEnum.NULLBODY,encapsulated.containsBodyEntry());
 	}
 	
 	@Test
@@ -143,5 +149,6 @@ public class EncapsulatedTest extends Assert {
 			fail("Encapsualted encoding failed");
 		}
 		assertEquals("encoded encapsulation header was wrong","Encapsulated: req-hdr=0, res-hdr=123, null-body=0\r\n\r\n",buffer.toString(Charset.defaultCharset()));
+		assertEquals("wrong body element found",IcapMessageElementEnum.NULLBODY,encapsulated.containsBodyEntry());
 	}
 }

@@ -97,10 +97,6 @@ public abstract class AbstractSocketTest extends Assert {
     protected abstract ChannelFactory newClientSocketChannelFactory(Executor executor);
     
     protected void runSocketTest(Handler serverHandler, Handler clientHandler, Object[] messages, PipelineType pipelineType) {
-    	if(!runTrickleTests) {
-    		assertTrue(true);
-    		return;
-    	}
         ServerBootstrap serverBootstrap  = new ServerBootstrap(newServerSocketChannelFactory(executor));
         ClientBootstrap clientBootstrap = new ClientBootstrap(newClientSocketChannelFactory(executor));
         
@@ -115,7 +111,11 @@ public abstract class AbstractSocketTest extends Assert {
 			setupCodecPipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
 			break;
 		case TRICKLE:
-			setupTricklePipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			if(runTrickleTests) {
+				setupTricklePipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			} else {
+				setupClassicPipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			}
 			break;
 		default:
 			setupClassicPipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
@@ -206,8 +206,8 @@ public abstract class AbstractSocketTest extends Assert {
     	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
 
+    	clientBootstrap.getPipeline().addLast("trickle",new TrickleDownstreamHandler(5,3));
     	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
-    	clientBootstrap.getPipeline().addBefore("encoder","trickle",new TrickleDownstreamHandler(20,3));
       	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
       	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }

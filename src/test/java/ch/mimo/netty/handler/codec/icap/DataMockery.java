@@ -213,8 +213,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapChunk createOPTIONSRequestWithBodyLastChunkIcapChunk() throws UnsupportedEncodingException {
-		IcapChunk chunk = new DefaultIcapChunk(ChannelBuffers.EMPTY_BUFFER);
-		return chunk;
+		return new DefaultIcapChunkTrailer();
 	}
 	
 	public static final void assertOPTIONSRequestWithBodyLastChunk(IcapChunk chunk) {
@@ -569,16 +568,8 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapMessage createREQMODWithTwoChunkBodyAndEncapsulationHeaderIcapMessage() {
-		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
-		request.setBody(IcapMessageElementEnum.REQBODY);
+		IcapMessage request = createREQMODWithTwoChunkBodyIcapMessage();
 		request.addHeader("Encapsulated","req-hdr=0, req-body=171");
-		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
-		request.setHttpRequest(httpRequest);
-		httpRequest.addHeader("Host","www.origin-server.com");
-		httpRequest.addHeader("Accept","text/html, text/plain");
-		httpRequest.addHeader("Accept-Encoding","compress");
-		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
-		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
 		return request;
 	}
 	
@@ -609,8 +600,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapChunk createREQMODWithTwoChunkBodyIcapChunkThree() throws UnsupportedEncodingException {
-		IcapChunk chunk = new DefaultIcapChunk(ChannelBuffers.EMPTY_BUFFER);
-		return chunk;
+		return new DefaultIcapChunkTrailer();
 	}
 	
 	public static final ChannelBuffer createREQMODWithTwoChunkBodyChunkThree() throws UnsupportedEncodingException {
@@ -685,6 +675,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final void assertCreateREQMODWithTwoChunkBodyThirdChunk(IcapChunk chunk) {
+		assertTrue("last chunk is wrong type",chunk instanceof IcapChunkTrailer);
 		assertChunk("third chunk",chunk,null,true);
 	}
 	
@@ -746,7 +737,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
 		addLine(buffer,"Host: icap-server.net");
 		addLine(buffer,"Preview: 51");
-		addLine(buffer,"Encapsulated: req-hdr=0, req-body=181");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=171");
 		addLine(buffer,null);
 		addLine(buffer,"POST / HTTP/1.1");
 		addLine(buffer,"Host: www.origin-server.com");
@@ -816,9 +807,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final IcapChunk createREQMODWithPreviewLastIcapChunk() throws UnsupportedEncodingException {
-		IcapChunk chunk = new DefaultIcapChunk(ChannelBuffers.EMPTY_BUFFER);
-		chunk.setIsPreviewChunk();
-		return chunk;
+		return new DefaultIcapChunkTrailer(true,false);
 	}
 	
 	public static final ChannelBuffer createREQMODWithPreviewLastChunk() throws UnsupportedEncodingException {
@@ -830,7 +819,7 @@ public final class DataMockery extends Assert {
 	public static final void assertCreateREQMODWithPreview(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
-		assertHeaderValue("Encapsulated","req-hdr=0, req-body=181",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=171",message);
 		assertHeaderValue("Preview","51",message);
 		assertNotNull("http request was null",message.getHttpRequest());
 		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
@@ -848,6 +837,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final void assertCreateREQMODWithPreviewChunkLastChunk(IcapChunk chunk) {
+		assertTrue("last chunk is wrong type",chunk instanceof IcapChunkTrailer);
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertTrue("preview chunk is not last chunk",chunk.isLast());
 		assertFalse("preview chunk states that it is early terminated",chunk.isEarlyTerminated());
@@ -955,6 +945,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final void assertCreateREQMODWithEarlyTerminatedPreviewLastChunk(IcapChunk chunk) {
+		assertTrue("last chunk is wrong type",chunk instanceof IcapChunkTrailer);
 		assertNotNull("preview last chunk was null",chunk);
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertTrue("preview chunk is not last chunk",chunk.isLast());
@@ -1090,6 +1081,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final void assertCreateRESPMODWithGetRequestAndPreviewLastChunk(IcapChunk chunk) {
+		assertTrue("last chunk is wrong type",chunk instanceof IcapChunkTrailer);
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertTrue("preview chunk is not last chunk",chunk.isLast());
 		assertFalse("preview chunk states that it is early terminated",chunk.isEarlyTerminated());
@@ -1121,7 +1113,7 @@ public final class DataMockery extends Assert {
 		if(chunkData == null) {
 			addLine(buffer,"0");
 			addLine(buffer,null);
-			addLine(buffer,null);
+//			addLine(buffer,null);
 		} else {
 			int length = chunkData.length();
 			String hex = Integer.toString(length,16);

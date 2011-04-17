@@ -19,6 +19,10 @@ import org.jboss.netty.buffer.ChannelBuffer;
 
 public class ReadIcapHeaderState extends State<Object> {
 
+	public ReadIcapHeaderState(String name) {
+		super(name);
+	}
+	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		if(icapMessageDecoder.message == null) {

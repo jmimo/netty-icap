@@ -15,8 +15,20 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-public class ReadChunkSizeState extends State<Integer> {
+public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> {
 
+	public static enum DecisionState {
+		READ_CHUNK,
+		READ_HUGE_CHUNK_IN_SMALER_CHUNKS,
+		READ_TRAILING_HEADERS,
+		IS_PREVIEW,
+		IS_LAST_CHUNK
+	}
+	
+	public ReadChunkSizeState(String name) {
+		super(name);
+	}
+	
 	@Override
 	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 	}
@@ -28,22 +40,47 @@ public class ReadChunkSizeState extends State<Integer> {
 		icapMessageDecoder.currentChunkSize = chunkSize;
 		if(chunkSize == -1) {
 			icapMessageDecoder.currentChunkSize = 0;
-			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(true,true),0);
+			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(true,true),DecisionState.IS_PREVIEW);
+		} else if(chunkSize == 0) { 
+			byte previewByte = buffer.getByte(buffer.readerIndex() + 1);
+			if(previewByte == IcapCodecUtil.CR | previewByte == IcapCodecUtil.LF) {
+				return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(icapMessageDecoder.message.isPreviewMessage(),false),DecisionState.IS_LAST_CHUNK);
+			} else {
+				return StateReturnValue.createIrrelevantResultWithDecisionInformation(DecisionState.READ_TRAILING_HEADERS);
+			}
 		} else {
 			icapMessageDecoder.currentChunkSize = chunkSize;
-			return StateReturnValue.createIrrelevantResultWithDecisionInformation(chunkSize);
+			if(chunkSize >= icapMessageDecoder.maxChunkSize) {
+				return StateReturnValue.createIrrelevantResultWithDecisionInformation(DecisionState.READ_HUGE_CHUNK_IN_SMALER_CHUNKS);
+			} else {
+				return StateReturnValue.createIrrelevantResultWithDecisionInformation(DecisionState.READ_CHUNK);
+			}
 		}
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Integer decisionInformation) throws Exception {
-		if(decisionInformation >= icapMessageDecoder.maxChunkSize) {
-			return StateEnum.READ_CHUNKED_CONTENT_AS_CHUNKS_STATE;
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, DecisionState decisionInformation) throws Exception {
+		StateEnum returnValue = null;
+		switch (decisionInformation) {
+		case READ_CHUNK:
+			returnValue = StateEnum.READ_CHUNK_STATE;
+			break;
+		case READ_HUGE_CHUNK_IN_SMALER_CHUNKS:
+			returnValue = StateEnum.READ_CHUNKED_CONTENT_AS_CHUNKS_STATE;
+			break;
+		case READ_TRAILING_HEADERS:
+			returnValue = StateEnum.READ_TRAILING_HEADERS_STATE;
+			break;
+		case IS_LAST_CHUNK:
+			// NOOP
+			break;
+		case IS_PREVIEW:
+			// NOOP
+			break;
+		default:
+			// NOOP
+			break;
 		}
-		if(decisionInformation == 0) {
-			return StateEnum.READ_TRAILING_HEADERS_STATE;
-		}
-		return StateEnum.READ_CHUNK_STATE;
+		return returnValue;
 	}
-
 }

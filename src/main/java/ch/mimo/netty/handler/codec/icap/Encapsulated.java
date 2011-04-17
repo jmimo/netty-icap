@@ -45,6 +45,26 @@ public class Encapsulated {
 		return false;
  	}
 	
+	public IcapMessageElementEnum containsBodyEntry() {
+		IcapMessageElementEnum body = null;
+		for(Entry entry : entries) {
+			if(entry.getName().equals(IcapMessageElementEnum.OPTBODY)) {
+				body = entry.getName();
+				break;
+			} else if(entry.getName().equals(IcapMessageElementEnum.REQBODY)) {
+				body = entry.getName();
+				break;
+			} else if(entry.getName().equals(IcapMessageElementEnum.RESBODY)) {
+				body = entry.getName();
+				break;
+			} else if(entry.getName().equals(IcapMessageElementEnum.NULLBODY)) {
+				body = entry.getName();
+				break;
+			}
+		}
+		return body;
+	}
+	
 //	public boolean containsBody() {
 //		return containsEntry(EntryName.REQBODY) | 
 //					containsEntry(EntryName.RESBODY) | 
@@ -88,7 +108,8 @@ public class Encapsulated {
 				String[] parameter = splitParameter(parameterString.trim());
 				try {
 					int value = Integer.parseInt(parameter[1]);
-					entries.add(new Entry(IcapMessageElementEnum.fromString(parameter[0]),value));
+					Entry entry = new Entry(IcapMessageElementEnum.fromString(parameter[0]),value);
+					entries.add(entry);
 				} catch(NumberFormatException nfe) {
 					throw new Error("the Encapsulated header value [" + parameter[1] + "] for the key [" + parameter[0] + "] is not a number");
 				}

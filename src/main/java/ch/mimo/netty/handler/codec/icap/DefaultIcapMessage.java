@@ -177,7 +177,11 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 	}
 
 	public IcapMessageElementEnum getBody() {
-		return body;
+		if(encapsulated != null) {
+			return encapsulated.containsBodyEntry();
+		} else {
+			return body;
+		}
 	}
 	
 	protected abstract void validateHeader(String name) throws IllegalArgumentException;
