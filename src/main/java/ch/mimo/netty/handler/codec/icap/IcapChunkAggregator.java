@@ -29,7 +29,7 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     	if(msg instanceof IcapMessage) {
     		IcapMessage currentMessage = (IcapMessage)msg;
     		message = currentMessage;
-    		// TODO Encapsulation header MUST tell wheter there is a body expected or not.
+    		// TODO Encapsulation header MUST tell whether there is a body expected or not.
     		if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
     			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     			message = null;
@@ -40,13 +40,13 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     			ctx.sendUpstream(e);
     		} else {
     			IcapChunkTrailer trailer = (IcapChunkTrailer)msg;
-    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
+    			if(trailer.getHeaderNames().size() > 0) {		
     				for(String name : trailer.getHeaderNames()) {
-    					message.getHttpRequest().addHeader(name,trailer.getHeader(name));
-    				}
-    			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
-    				for(String name : trailer.getHeaderNames()) {
-    					message.getHttpResponse().addHeader(name,trailer.getHeader(name));
+    					if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
+    						message.getHttpRequest().addHeader(name,trailer.getHeader(name));
+    					} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
+    						message.getHttpResponse().addHeader(name,trailer.getHeader(name));
+    					}	
     				}
     			}
     			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());

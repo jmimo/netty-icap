@@ -279,6 +279,7 @@ public abstract class SocketTests extends AbstractSocketTest {
 				builder.append("This is data that was returned by an origin server.");
 				assertEquals("The body content was wrong",builder.toString(),body);
 				channel.write(DataMockery.createREQMODWithPreviewAnnouncement204ResponseIcapMessage());
+				return true;
 			} else {
 				fail("unexpected msg instance [" + msg.getClass().getCanonicalName() + "]");
 			}
@@ -327,8 +328,7 @@ public abstract class SocketTests extends AbstractSocketTest {
 		sendREQMODWithPreview(PipelineType.TRICKLE);
 	}
 	
-	// TODO activate test
-//	@Test
+	@Test
 	public void sendREQMODWithPreviewThroughAggregatorPipleline() {
 		try {
 			runSocketTest(new SendREQMODWithPreviewAggregatorServerHandler(),new SendREQMODWithPreviewClientHandler(),new Object[]{DataMockery.createREQMODWithPreviewAnnouncementIcapMessage(),

@@ -84,5 +84,30 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		Object object = embedder.peek();
 		assertNull("still something there",object);
 	}
+	
+	@Test
+	public void aggregateREQModRequestWithCunksAndTrailingHeaders() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyAndEncapsulationHeaderIcapMessage());
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyChunkThreeIcapChunkTrailer());
+		IcapMessage request = (IcapMessage)embedder.poll();
+		DataMockery.assertCreateREQMODWithTwoChunkBody(request);
+		assertTrue("Key does not exist [TrailingHeaderKey1]",request.getHttpRequest().containsHeader("TrailingHeaderKey1"));
+		assertEquals("The header: TrailingHeaderKey1 is invalid","TrailingHeaderValue1",request.getHttpRequest().getHeader("TrailingHeaderKey1"));
+		assertTrue("Key does not exist [TrailingHeaderKey2]",request.getHttpRequest().containsHeader("TrailingHeaderKey2"));
+		assertEquals("The header: TrailingHeaderKey2 is invalid","TrailingHeaderValue2",request.getHttpRequest().getHeader("TrailingHeaderKey2"));
+		assertTrue("Key does not exist [TrailingHeaderKey3]",request.getHttpRequest().containsHeader("TrailingHeaderKey3"));
+		assertEquals("The header: TrailingHeaderKey3 is invalid","TrailingHeaderValue3",request.getHttpRequest().getHeader("TrailingHeaderKey3"));
+		assertTrue("Key does not exist [TrailingHeaderKey4]",request.getHttpRequest().containsHeader("TrailingHeaderKey1"));
+		assertEquals("The header: TrailingHeaderKey4 is invalid","TrailingHeaderValue4",request.getHttpRequest().getHeader("TrailingHeaderKey4"));
+		String body = request.getHttpRequest().getContent().toString(IcapCodecUtil.ASCII_CHARSET);
+		StringBuilder builder = new StringBuilder();
+		builder.append("This is data that was returned by an origin server.");
+		builder.append("And this the second chunk which contains more information.");
+		assertEquals("The body content was wrong",builder.toString(),body);
+		Object object = embedder.peek();
+		assertNull("still something there",object);
+	}
 }
 
