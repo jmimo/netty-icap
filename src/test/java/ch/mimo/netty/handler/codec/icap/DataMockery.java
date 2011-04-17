@@ -786,6 +786,10 @@ public final class DataMockery extends Assert {
 		return new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.NO_CONTENT);
 	}
 	
+	public static final IcapMessage createREQMODWithPreviewAnnouncement100ContinueIcapMessage() {
+		return new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.CONTINUE);
+	}
+	
 	public static final void assertCreateREQMODWithPreviewAnnouncement204Response(IcapResponse response) {
 		assertNotNull("response was null",response);
 		assertEquals("wrong icap version",IcapVersion.ICAP_1_0,response.getProtocolVersion());
@@ -806,6 +810,17 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final IcapChunk createREQMODWithPreview100ContinueIcapChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is the second chunk that is received when 100 continue was sent.".getBytes("ASCII"));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		return chunk;
+	}
+	
+	public static final IcapChunk createREQMODWithPreview100ContinueLastIcapChunk() {
+		return new DefaultIcapChunkTrailer(false,false);
+	}
+	
 	public static final IcapChunk createREQMODWithPreviewLastIcapChunk() throws UnsupportedEncodingException {
 		return new DefaultIcapChunkTrailer(true,false);
 	}
@@ -815,6 +830,8 @@ public final class DataMockery extends Assert {
 		addChunk(buffer,null);
 		return buffer;
 	}
+	
+	
 	
 	public static final void assertCreateREQMODWithPreview(IcapMessage message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
@@ -841,6 +858,10 @@ public final class DataMockery extends Assert {
 		assertTrue("preview chunk is not marked as such",chunk.isPreviewChunk());
 		assertTrue("preview chunk is not last chunk",chunk.isLast());
 		assertFalse("preview chunk states that it is early terminated",chunk.isEarlyTerminated());
+	}
+	
+	public static final void assertCreateREQMODWithPreview100ContinueChunk(IcapChunk chunk) {
+		assertChunk("preview chunk", chunk,"This is the second chunk that is received whn 100 continue was sent.",false);
 	}
 	
 	public static final ChannelBuffer createREQMODWithEarlyTerminatedPreview() throws UnsupportedEncodingException {
