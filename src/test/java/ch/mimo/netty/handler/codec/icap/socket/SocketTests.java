@@ -19,7 +19,6 @@ import java.nio.charset.Charset;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.junit.Test;
 
@@ -328,6 +327,7 @@ public abstract class SocketTests extends AbstractSocketTest {
 		sendREQMODWithPreview(PipelineType.TRICKLE);
 	}
 	
+	// TODO activate test
 //	@Test
 	public void sendREQMODWithPreviewThroughAggregatorPipleline() {
 		try {
@@ -339,6 +339,6 @@ public abstract class SocketTests extends AbstractSocketTest {
 			}
 	}
 	
-	// TODO Test preview with 100 Continue and chunk aggregator
+	// TODO Test preview, 100 Continue with and without chunk aggregator
 }
 
