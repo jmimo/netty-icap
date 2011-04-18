@@ -28,8 +28,8 @@ public class JDKLoggerConfiguration {
 			defaultHandler.setLevel(Level.ALL);
 			rootLogger.setLevel(Level.ALL);
 		} else {
-			defaultHandler.setLevel(Level.ALL);
-			rootLogger.setLevel(Level.ALL);
+			defaultHandler.setLevel(Level.WARNING);
+			rootLogger.setLevel(Level.WARNING);
 		}
 		rootLogger.addHandler(defaultHandler);
 		logManager.addLogger(rootLogger);

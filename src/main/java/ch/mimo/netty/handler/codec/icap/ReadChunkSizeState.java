@@ -37,7 +37,6 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
 		String line = IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength);
-		// TODO handle empty line better
 		int chunkSize = IcapDecoderUtil.getChunkSize(line);
 		icapMessageDecoder.currentChunkSize = chunkSize;
 		if(chunkSize == -1) {
@@ -45,7 +44,6 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 			IcapDecoderUtil.readLine(buffer,Integer.MAX_VALUE);
 			return StateReturnValue.createRelevantResultWithDecisionInformation(new DefaultIcapChunkTrailer(true,true),DecisionState.IS_LAST_PREVIEW_CHUNK);
 		} else if(chunkSize == 0) {
-			// TODO read the followup CRLF in order to reach the end.
 			byte previewByte = buffer.getByte(buffer.readerIndex() + 1);
 			if(previewByte == IcapCodecUtil.CR | previewByte == IcapCodecUtil.LF) {
 				IcapDecoderUtil.readLine(buffer,10);
