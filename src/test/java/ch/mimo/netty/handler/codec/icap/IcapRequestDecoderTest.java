@@ -219,5 +219,7 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 		assertTrue("last chunk is of wrong type",chunk13 instanceof IcapChunkTrailer);
 		assertTrue("last chunk is not marked as such",chunk13.isLast());
 	}
+	
+	// TODO chunking test with preview message
 }
 
