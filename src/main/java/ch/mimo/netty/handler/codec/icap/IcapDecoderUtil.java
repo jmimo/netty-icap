@@ -50,11 +50,9 @@ public final class IcapDecoderUtil {
                 if (nextByte == IcapCodecUtil.LF) {
                     return sb.toString();
                 }
-            }
-            else if (nextByte == IcapCodecUtil.LF) {
+            } else if (nextByte == IcapCodecUtil.LF) {
                 return sb.toString();
-            }
-            else {
+            } else {
                 if (lineLength >= maxLineLength) {
                     throw new TooLongFrameException(
                             "An HTTP line is larger than " + maxLineLength +
@@ -130,9 +128,6 @@ public final class IcapDecoderUtil {
                 break;
             }
         }
-//        if(hex != null && hex.length() == 0) {
-//        	return -2;
-//        }
         return Integer.parseInt(hex, 16);
     }
 	

@@ -860,7 +860,7 @@ public final class DataMockery extends Assert {
 	}
 	
 	public static final void assertCreateREQMODWithPreview100ContinueChunk(IcapChunk chunk) {
-		assertChunk("preview chunk", chunk,"This is the second chunk that is received whn 100 continue was sent.",false);
+		assertChunk("preview chunk", chunk,"This is the second chunk that is received when 100 continue was sent.",false);
 	}
 	
 	public static final ChannelBuffer createREQMODWithEarlyTerminatedPreview() throws UnsupportedEncodingException {

@@ -17,10 +17,9 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
-import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
-
+// TODO add reset function in case of unexpected exception
 public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 
 	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapMessageDecoder.class);
@@ -69,21 +68,24 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, StateEnum stateEnumValue) throws Exception {
-		buffer = new AnaylsisChannelBuffer(buffer);
-		State state = stateEnumValue.getState();
-		LOG.debug("Executing state [" + state + ']');
-		state.onEntry(buffer,this);
-		StateReturnValue returnValue = state.execute(buffer,this);
-		LOG.debug("Return value from state [" + state + "] = [" + returnValue + "]");
-		StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
-		LOG.debug("Next State [" + nextState + "]");
-		// TODO set checkpoint only if required. see preview chunk reading
-		// TODO re-reading
-		if(nextState != null) {
-			checkpoint(nextState);
-		}
-		if(returnValue.isRelevant()) {
-			return returnValue.getValue();
+		if(stateEnumValue != null) {
+			State state = stateEnumValue.getState();
+			LOG.debug("Executing state [" + state + ']');
+			state.onEntry(buffer,this);
+			StateReturnValue returnValue = state.execute(buffer,this);
+			LOG.debug("Return value from state [" + state + "] = [" + returnValue + "]");
+			StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
+			LOG.debug("Next State [" + nextState + "]");
+			// TODO set checkpoint only if required. see preview chunk reading
+			// TODO re-reading
+			if(nextState != null) {
+				checkpoint(nextState);
+			} else {
+				checkpoint();
+			}
+			if(returnValue.isRelevant()) {
+				return returnValue.getValue();
+			}
 		}
 		return null;
 	}
