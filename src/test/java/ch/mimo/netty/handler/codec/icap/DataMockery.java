@@ -1120,6 +1120,23 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final IcapRequest createREQMODWithGetRequestAndDataIcapMessage() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		httpRequest.setContent(buffer);
+		return request;
+	}
+	
+	
+	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {
 		if(value == null) {
 			buffer.writeBytes(IcapCodecUtil.CRLF);
@@ -1133,7 +1150,6 @@ public final class DataMockery extends Assert {
 		if(chunkData == null) {
 			addLine(buffer,"0");
 			addLine(buffer,null);
-//			addLine(buffer,null);
 		} else {
 			int length = chunkData.length();
 			String hex = Integer.toString(length,16);

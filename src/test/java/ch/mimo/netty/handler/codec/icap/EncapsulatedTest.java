@@ -40,6 +40,13 @@ public class EncapsulatedTest extends Assert {
 	}
 	
 	@Test
+	public void testToString() {
+		String parameter = "req-hdr=0, res-hdr=45, req-body=124";
+		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		assertEquals("toString output was wrong","Encapsulated:  [REQHDR=0 : false]  [RESHDR=45 : false]  [REQBODY=124 : false] ",encapsulated.toString());
+	}
+	
+	@Test
 	public void testWhitespaceGap() {
 		String parameter = "req-hdr=0,  res-hdr=45, req-body=124";
 		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);

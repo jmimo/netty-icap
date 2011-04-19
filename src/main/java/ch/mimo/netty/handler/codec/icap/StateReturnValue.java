@@ -25,14 +25,6 @@ public class StateReturnValue {
 		this.decisionInformation = decisionInformation;
 	}
 	
-	public static StateReturnValue createNullResult() {
-		return new StateReturnValue(true,null,null);
-	}
-	
-	public static StateReturnValue createNullResultWithDecisionInformation(Object decisionInformation) {
-		return new StateReturnValue(true,null,decisionInformation);
-	}
-	
 	public static StateReturnValue createIrrelevantResult() {
 		return new StateReturnValue(false,null,null);
 	}

@@ -99,7 +99,7 @@ public class Encapsulated {
 	 */
 	public void parseHeaderValue(String headerValue) {
 		if(headerValue == null) {
-			throw new Error("No value associated with Encapsualted header");
+			throw new IcapDecodingError("No value associated with Encapsualted header");
 		}
 		StringTokenizer tokenizer = new StringTokenizer(headerValue,",");
 		while(tokenizer.hasMoreTokens()) {
@@ -121,7 +121,7 @@ public class Encapsulated {
 	private String[] splitParameter(String parameter) {
 		int offset = parameter.indexOf("=");
 		if(offset <= 0) {
-			throw new Error("Encapsulated header value was not understood [" + parameter + "]");
+			throw new IcapDecodingError("Encapsulated header value was not understood [" + parameter + "]");
 		}
 		String key = parameter.substring(0,offset);
 		String value = parameter.substring(offset + 1,parameter.length());

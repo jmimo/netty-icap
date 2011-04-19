@@ -20,7 +20,6 @@ public final class IcapVersion {
 	public static final HttpVersion ICAP_1_0 = new HttpVersion("ICAP", 1, 0, true);
 
     private IcapVersion() {
-        super();
     }
 	
     /**

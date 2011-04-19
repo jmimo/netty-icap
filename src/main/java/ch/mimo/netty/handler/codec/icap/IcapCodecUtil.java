@@ -90,7 +90,6 @@ class IcapCodecUtil {
     static final String ENCAPSULATION_ELEMENT_NULLBODY = "null-body";
     
     private IcapCodecUtil() {
-        super();
     }
 
     static void validateHeaderName(String name) {

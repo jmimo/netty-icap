@@ -3,7 +3,6 @@ package ch.mimo.netty.handler.codec.icap;
 import java.io.UnsupportedEncodingException;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
-import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.junit.Before;
 import org.junit.Test;
 

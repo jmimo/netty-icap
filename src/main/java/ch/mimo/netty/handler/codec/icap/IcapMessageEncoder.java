@@ -73,7 +73,6 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 					buffer.writeByte((byte) '0');
 					buffer.writeBytes(IcapCodecUtil.CRLF);
 					buffer.writeBytes(IcapCodecUtil.CRLF);
-//					buffer.writeBytes(IcapCodecUtil.CRLF);
 				}
 			} else {
 				ChannelBuffer chunkBuffer = chunk.getContent();
@@ -99,13 +98,9 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 			buffer.writeByte(IcapCodecUtil.SP);
 			buffer.writeBytes(httpRequest.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeBytes(IcapCodecUtil.CRLF);
-	        try {
-	            for (Map.Entry<String, String> h: httpRequest.getHeaders()) {
-	                encodeHeader(buffer, h.getKey(), h.getValue());
-	            }
-	        } catch (UnsupportedEncodingException e) {
-	            throw (Error) new Error().initCause(e);
-	        }
+            for (Map.Entry<String, String> h: httpRequest.getHeaders()) {
+                encodeHeader(buffer, h.getKey(), h.getValue());
+            }
 		}
 		return buffer;
 	}
@@ -117,43 +112,30 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 			buffer.writeByte(IcapCodecUtil.SP);
 			buffer.writeBytes(httpResponse.getStatus().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeBytes(IcapCodecUtil.CRLF);
-	        try {
-	            for (Map.Entry<String, String> h: httpResponse.getHeaders()) {
-	                encodeHeader(buffer, h.getKey(), h.getValue());
-	            }
-	        } catch (UnsupportedEncodingException e) {
-	            throw (Error) new Error().initCause(e);
-	        }
+            for (Map.Entry<String, String> h: httpResponse.getHeaders()) {
+                encodeHeader(buffer, h.getKey(), h.getValue());
+            }
 		}
 		return buffer;
 	}
 	
     private int encodeTrailingHeaders(ChannelBuffer buffer, IcapChunkTrailer chunkTrailer) {
     	int index = buffer.readableBytes();
-        try {
-            for (Map.Entry<String, String> h: chunkTrailer.getHeaders()) {
-                encodeHeader(buffer, h.getKey(), h.getValue());
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw (Error) new Error().initCause(e);
+        for (Map.Entry<String, String> h: chunkTrailer.getHeaders()) {
+            encodeHeader(buffer, h.getKey(), h.getValue());
         }
         return buffer.readableBytes() - index;
     }
 	
     private int encodeHeaders(ChannelBuffer buffer, IcapMessage message) {
     	int index = buffer.readableBytes();
-        try {
-            for (Map.Entry<String, String> h: message.getHeaders()) {
-                encodeHeader(buffer, h.getKey(), h.getValue());
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw (Error) new Error().initCause(e);
+        for (Map.Entry<String, String> h: message.getHeaders()) {
+            encodeHeader(buffer, h.getKey(), h.getValue());
         }
         return buffer.readableBytes() - index;
     }
     
-    // TODO return the length
-    private void encodeHeader(ChannelBuffer buf, String header, String value) throws UnsupportedEncodingException {
+    private void encodeHeader(ChannelBuffer buf, String header, String value) {
 		buf.writeBytes(header.getBytes(IcapCodecUtil.ASCII_CHARSET));
 		buf.writeByte(IcapCodecUtil.COLON);
 		buf.writeByte(IcapCodecUtil.SP);
