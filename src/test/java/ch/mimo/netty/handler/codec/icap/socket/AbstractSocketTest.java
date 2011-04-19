@@ -184,7 +184,7 @@ public abstract class AbstractSocketTest extends AbstractJDKLoggerPreparation {
     
     protected void setupClassicPipelineWithChunkAggregator(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
     	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
-    	serverBootstrap.getPipeline().addLast("chunkAggregator",new IcapChunkAggregator());
+    	serverBootstrap.getPipeline().addLast("chunkAggregator",new IcapChunkAggregator(4012));
     	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
     	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
 

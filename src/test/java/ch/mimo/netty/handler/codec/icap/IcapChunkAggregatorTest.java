@@ -3,6 +3,7 @@ package ch.mimo.netty.handler.codec.icap;
 import java.io.UnsupportedEncodingException;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 	
 	@Before
 	public void setUp() throws UnsupportedEncodingException {
-		embedder = new DecoderEmbedder<Object>(new IcapChunkAggregator());
+		embedder = new DecoderEmbedder<Object>(new IcapChunkAggregator(4012));
 	}
 	
 	@Test
@@ -108,6 +109,19 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		assertEquals("The body content was wrong",builder.toString(),body);
 		Object object = embedder.peek();
 		assertNull("still something there",object);
+	}
+	
+	@Test
+	public void exceedMaximumBodySize() throws UnsupportedEncodingException {
+		DecoderEmbedder<Object> embedder = new DecoderEmbedder<Object>(new IcapChunkAggregator(20));
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyAndEncapsulationHeaderIcapMessage());
+		boolean exception = false;
+		try {
+			embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
+		} catch(RuntimeException rte) {
+			exception = true;
+		}
+		assertTrue("No Exception was thrown",exception);
 	}
 }
 

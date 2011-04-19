@@ -221,5 +221,36 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 	}
 	
 	// TODO chunking test with preview message
+	
+	@Test
+	public void decodeRESPMODWithGetRequestAndPreviewAndHugeChunk() throws UnsupportedEncodingException {
+		DecoderEmbedder<Object> embedder = new DecoderEmbedder<Object>(new IcapRequestDecoder(4000,4000,4000,10));
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreview());
+		IcapMessage result = (IcapMessage)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreview(result);
+		IcapChunk chunk1 = (IcapChunk)embedder.poll();
+		assertEquals("chunk 1 has wrong contents","This is da",chunk1.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertTrue("chunk 1 is not marked as preview chunk",chunk1.isPreviewChunk());
+		IcapChunk chunk2 = (IcapChunk)embedder.poll();
+		assertEquals("chunk 2 has wrong contents","ta that wa",chunk2.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertTrue("chunk 2 is not marked as preview chunk",chunk2.isPreviewChunk());
+		IcapChunk chunk3 = (IcapChunk)embedder.poll();
+		assertEquals("chunk 3 has wrong contents","s returned",chunk3.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertTrue("chunk 3 is not marked as preview chunk",chunk3.isPreviewChunk());
+		IcapChunk chunk5 = (IcapChunk)embedder.poll();
+		assertEquals("chunk 5 has wrong contents"," by an ori",chunk5.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertTrue("chunk 5 is not marked as preview chunk",chunk5.isPreviewChunk());
+		IcapChunk chunk6 = (IcapChunk)embedder.poll();
+		assertEquals("chunk 6 has wrong contents","gin server",chunk6.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertTrue("chunk 6 is not marked as preview chunk",chunk6.isPreviewChunk());
+		IcapChunk chunk7 = (IcapChunk)embedder.poll();
+		assertEquals("chunk 7 has wrong contents",".",chunk7.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertTrue("chunk 7 is not marked as preview chunk",chunk7.isPreviewChunk());
+		IcapChunk chunk8 = (IcapChunk)embedder.poll();
+		assertTrue("last chunk is of wrong type",chunk8 instanceof IcapChunkTrailer);
+		assertTrue("last chunk is not marked as such",chunk8.isLast());
+		assertTrue("last chunk is not marked as preview chunk",chunk8.isPreviewChunk());
+	}
 }
 

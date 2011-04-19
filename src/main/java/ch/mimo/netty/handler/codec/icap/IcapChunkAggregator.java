@@ -6,6 +6,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 
 /**
  * This Icap chunk aggregator will receive the icap message and store the body
@@ -21,7 +22,12 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
  */
 public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 
+	private long maxContentLength;
 	private IcapMessage message;
+	
+	public IcapChunkAggregator(long maxContentLength) {
+		this.maxContentLength = maxContentLength;
+	}
 	
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
@@ -29,7 +35,6 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     	if(msg instanceof IcapMessage) {
     		IcapMessage currentMessage = (IcapMessage)msg;
     		message = currentMessage;
-    		// TODO Encapsulation header MUST tell whether there is a body expected or not.
     		if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
     			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     			message = null;
@@ -56,32 +61,36 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     		if(message == null) {
     			ctx.sendUpstream(e);
     		} else if(chunk.isLast()) {
-    			// TODO handle trailing headers
     			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     			message = null;
     		} else {
 	    		ChannelBuffer chunkBuffer = chunk.getContent();
-	    		// TODO consider max length of content.
+	    		ChannelBuffer content = null;
     			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
     				if(message.getHttpRequest() != null) {
     					if(message.getHttpRequest().getContent().readableBytes() <= 0) {
     						message.getHttpRequest().setContent(ChannelBuffers.dynamicBuffer());
     					}
-    					message.getHttpRequest().getContent().writeBytes(chunkBuffer);
+    					content = message.getHttpRequest().getContent();
     				} else {
-    					// no http request found but body marker indicates that the body is of this type.
+    					throw new IcapDecodingError("unable attaching chunked content to http request, beaause it does not exist");
     				}
     			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
     				if(message.getHttpResponse() != null) {
     					if(message.getHttpResponse().getContent().readableBytes() <= 0) {
     						message.getHttpResponse().setContent(ChannelBuffers.dynamicBuffer());
     					}
-    					message.getHttpResponse().getContent().writeBytes(chunkBuffer);
+    					content = message.getHttpResponse().getContent();
     				} else {
-    					// TODO handle: no http response found but body marker indicates that the body is of this type.
+    					throw new IcapDecodingError("unable attaching chunked content to http response, beaause it does not exist");
     				}
     			} else {
-    				// TODO handle: invalid body marker found.
+    				throw new IcapDecodingError("Invalid encapsulation value found [" + message.getBody().name() + "]");
+    			}
+    			if(content.readableBytes() > maxContentLength - chunkBuffer.readableBytes()) {
+    				throw new TooLongFrameException("ICAP content length exceeded [" + maxContentLength + "] bytes");
+    			} else {
+    				content.writeBytes(chunkBuffer);
     			}
     		}
     	} else {
