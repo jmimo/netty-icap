@@ -65,12 +65,14 @@ public final class Encapsulated {
 	}
 	
 	public IcapMessageElementEnum getNextEntry() {
+		IcapMessageElementEnum entryName = null;
 		for(Entry entry : entries) {
 			if(!entry.isProcessed()) {
-				return entry.getName();
+				entryName = entry.getName();
+				break;
 			}
 		}
-		return null;
+		return entryName;
 	}
 	
 	public void setEntryAsProcessed(IcapMessageElementEnum entryName) {
@@ -94,7 +96,8 @@ public final class Encapsulated {
 			buffer.writeBytes("=".getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes(IcapCodecUtil.ASCII_CHARSET));
 			if(entryIterator.hasNext()) {
-				buffer.writeBytes(new byte[]{',',IcapCodecUtil.SP});
+				buffer.writeByte(',');
+				buffer.writeByte(IcapCodecUtil.SP);
 			}
 		}
         buffer.writeBytes(IcapCodecUtil.CRLF);
@@ -144,12 +147,14 @@ public final class Encapsulated {
 	}
 	
 	private Entry getEntryByName(IcapMessageElementEnum entryName) {
+		Entry returnValue = null;
 		for(Entry entry : entries) {
 			if(entry.getName().equals(entryName)) {
-				return entry;
+				returnValue = entry;
+				break;
 			}
 		}
-		return null;
+		return returnValue;
 	}
 	
 	private final static class Entry implements Comparable<Entry> {
