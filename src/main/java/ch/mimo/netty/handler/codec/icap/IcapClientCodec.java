@@ -20,8 +20,8 @@ import org.jboss.netty.channel.ChannelUpstreamHandler;
 
 public class IcapClientCodec implements ChannelUpstreamHandler, ChannelDownstreamHandler {
 
-	private IcapRequestEncoder encoder = new IcapRequestEncoder();
-	private IcapResponseDecoder decoder;
+	private final IcapRequestEncoder encoder = new IcapRequestEncoder();
+	private final IcapResponseDecoder decoder;
 	
 	public IcapClientCodec(int maxInitialLineLength, int maxIcapHeaderSize, int maxHttpHeaderSize, int maxChunkSize) {
 		decoder = new IcapResponseDecoder(maxInitialLineLength,maxIcapHeaderSize,maxHttpHeaderSize,maxChunkSize);

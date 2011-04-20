@@ -25,7 +25,7 @@ import org.jboss.netty.util.CharsetUtil;
  * This class is an exact copy of @see HttpCodecUtil
  * Once the ICAP codec will be integrated into netty this has to be consolidated.
  */
-class IcapCodecUtil {
+final class IcapCodecUtil {
 	
 	// 0; ieof
 	static final Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};

@@ -32,9 +32,7 @@ public final class IcapVersion {
         if (text == null) {
             throw new NullPointerException("text");
         }
-
-        text = text.trim().toUpperCase();
-        if (text.equals("ICAP/1.0")) {
+        if (text.trim().toUpperCase().equals("ICAP/1.0")) {
             return ICAP_1_0;
         }
 

@@ -116,8 +116,8 @@ public final class IcapDecoderUtil {
 		return result;
 	}
 	
-    public static int getChunkSize(String hex) {
-        hex = hex.trim();
+    public static int getChunkSize(String line) {
+        String hex = line.trim();
         if(hex.equals(IcapCodecUtil.IEOF_SEQUENCE_STRING)) {
         	return -1;
         }
@@ -176,15 +176,13 @@ public final class IcapDecoderUtil {
 			char nextByte = (char) buffer.readByte();
 			sizeDelimiter.increment();
 
-			switch (nextByte) {
-			case IcapCodecUtil.CR:
+			if(nextByte == IcapCodecUtil.CR) {
 				nextByte = (char) buffer.readByte();
 				sizeDelimiter.increment();
 				if (nextByte == IcapCodecUtil.LF) {
 					break loop;
 				}
-				break;
-			case IcapCodecUtil.LF:
+			} else if(nextByte == IcapCodecUtil.LF) {
 				break loop;
 			}
 			sb.append(nextByte);

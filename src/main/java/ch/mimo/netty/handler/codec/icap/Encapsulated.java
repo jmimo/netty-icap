@@ -111,7 +111,7 @@ public class Encapsulated {
 					Entry entry = new Entry(IcapMessageElementEnum.fromString(parameter[0]),value);
 					entries.add(entry);
 				} catch(NumberFormatException nfe) {
-					throw new Error("the Encapsulated header value [" + parameter[1] + "] for the key [" + parameter[0] + "] is not a number");
+					throw new IcapDecodingError("the Encapsulated header value [" + parameter[1] + "] for the key [" + parameter[0] + "] is not a number");
 				}
 			}
 		}
@@ -119,14 +119,14 @@ public class Encapsulated {
 	}
 	
 	private String[] splitParameter(String parameter) {
-		int offset = parameter.indexOf("=");
+		int offset = parameter.indexOf('=');
 		if(offset <= 0) {
 			throw new IcapDecodingError("Encapsulated header value was not understood [" + parameter + "]");
 		}
 		String key = parameter.substring(0,offset);
 		String value = parameter.substring(offset + 1,parameter.length());
 		if(value.contains(",")) {
-			value = value.substring(0,value.indexOf(","));
+			value = value.substring(0,value.indexOf(','));
 		}
 		return new String[]{key.trim(),value};
 	}

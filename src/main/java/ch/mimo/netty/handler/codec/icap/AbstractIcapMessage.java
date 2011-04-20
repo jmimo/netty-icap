@@ -25,7 +25,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.internal.StringUtil;
 
 
-public abstract class DefaultIcapMessage implements IcapMessage {
+public abstract class AbstractIcapMessage implements IcapMessage {
 	
 	private IcapHeaders icapHeaders;
 	private HttpVersion version;
@@ -38,15 +38,15 @@ public abstract class DefaultIcapMessage implements IcapMessage {
 	
 	private IcapMessageElementEnum body;
 	
-	public DefaultIcapMessage(HttpVersion version) {
-		setProtocolVersion(version);
+	public AbstractIcapMessage(HttpVersion version) {
+		this.version = version;
 		icapHeaders = new IcapHeaders();
 	}
 	
-    public DefaultIcapMessage(HttpVersion icapVersion, HttpMethod method, String uri) {
+    public AbstractIcapMessage(HttpVersion icapVersion, HttpMethod method, String uri) {
     	this(icapVersion);
-        setMethod(method);
-        setUri(uri);
+    	this.method = method;
+    	this.uri = uri;
     }
 
 	@Override

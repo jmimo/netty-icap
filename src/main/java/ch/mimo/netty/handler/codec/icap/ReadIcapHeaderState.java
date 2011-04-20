@@ -40,11 +40,11 @@ public class ReadIcapHeaderState extends State<Object> {
 		if(!icapMessageDecoder.isDecodingResponse()) {
 			// validate mandatory icap headers
 			if(!icapMessageDecoder.message.containsHeader(IcapHeaders.Names.HOST)) {
-				throw new Error("Mandatory ICAP message header [Host] is missing");
+				throw new IcapDecodingError("Mandatory ICAP message header [Host] is missing");
 			}
 		}
 		if(!icapMessageDecoder.message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
-			throw new Error("Mandatory ICAP message header [Encapsulated] is missing");
+			throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
 		}
 		Encapsulated encapsulated = Encapsulated.parseHeader(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);

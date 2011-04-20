@@ -17,7 +17,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-public class DefaultIcapRequest extends DefaultIcapMessage implements IcapRequest {
+public class DefaultIcapRequest extends AbstractIcapMessage implements IcapRequest {
 	
 	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri, String host) {
 		super(icapVersion,method,uri);

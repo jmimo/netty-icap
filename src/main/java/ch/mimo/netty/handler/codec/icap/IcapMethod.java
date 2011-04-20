@@ -40,13 +40,13 @@ public final class IcapMethod {
 	 */
 	public static final HttpMethod OPTIONS = HttpMethod.OPTIONS;
 	
-    private static final Map<String, HttpMethod> methodMap =
+    private static final Map<String, HttpMethod> METHOD_MAP =
         new HashMap<String, HttpMethod>();
 
 	static {
-		methodMap.put(REQMOD.toString(),REQMOD);
-		methodMap.put(RESPMOD.toString(),RESPMOD);
-	    methodMap.put(OPTIONS.toString(),OPTIONS);
+		METHOD_MAP.put(REQMOD.toString(),REQMOD);
+		METHOD_MAP.put(RESPMOD.toString(),RESPMOD);
+	    METHOD_MAP.put(OPTIONS.toString(),OPTIONS);
 	}
 	
 	private IcapMethod() {
@@ -68,7 +68,7 @@ public final class IcapMethod {
             throw new IllegalArgumentException("empty name");
         }
 
-        HttpMethod result = methodMap.get(name);
+        HttpMethod result = METHOD_MAP.get(name);
         if (result != null) {
             return result;
         } else {

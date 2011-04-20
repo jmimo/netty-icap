@@ -55,13 +55,9 @@ public class StateReturnValue {
 	
 	public String toString() {
 		String printValue = "null";
-//		String printDecisionInformation = "null";
 		if(value != null) {
 			printValue = value.getClass().getCanonicalName();
 		}
-//		if(decisionInformation != null) {
-//			printDecisionInformation = decisionInformation.getClass().getCanonicalName();
-//		}
 		return "StateReturnValue: [relevance=" + relevance + 
 				"] [value=" + printValue + "] [decision information=" + decisionInformation + "]";
 	}

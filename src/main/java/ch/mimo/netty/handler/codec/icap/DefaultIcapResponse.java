@@ -15,7 +15,7 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-public class DefaultIcapResponse extends DefaultIcapMessage implements IcapResponse {
+public class DefaultIcapResponse extends AbstractIcapMessage implements IcapResponse {
 
 	private IcapResponseStatus status;
 	
