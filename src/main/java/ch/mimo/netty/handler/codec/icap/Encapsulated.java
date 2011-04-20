@@ -22,7 +22,7 @@ import java.util.StringTokenizer;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-public class Encapsulated {
+public final class Encapsulated {
 	
 	private List<Entry> entries;
 	
@@ -30,10 +30,9 @@ public class Encapsulated {
 		entries = new ArrayList<Encapsulated.Entry>();
 	}
 	
-	public static Encapsulated parseHeader(String headerValue) {
-		Encapsulated encapsulated = new Encapsulated();
-		encapsulated.parseHeaderValue(headerValue);
-		return encapsulated;
+	public Encapsulated(String headerValue) {
+		this();
+		parseHeaderValue(headerValue);
 	}
 	
 	public boolean containsEntry(IcapMessageElementEnum entity) {
@@ -65,12 +64,6 @@ public class Encapsulated {
 		return body;
 	}
 	
-//	public boolean containsBody() {
-//		return containsEntry(EntryName.REQBODY) | 
-//					containsEntry(EntryName.RESBODY) | 
-//					containsEntry(EntryName.OPTBODY);
-//	}
-	
 	public IcapMessageElementEnum getNextEntry() {
 		for(Entry entry : entries) {
 			if(!entry.isProcessed()) {
@@ -80,7 +73,7 @@ public class Encapsulated {
 		return null;
 	}
 	
-	public void setProcessed(IcapMessageElementEnum entryName) {
+	public void setEntryAsProcessed(IcapMessageElementEnum entryName) {
 		Entry entry = getEntryByName(entryName);
 		entry.setIsProcessed();
 	}
@@ -90,6 +83,25 @@ public class Encapsulated {
 		entries.add(entry);
 	}
 	
+	public int encode(ChannelBuffer buffer) throws UnsupportedEncodingException {
+		int index = buffer.readableBytes();
+		Collections.sort(entries);
+		buffer.writeBytes("Encapsulated: ".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		Iterator<Entry> entryIterator = entries.iterator();
+		while(entryIterator.hasNext()) {
+			Entry entry = entryIterator.next();
+			buffer.writeBytes(entry.getName().getValue().getBytes(IcapCodecUtil.ASCII_CHARSET));
+			buffer.writeBytes("=".getBytes(IcapCodecUtil.ASCII_CHARSET));
+			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes(IcapCodecUtil.ASCII_CHARSET));
+			if(entryIterator.hasNext()) {
+				buffer.writeBytes(new byte[]{',',IcapCodecUtil.SP});
+			}
+		}
+        buffer.writeBytes(IcapCodecUtil.CRLF);
+        buffer.writeBytes(IcapCodecUtil.CRLF);
+		return buffer.readableBytes() - index;
+	}
+	
 	/*
 	REQMOD request: 	 [req-hdr] req-body
 	REQMOD response: 	{[req-hdr] req-body} | {[res-hdr] res-body}
@@ -97,7 +109,7 @@ public class Encapsulated {
 	RESPMOD response:	 [res-hdr] res-body
 	OPTIONS response:	 opt-body
 	 */
-	public void parseHeaderValue(String headerValue) {
+	private void parseHeaderValue(String headerValue) {
 		if(headerValue == null) {
 			throw new IcapDecodingError("No value associated with Encapsualted header");
 		}
@@ -140,29 +152,10 @@ public class Encapsulated {
 		return null;
 	}
 	
-	public int encode(ChannelBuffer buffer) throws UnsupportedEncodingException {
-		int index = buffer.readableBytes();
-		Collections.sort(entries);
-		buffer.writeBytes("Encapsulated: ".getBytes(IcapCodecUtil.ASCII_CHARSET));
-		Iterator<Entry> entryIterator = entries.iterator();
-		while(entryIterator.hasNext()) {
-			Entry entry = entryIterator.next();
-			buffer.writeBytes(entry.getName().getValue().getBytes(IcapCodecUtil.ASCII_CHARSET));
-			buffer.writeBytes("=".getBytes(IcapCodecUtil.ASCII_CHARSET));
-			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes(IcapCodecUtil.ASCII_CHARSET));
-			if(entryIterator.hasNext()) {
-				buffer.writeBytes(new byte[]{',',IcapCodecUtil.SP});
-			}
-		}
-        buffer.writeBytes(IcapCodecUtil.CRLF);
-        buffer.writeBytes(IcapCodecUtil.CRLF);
-		return buffer.readableBytes() - index;
-	}
-	
-	private final class Entry implements Comparable<Entry> {
+	private final static class Entry implements Comparable<Entry> {
 
-		private IcapMessageElementEnum name;
-		private Integer position;
+		private final IcapMessageElementEnum name;
+		private final Integer position;
 		private boolean processed;
 		
 		public Entry(IcapMessageElementEnum name, Integer position) {

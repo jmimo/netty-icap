@@ -32,7 +32,7 @@ public class EncapsulatedTest extends Assert {
 	@Test
 	public void testSimpleValueParsing() {
 		String parameter = "req-hdr=0, res-hdr=45, req-body=124";
-		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		Encapsulated encapsulated = new Encapsulated(parameter);
 		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
 		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
@@ -42,14 +42,14 @@ public class EncapsulatedTest extends Assert {
 	@Test
 	public void testToString() {
 		String parameter = "req-hdr=0, res-hdr=45, req-body=124";
-		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		Encapsulated encapsulated = new Encapsulated(parameter);
 		assertEquals("toString output was wrong","Encapsulated:  [REQHDR=0 : false]  [RESHDR=45 : false]  [REQBODY=124 : false] ",encapsulated.toString());
 	}
 	
 	@Test
 	public void testWhitespaceGap() {
 		String parameter = "req-hdr=0,  res-hdr=45, req-body=124";
-		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		Encapsulated encapsulated = new Encapsulated(parameter);
 		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
 		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
@@ -59,20 +59,20 @@ public class EncapsulatedTest extends Assert {
 	@Test
 	public void testIteratorWithWrongSequence() {
 		String parameter = "res-hdr=45, req-hdr=0, req-body=124";
-		Encapsulated encapsulated = Encapsulated.parseHeader(parameter);
+		Encapsulated encapsulated = new Encapsulated(parameter);
 		assertEquals("wrong body element found",IcapMessageElementEnum.REQBODY,encapsulated.containsBodyEntry());
 		assertTrue("req-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQHDR));
 		assertTrue("res-hdr value is missing",encapsulated.containsEntry(IcapMessageElementEnum.RESHDR));
 		assertTrue("req-body value is missing",encapsulated.containsEntry(IcapMessageElementEnum.REQBODY));
 		IcapMessageElementEnum reqhdr = encapsulated.getNextEntry();
 		assertEquals("req-hdr was expected",IcapMessageElementEnum.REQHDR,reqhdr);
-		encapsulated.setProcessed(reqhdr);
+		encapsulated.setEntryAsProcessed(reqhdr);
 		IcapMessageElementEnum reshdr = encapsulated.getNextEntry();
 		assertEquals("res-hdr was expected",IcapMessageElementEnum.RESHDR,reshdr);
-		encapsulated.setProcessed(reshdr);
+		encapsulated.setEntryAsProcessed(reshdr);
 		IcapMessageElementEnum reqbody = encapsulated.getNextEntry();
 		assertEquals("reqbody was expected",IcapMessageElementEnum.REQBODY,reqbody);
-		encapsulated.setProcessed(reqbody);
+		encapsulated.setEntryAsProcessed(reqbody);
 		assertNull("null was expected after last entry is processed",encapsulated.getNextEntry());
 	}
 	
@@ -81,7 +81,7 @@ public class EncapsulatedTest extends Assert {
 		String parameter = "   req-hdr=0; req-body=124, Whaterver   ";
 		boolean error = false;
 		try {
-			Encapsulated.parseHeader(parameter);
+			new Encapsulated(parameter);
 		} catch(Error e) {
 			error = true;
 		}

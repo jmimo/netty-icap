@@ -46,7 +46,7 @@ public class ReadIcapHeaderState extends State<Object> {
 		if(!icapMessageDecoder.message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
 			throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
 		}
-		Encapsulated encapsulated = Encapsulated.parseHeader(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
+		Encapsulated encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
 		
 		if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {

@@ -49,7 +49,7 @@ public class ReadHttpRequestInitialAndHeadersState extends State<Object> {
 			message.addHeader(header[0],header[1]);
 		}
 		Encapsulated encapsulated = icapMessageDecoder.message.getEncapsulatedHeader();
-		encapsulated.setProcessed(encapsulated.getNextEntry());
+		encapsulated.setEntryAsProcessed(encapsulated.getNextEntry());
 		if(encapsulated.getNextEntry() != null && encapsulated.getNextEntry().equals(IcapMessageElementEnum.RESHDR)) {
 			return StateReturnValue.createIrrelevantResult();
 		}
