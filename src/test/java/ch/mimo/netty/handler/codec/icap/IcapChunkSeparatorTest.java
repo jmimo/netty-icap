@@ -29,6 +29,22 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void sendNonIcapMessage() {
+		embedder.offer("This is a simple string");
+		String message = (String)embedder.poll();
+		assertNotNull("input response was not received",message);
+		assertEquals("input message is not equals output message","This is a simple string",message);
+	}
+	
+	@Test
+	public void separateREQMODWithGetRequestNoBodyIcapRequest() {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyIcapMessage());
+		IcapMessage message = (IcapMessage)embedder.poll();
+		assertNotNull("message was null",message);
+		assertNull("still some elements in the pipeline",embedder.poll());
+	}
+	
+	@Test
 	public void separateREQMODWithGetRequestAndData() {
 		embedder.offer(DataMockery.createREQMODWithGetRequestAndDataIcapMessage());
 		IcapMessage message = (IcapMessage)embedder.poll();
@@ -88,9 +104,7 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		assertTrue("trailer is not marked as preview",trailer.isPreviewChunk());
 		assertNotNull("chunk trailer was null",trailer);
 	}
-	
-	// TODO test icap response
-	// TODO test message without body
+		
 	// TODO test preview with early termination
 	// TODO test options body
 }

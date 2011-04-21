@@ -32,13 +32,12 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
     	Object msg = e.getMessage();
     	if(msg instanceof IcapMessage) {
     		IcapMessage message = (IcapMessage)msg;
-    		// TODO handle preview
     		Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     		ChannelBuffer content = null;
-    		if(message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
+    		if(message.getHttpRequest() != null && message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
     			content = message.getHttpRequest().getContent();
     			message.setBody(IcapMessageElementEnum.REQBODY);
-    		} else if(message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
+    		} else if(message.getHttpResponse() != null && message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
     			content = message.getHttpResponse().getContent();
     			message.setBody(IcapMessageElementEnum.RESBODY);
     		}
@@ -59,6 +58,7 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
 					dataWasSent = true;
 				}
 				if(dataWasSent) {
+					// TODO handle preview ieof!
 					IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
 					if(message.isPreviewMessage()) {
 						trailer.setIsPreviewChunk();
@@ -67,8 +67,6 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
 					// trailing headers and what they are named.
 					Channels.fireMessageReceived(ctx,trailer,e.getRemoteAddress());
 				}
-    		} else {
-    			ctx.sendUpstream(e);
     		}
     	} else {
     		ctx.sendUpstream(e);
