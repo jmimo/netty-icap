@@ -128,7 +128,6 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		assertTrue("trailer is not marked as preview",trailer.isPreviewChunk());
 		assertTrue("trailer is not marked as early terminated",trailer.isEarlyTerminated());
 	}
-	
-	// TODO test preview with early termination
+
 	// TODO test options body
 }
