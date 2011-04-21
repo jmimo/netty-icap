@@ -29,9 +29,7 @@ public class ReadChunkState extends State<Object> {
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {		
 		IcapChunk chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.currentChunkSize));
-		if(icapMessageDecoder.message.isPreviewMessage()) {
-			chunk.setIsPreviewChunk();
-		}
+		chunk.setPreviewChunk(icapMessageDecoder.message.isPreviewMessage());
 		return StateReturnValue.createRelevantResult(chunk);
 	}
 

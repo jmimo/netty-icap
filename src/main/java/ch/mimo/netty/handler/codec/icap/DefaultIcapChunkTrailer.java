@@ -32,8 +32,8 @@ public class DefaultIcapChunkTrailer extends DefaultHttpChunkTrailer implements 
 	}
 	
 	@Override
-	public void setIsPreviewChunk() {
-		this.preview = true;
+	public void setPreviewChunk(boolean preview) {
+		this.preview = preview;
 	}
 
 	@Override
@@ -42,8 +42,8 @@ public class DefaultIcapChunkTrailer extends DefaultHttpChunkTrailer implements 
 	}
 
 	@Override
-	public void setIsEarlyTerminated() {
-		this.earlyTerminated = true;
+	public void setEarlyTermination(boolean earlyTermination) {
+		this.earlyTerminated = earlyTermination;
 	}
 
 	@Override

@@ -25,16 +25,16 @@ public class DefaultIcapChunk extends DefaultHttpChunk implements IcapChunk {
 		super(content);
 	}
 	
-	public void setIsPreviewChunk() {
-		preview = true;
+	public void setPreviewChunk(boolean preview) {
+		this.preview = preview;
 	}
 	
 	public boolean isPreviewChunk() {
 		return preview;
 	}
-
-	public void setIsEarlyTerminated() {
-		earlyTerminated = true;
+	
+	public void setEarlyTermination(boolean earlyTermination) {
+		this.earlyTerminated = earlyTermination;
 	}
 	
 	public boolean isEarlyTerminated() {

@@ -101,10 +101,34 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		assertTrue("chunk 3 is not marked as preview",chunk3.isPreviewChunk());
 		assertEquals("chunk 3 content is wrong","gin server.",chunk3.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
 		IcapChunkTrailer trailer = (IcapChunkTrailer)embedder.poll();
-		assertTrue("trailer is not marked as preview",trailer.isPreviewChunk());
 		assertNotNull("chunk trailer was null",trailer);
+		assertTrue("trailer is not marked as preview",trailer.isPreviewChunk());
 	}
-		
+	
+	@Test
+	public void separateREQMODWithPreviewDataAndEarlyTermination() {
+		embedder.offer(DataMockery.createRESPMODWithPreviewDataAndEarlyTerminationIcapRequest());
+		IcapMessage message = (IcapMessage)embedder.poll();
+		assertNotNull("message was null",message);
+		assertEquals("message body indicator is wrong",IcapMessageElementEnum.RESBODY,message.getBody());
+		IcapChunk chunk1 = (IcapChunk)embedder.poll();
+		assertNotNull("chunk 1 was null",chunk1);
+		assertTrue("chunk 1 is not marked as preview",chunk1.isPreviewChunk());
+		assertEquals("chunk 1 content is wrong","This is data that wa",chunk1.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk2 = (IcapChunk)embedder.poll();
+		assertNotNull("chunk 2 was null",chunk2);
+		assertTrue("chunk 2 is not marked as preview",chunk2.isPreviewChunk());
+		assertEquals("chunk 2 content is wrong","s returned by an ori",chunk2.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk3 = (IcapChunk)embedder.poll();
+		assertNotNull("chunk 3 was null",chunk3);
+		assertTrue("chunk 3 is not marked as preview",chunk3.isPreviewChunk());
+		assertEquals("chunk 3 content is wrong","g",chunk3.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunkTrailer trailer = (IcapChunkTrailer)embedder.poll();
+		assertNotNull("chunk trailer was null",trailer);
+		assertTrue("trailer is not marked as preview",trailer.isPreviewChunk());
+		assertTrue("trailer is not marked as early terminated",trailer.isEarlyTerminated());
+	}
+	
 	// TODO test preview with early termination
 	// TODO test options body
 }

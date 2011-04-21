@@ -43,6 +43,17 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
     		}
     		// TODO implement options body for this we need to introduce a ChannelBuffer member in the IcapMessage implementation.
     		if(content != null) {
+    			boolean isPreview = message.isPreviewMessage();
+    			boolean isEarlyTerminated = false;
+    			if(isPreview) {
+    				int amount = 0;
+    				try {
+    					amount = Integer.parseInt(message.getHeader(IcapHeaders.Names.PREVIEW));
+    				} catch(NumberFormatException nfe) {
+    					// NOOP
+    				}
+    				isEarlyTerminated = content.readableBytes() < amount;
+    			}
     			boolean dataWasSent = false;
 				while(content.readableBytes() > 0) {
 					IcapChunk chunk = null;
@@ -51,18 +62,15 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
 					} else {
 						chunk = new DefaultIcapChunk(content.readBytes(content.readableBytes()));
 					}
-					if(message.isPreviewMessage()) {
-						chunk.setIsPreviewChunk();
-					}
+					chunk.setPreviewChunk(isPreview);
+					chunk.setEarlyTermination(isEarlyTerminated);
 					Channels.fireMessageReceived(ctx,chunk,e.getRemoteAddress());
 					dataWasSent = true;
 				}
 				if(dataWasSent) {
-					// TODO handle preview ieof!
 					IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
-					if(message.isPreviewMessage()) {
-						trailer.setIsPreviewChunk();
-					}
+					trailer.setPreviewChunk(isPreview);
+					trailer.setEarlyTermination(isEarlyTerminated);
 					// TODO we are currently unable to handle trailing headers. for this we have to specify in the message that there are 
 					// trailing headers and what they are named.
 					Channels.fireMessageReceived(ctx,trailer,e.getRemoteAddress());
