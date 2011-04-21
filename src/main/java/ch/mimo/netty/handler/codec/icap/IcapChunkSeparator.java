@@ -38,7 +38,7 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
     		if(message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
     			content = message.getHttpRequest().getContent();
     			message.setBody(IcapMessageElementEnum.REQBODY);
-    		} else if(message.getHttpResponse().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
+    		} else if(message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
     			content = message.getHttpResponse().getContent();
     			message.setBody(IcapMessageElementEnum.RESBODY);
     		}
@@ -52,13 +52,17 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
 					} else {
 						chunk = new DefaultIcapChunk(content.readBytes(content.readableBytes()));
 					}
-					// TODO handle preview chunks
+					if(message.isPreviewMessage()) {
+						chunk.setIsPreviewChunk();
+					}
 					Channels.fireMessageReceived(ctx,chunk,e.getRemoteAddress());
 					dataWasSent = true;
 				}
 				if(dataWasSent) {
 					IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
-					// TODO handle preview
+					if(message.isPreviewMessage()) {
+						trailer.setIsPreviewChunk();
+					}
 					// TODO we are currently unable to handle trailing headers. for this we have to specify in the message that there are 
 					// trailing headers and what they are named.
 					Channels.fireMessageReceived(ctx,trailer,e.getRemoteAddress());

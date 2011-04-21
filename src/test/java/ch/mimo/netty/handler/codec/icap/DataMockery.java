@@ -997,7 +997,6 @@ public final class DataMockery extends Assert {
 	}	
 	
 	public static final IcapRequest createRESPMODWithGetRequestAndPreviewIncludingEncapsulationHeaderIcapRequest() {
-		// TODO
 		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.RESPMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		request.addHeader("Encapsulated","req-hdr=0, res-hdr=137, res-body=296");
 		request.addHeader("Preview","51");
@@ -1135,7 +1134,45 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
+	public static final IcapResponse createREQMODWithDataIcapResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Host","icap-server.net");
+		response.addHeader("ISTag","Serial-0815");
+		response.setBody(IcapMessageElementEnum.REQBODY);
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
+		response.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		httpRequest.setContent(buffer);
+		return response;
+	}
 	
+	public static final IcapRequest createRESPMODWithPreviewDataIcapRequest() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.RESPMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
+		request.addHeader("Preview","51");
+		request.setBody(IcapMessageElementEnum.RESBODY);
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/origin-resource");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain, image/gif");
+		httpRequest.addHeader("Accept-Encoding","gzip, compress");
+		HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.OK);
+		request.setHttpResponse(httpResponse);
+		httpResponse.addHeader("Date","Mon, 10 Jan 2000 09:52:22 GMT");
+		httpResponse.addHeader("Server","Apache/1.3.6 (Unix)");
+		httpResponse.addHeader("ETag","\"63840-1ab7-378d415b\"");
+		httpResponse.addHeader("Content-Type","text/html");
+		httpResponse.addHeader("Content-Length","151");
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		httpResponse.setContent(buffer);
+		return request;
+	}
 	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {
 		if(value == null) {
