@@ -13,11 +13,13 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
 public class DefaultIcapResponse extends AbstractIcapMessage implements IcapResponse {
 
 	private IcapResponseStatus status;
+	private ChannelBuffer optionsContent;
 	
 	public DefaultIcapResponse(HttpVersion version, IcapResponseStatus status) {
 		super(version);
@@ -37,6 +39,14 @@ public class DefaultIcapResponse extends AbstractIcapMessage implements IcapResp
 	@Override
 	protected void validateHeader(String name) throws IllegalArgumentException {
 		// NOOP
+	}
+
+	public void setOptionsContent(ChannelBuffer optionsContent) {
+		this.optionsContent = optionsContent;
+	}
+
+	public ChannelBuffer getOptionsContent() {
+		return optionsContent;
 	}
 
 }

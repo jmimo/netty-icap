@@ -1196,6 +1196,22 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
+	public static final IcapResponse createOPTIONSResponseWithBodyInIcapResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Methods","REQMOD RESPMOD");
+		response.addHeader("Service","Joggels icap server 1.0");
+		response.addHeader("ISTag","5BDEEEA9-12E4-2");
+		response.addHeader("Max-Connections","100");
+		response.addHeader("Options-TTL","1000");
+		response.addHeader("Allow","204");
+		response.addHeader("Preview","1024");
+		response.addHeader("Opt-body-type","Simple-text");
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		response.setOptionsContent(buffer);
+		return response;
+	}
+	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {
 		if(value == null) {
 			buffer.writeBytes(IcapCodecUtil.CRLF);

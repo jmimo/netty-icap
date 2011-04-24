@@ -128,6 +128,25 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		assertTrue("trailer is not marked as preview",trailer.isPreviewChunk());
 		assertTrue("trailer is not marked as early terminated",trailer.isEarlyTerminated());
 	}
+	
+	@Test
+	public void separateOPTIONSResponseWithBody() {
+		embedder.offer(DataMockery.createOPTIONSResponseWithBodyInIcapResponse());
+		IcapMessage message = (IcapMessage)embedder.poll();
+		assertNotNull("message was null",message);
+		assertEquals("message body indicator is wrong",IcapMessageElementEnum.OPTBODY,message.getBody());
+		IcapChunk chunk1 = (IcapChunk)embedder.poll();
+		assertNotNull("chunk 1 was null",chunk1);
+		assertEquals("chunk 1 content is wrong","This is data that wa",chunk1.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk2 = (IcapChunk)embedder.poll();
+		assertNotNull("chunk 2 was null",chunk2);
+		assertEquals("chunk 2 content is wrong","s returned by an ori",chunk2.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk3 = (IcapChunk)embedder.poll();
+		assertNotNull("chunk 3 was null",chunk3);
+		assertEquals("chunk 3 content is wrong","gin server.",chunk3.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunkTrailer trailer = (IcapChunkTrailer)embedder.poll();
+		assertNotNull("chunk trailer was null",trailer);
+	}
 
 	// TODO test options body
 }

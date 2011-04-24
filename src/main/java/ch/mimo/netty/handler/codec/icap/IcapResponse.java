@@ -13,9 +13,15 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 public interface IcapResponse extends IcapMessage {
 
 	void setStatus(IcapResponseStatus status);
 	
 	IcapResponseStatus getStatus();
+	
+	void setOptionsContent(ChannelBuffer optionsContent);
+
+	ChannelBuffer getOptionsContent();
 }

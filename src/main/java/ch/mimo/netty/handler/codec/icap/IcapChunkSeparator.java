@@ -34,14 +34,19 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
     		IcapMessage message = (IcapMessage)msg;
     		Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     		ChannelBuffer content = null;
-    		if(message.getHttpRequest() != null && message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
+    		if(message instanceof IcapResponse && ((IcapResponse)message).getOptionsContent() != null) {
+    			IcapResponse response = (IcapResponse)message;
+    			content = response.getOptionsContent();
+    			if(content != null) {
+    				message.setBody(IcapMessageElementEnum.OPTBODY);
+    			}
+    		} else if(message.getHttpRequest() != null && message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
     			content = message.getHttpRequest().getContent();
     			message.setBody(IcapMessageElementEnum.REQBODY);
     		} else if(message.getHttpResponse() != null && message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
     			content = message.getHttpResponse().getContent();
     			message.setBody(IcapMessageElementEnum.RESBODY);
     		}
-    		// TODO implement options body for this we need to introduce a ChannelBuffer member in the IcapMessage implementation.
     		if(content != null) {
     			boolean isPreview = message.isPreviewMessage();
     			boolean isEarlyTerminated = false;
