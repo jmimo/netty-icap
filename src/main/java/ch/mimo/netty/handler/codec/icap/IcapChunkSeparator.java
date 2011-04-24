@@ -55,7 +55,7 @@ public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
     				try {
     					amount = Integer.parseInt(message.getHeader(IcapHeaders.Names.PREVIEW));
     				} catch(NumberFormatException nfe) {
-    					// NOOP
+    					// TODO throw exception
     				}
     				isEarlyTerminated = content.readableBytes() < amount;
     			}

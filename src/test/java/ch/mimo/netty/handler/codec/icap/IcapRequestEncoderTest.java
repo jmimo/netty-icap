@@ -30,7 +30,7 @@ public class IcapRequestEncoderTest extends AbstractEncoderTest {
 	
 	@Test
 	public void testEncoderWithUnknownObject() {
-		embedder.offer(new String());
+		embedder.offer("");
 		assertNull("poll should return null",embedder.poll());
 	}
 	
