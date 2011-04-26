@@ -18,12 +18,22 @@ import org.jboss.netty.buffer.ChannelBuffer;
 public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> {
 
 	public static enum DecisionState {
-		READ_CHUNK,
-		READ_HUGE_CHUNK_IN_SMALER_CHUNKS,
-		READ_TRAILING_HEADERS,
-		IS_LAST_PREVIEW_CHUNK,
-		IS_LAST_CHUNK,
-		IRRELEVANT
+		READ_CHUNK(StateEnum.READ_CHUNK_STATE),
+		READ_HUGE_CHUNK_IN_SMALER_CHUNKS(StateEnum.READ_CHUNKED_CONTENT_AS_CHUNKS_STATE),
+		READ_TRAILING_HEADERS(StateEnum.READ_TRAILING_HEADERS_STATE),
+		IS_LAST_PREVIEW_CHUNK(StateEnum.READ_CHUNK_SIZE_STATE),
+		IS_LAST_CHUNK(StateEnum.SKIP_CONTROL_CHARS),
+		IRRELEVANT(StateEnum.READ_CHUNK_SIZE_STATE);
+		
+		private StateEnum state;
+		
+		DecisionState(StateEnum nextState) {
+			state = nextState;
+		}
+		
+		public StateEnum getNextState() {
+			return state;
+		}
 	}
 	
 	public ReadChunkSizeState(String name) {
@@ -67,30 +77,6 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 
 	@Override
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, DecisionState decisionInformation) throws Exception {
-		StateEnum returnValue = null;
-		switch (decisionInformation) {
-		case READ_CHUNK:
-			returnValue = StateEnum.READ_CHUNK_STATE;
-			break;
-		case READ_HUGE_CHUNK_IN_SMALER_CHUNKS:
-			returnValue = StateEnum.READ_CHUNKED_CONTENT_AS_CHUNKS_STATE;
-			break;
-		case READ_TRAILING_HEADERS:
-			returnValue = StateEnum.READ_TRAILING_HEADERS_STATE;
-			break;
-		case IS_LAST_CHUNK:
-			returnValue = StateEnum.SKIP_CONTROL_CHARS;
-			break;
-		case IS_LAST_PREVIEW_CHUNK:
-			returnValue = StateEnum.READ_CHUNK_SIZE_STATE;
-			break;
-		case IRRELEVANT:
-			returnValue = StateEnum.READ_CHUNK_SIZE_STATE;
-			break;
-		default:
-			returnValue = StateEnum.READ_CHUNK_SIZE_STATE;
-			break;
-		}
-		return returnValue;
+		return decisionInformation.getNextState();
 	}
 }
