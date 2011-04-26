@@ -22,7 +22,6 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
-// TODO needs to be up and downstream if we want to separate out bound requests.
 public class IcapChunkSeparator implements ChannelDownstreamHandler {
 
 	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapChunkSeparator.class);
@@ -41,20 +40,7 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 	    	if(msg instanceof IcapMessage) {
 	    		LOG.debug("Separation of message [" + msg.getClass().getName() + "] ");
 	    		IcapMessage message = (IcapMessage)msg;
-	    		ChannelBuffer content = null;
-	    		if(message instanceof IcapResponse && ((IcapResponse)message).getOptionsContent() != null) {
-	    			IcapResponse response = (IcapResponse)message;
-	    			content = response.getOptionsContent();
-	    			if(content != null) {
-	    				message.setBody(IcapMessageElementEnum.OPTBODY);
-	    			}
-	    		} else if(message.getHttpRequest() != null && message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
-	    			content = message.getHttpRequest().getContent();
-	    			message.setBody(IcapMessageElementEnum.REQBODY);
-	    		} else if(message.getHttpResponse() != null && message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
-	    			content = message.getHttpResponse().getContent();
-	    			message.setBody(IcapMessageElementEnum.RESBODY);
-	    		}
+	    		ChannelBuffer content = extractContentFromMessage(message);
 	    		fireDownstreamEvent(ctx,message,msgEvent);
 	    		if(content != null) {
 	    			boolean isPreview = message.isPreviewMessage();
@@ -98,6 +84,24 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 		}
 	}
     
+	private ChannelBuffer extractContentFromMessage(IcapMessage message) {
+		ChannelBuffer content = null;
+		if(message instanceof IcapResponse && ((IcapResponse)message).getOptionsContent() != null) {
+			IcapResponse response = (IcapResponse)message;
+			content = response.getOptionsContent();
+			if(content != null) {
+				message.setBody(IcapMessageElementEnum.OPTBODY);
+			}
+		} else if(message.getHttpRequest() != null && message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
+			content = message.getHttpRequest().getContent();
+			message.setBody(IcapMessageElementEnum.REQBODY);
+		} else if(message.getHttpResponse() != null && message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
+			content = message.getHttpResponse().getContent();
+			message.setBody(IcapMessageElementEnum.RESBODY);
+		}
+		return content;
+	}
+	
     private void fireDownstreamEvent(ChannelHandlerContext ctx, Object message, MessageEvent messageEvent) {
     	DownstreamMessageEvent downstreamMessageEvent = new DownstreamMessageEvent(ctx.getChannel(),
     																				messageEvent.getFuture(),
