@@ -20,6 +20,8 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 
 /**
  * This Icap chunk aggregator will receive the icap message and store the body
@@ -35,6 +37,8 @@ import org.jboss.netty.handler.codec.frame.TooLongFrameException;
  */
 public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 
+	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapChunkAggregator.class);
+	
 	private long maxContentLength;
 	private IcapMessage message;
 	
@@ -46,6 +50,7 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
     	Object msg = e.getMessage();
     	if(msg instanceof IcapMessage) {
+    		LOG.debug("Aggregation of message [" + msg.getClass().getName() + "] ");
     		IcapMessage currentMessage = (IcapMessage)msg;
     		message = currentMessage;
     		if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
@@ -54,6 +59,7 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     			return;
     		}
     	} else if(msg instanceof IcapChunkTrailer) {
+    		LOG.debug("Aggregation of chunk trailer [" + msg.getClass().getName() + "] ");
     		if(message == null) {
     			ctx.sendUpstream(e);
     		} else {
@@ -70,6 +76,7 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
     		}
     	} else if(msg instanceof IcapChunk) {
+    		LOG.debug("Aggregation of chunk [" + msg.getClass().getName() + "] ");
     		IcapChunk chunk = (IcapChunk)msg;
     		if(message == null) {
     			ctx.sendUpstream(e);

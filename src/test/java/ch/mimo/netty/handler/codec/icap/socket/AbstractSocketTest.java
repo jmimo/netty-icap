@@ -33,6 +33,7 @@ import org.junit.BeforeClass;
 
 import ch.mimo.netty.handler.codec.icap.AbstractJDKLoggerPreparation;
 import ch.mimo.netty.handler.codec.icap.IcapChunkAggregator;
+import ch.mimo.netty.handler.codec.icap.IcapChunkSeparator;
 import ch.mimo.netty.handler.codec.icap.IcapClientCodec;
 import ch.mimo.netty.handler.codec.icap.IcapRequestDecoder;
 import ch.mimo.netty.handler.codec.icap.IcapRequestEncoder;
@@ -51,6 +52,7 @@ public abstract class AbstractSocketTest extends AbstractJDKLoggerPreparation {
 		CLASSIC,
 		CODEC,
 		AGGREGATOR,
+		SEPARATOR_AGGREGATOR,
 		TRICKLE
 	}
 	
@@ -78,6 +80,11 @@ public abstract class AbstractSocketTest extends AbstractJDKLoggerPreparation {
         LOCALHOST = localhost;
     }
 	
+//    @BeforeClass
+//    public static void log() {
+//    	System.setProperty("icap.test.output","true");
+//    }
+    
 	@BeforeClass
 	public static void init() {
 		executor = Executors.newCachedThreadPool();
@@ -106,6 +113,9 @@ public abstract class AbstractSocketTest extends AbstractJDKLoggerPreparation {
 			break;
 		case AGGREGATOR:
 			setupClassicPipelineWithChunkAggregator(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
+			break;
+		case SEPARATOR_AGGREGATOR:
+			setupClassicPipelineWithAggregatorAndSeparator(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
 			break;
 		case CODEC:
 			setupCodecPipeline(serverBootstrap,clientBootstrap,serverHandler,clientHandler);
@@ -209,6 +219,20 @@ public abstract class AbstractSocketTest extends AbstractJDKLoggerPreparation {
     	clientBootstrap.getPipeline().addLast("trickle",new TrickleDownstreamHandler(20,3));
     	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
       	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+      	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
+    }
+    
+    protected void setupClassicPipelineWithAggregatorAndSeparator(ServerBootstrap serverBootstrap, ClientBootstrap clientBootstrap, Handler serverHandler, Handler clientHandler) {
+    	serverBootstrap.getPipeline().addLast("decoder",new IcapRequestDecoder());
+    	serverBootstrap.getPipeline().addLast("chunkAggregator",new IcapChunkAggregator(4012));
+    	serverBootstrap.getPipeline().addLast("encoder",new IcapResponseEncoder());
+    	serverBootstrap.getPipeline().addLast("chunkSeparator",new IcapChunkSeparator(4012));
+    	serverBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)serverHandler);
+
+    	clientBootstrap.getPipeline().addLast("encoder",new IcapRequestEncoder());
+    	clientBootstrap.getPipeline().addLast("chunkSeparator",new IcapChunkSeparator(4021));
+      	clientBootstrap.getPipeline().addLast("decoder",new IcapResponseDecoder());
+      	clientBootstrap.getPipeline().addLast("chunkAggregator",new IcapChunkAggregator(4012));
       	clientBootstrap.getPipeline().addLast("handler",(SimpleChannelUpstreamHandler)clientHandler);
     }
 }

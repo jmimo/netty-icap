@@ -14,75 +14,94 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.ChannelDownstreamHandler;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 
-public class IcapChunkSeparator extends SimpleChannelUpstreamHandler {
+// TODO needs to be up and downstream if we want to separate out bound requests.
+public class IcapChunkSeparator implements ChannelDownstreamHandler {
 
+	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapChunkSeparator.class);
+	
 	private int chunkSize;
 	
 	public IcapChunkSeparator(int chunkSize) {
 		this.chunkSize = chunkSize;
 	}
 	
-    @Override
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-    	Object msg = e.getMessage();
-    	if(msg instanceof IcapMessage) {
-    		IcapMessage message = (IcapMessage)msg;
-    		Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
-    		ChannelBuffer content = null;
-    		if(message instanceof IcapResponse && ((IcapResponse)message).getOptionsContent() != null) {
-    			IcapResponse response = (IcapResponse)message;
-    			content = response.getOptionsContent();
-    			if(content != null) {
-    				message.setBody(IcapMessageElementEnum.OPTBODY);
-    			}
-    		} else if(message.getHttpRequest() != null && message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
-    			content = message.getHttpRequest().getContent();
-    			message.setBody(IcapMessageElementEnum.REQBODY);
-    		} else if(message.getHttpResponse() != null && message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
-    			content = message.getHttpResponse().getContent();
-    			message.setBody(IcapMessageElementEnum.RESBODY);
-    		}
-    		if(content != null) {
-    			boolean isPreview = message.isPreviewMessage();
-    			boolean isEarlyTerminated = false;
-    			if(isPreview) {
-    				int amount = 0;
-    				try {
-    					amount = Integer.parseInt(message.getHeader(IcapHeaders.Names.PREVIEW));
-    				} catch(NumberFormatException nfe) {
-    					// TODO throw exception
-    				}
-    				isEarlyTerminated = content.readableBytes() < amount;
-    			}
-    			boolean dataWasSent = false;
-				while(content.readableBytes() > 0) {
-					IcapChunk chunk = null;
-					if(content.readableBytes() > chunkSize) {
-						chunk = new DefaultIcapChunk(content.readBytes(chunkSize));
-					} else {
-						chunk = new DefaultIcapChunk(content.readBytes(content.readableBytes()));
+	@Override
+	public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+		if (e instanceof MessageEvent) {
+			MessageEvent msgEvent = (MessageEvent)e;
+			Object msg = msgEvent.getMessage();
+	    	if(msg instanceof IcapMessage) {
+	    		LOG.debug("Separation of message [" + msg.getClass().getName() + "] ");
+	    		IcapMessage message = (IcapMessage)msg;
+	    		ChannelBuffer content = null;
+	    		if(message instanceof IcapResponse && ((IcapResponse)message).getOptionsContent() != null) {
+	    			IcapResponse response = (IcapResponse)message;
+	    			content = response.getOptionsContent();
+	    			if(content != null) {
+	    				message.setBody(IcapMessageElementEnum.OPTBODY);
+	    			}
+	    		} else if(message.getHttpRequest() != null && message.getHttpRequest().getContent() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
+	    			content = message.getHttpRequest().getContent();
+	    			message.setBody(IcapMessageElementEnum.REQBODY);
+	    		} else if(message.getHttpResponse() != null && message.getHttpResponse().getContent() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
+	    			content = message.getHttpResponse().getContent();
+	    			message.setBody(IcapMessageElementEnum.RESBODY);
+	    		}
+	    		fireDownstreamEvent(ctx,message,msgEvent);
+	    		if(content != null) {
+	    			boolean isPreview = message.isPreviewMessage();
+	    			boolean isEarlyTerminated = false;
+	    			if(isPreview) {
+	    				int amount = 0;
+	    				try {
+	    					amount = Integer.parseInt(message.getHeader(IcapHeaders.Names.PREVIEW));
+	    				} catch(NumberFormatException nfe) {
+	    					// TODO throw exception
+	    				}
+	    				isEarlyTerminated = content.readableBytes() < amount;
+	    			}
+	    			boolean dataWasSent = false;
+					while(content.readableBytes() > 0) {
+						IcapChunk chunk = null;
+						if(content.readableBytes() > chunkSize) {
+							chunk = new DefaultIcapChunk(content.readBytes(chunkSize));
+						} else {
+							chunk = new DefaultIcapChunk(content.readBytes(content.readableBytes()));
+						}
+						chunk.setPreviewChunk(isPreview);
+						chunk.setEarlyTermination(isEarlyTerminated);
+						fireDownstreamEvent(ctx,chunk,msgEvent);
+						dataWasSent = true;
 					}
-					chunk.setPreviewChunk(isPreview);
-					chunk.setEarlyTermination(isEarlyTerminated);
-					Channels.fireMessageReceived(ctx,chunk,e.getRemoteAddress());
-					dataWasSent = true;
-				}
-				if(dataWasSent) {
-					IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
-					trailer.setPreviewChunk(isPreview);
-					trailer.setEarlyTermination(isEarlyTerminated);
-					// TODO we are currently unable to handle trailing headers. for this we have to specify in the message that there are 
-					// trailing headers and what they are named.
-					Channels.fireMessageReceived(ctx,trailer,e.getRemoteAddress());
-				}
-    		}
-    	} else {
-    		ctx.sendUpstream(e);
-    	}
+					if(dataWasSent) {
+						IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
+						trailer.setPreviewChunk(isPreview);
+						trailer.setEarlyTermination(isEarlyTerminated);
+						// TODO we are currently unable to handle trailing headers. for this we have to specify in the message that there are 
+						// trailing headers and what they are named.
+						fireDownstreamEvent(ctx,trailer,msgEvent);
+					}
+	    		}
+	    	} else {
+	    		ctx.sendDownstream(e);
+	    	}
+		} else {
+			ctx.sendDownstream(e);
+		}
+	}
+    
+    private void fireDownstreamEvent(ChannelHandlerContext ctx, Object message, MessageEvent messageEvent) {
+    	DownstreamMessageEvent downstreamMessageEvent = new DownstreamMessageEvent(ctx.getChannel(),
+    																				messageEvent.getFuture(),
+    																				message,messageEvent.getRemoteAddress());
+    	ctx.sendDownstream(downstreamMessageEvent);
     }
 }

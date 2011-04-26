@@ -16,16 +16,17 @@ package ch.mimo.netty.handler.codec.icap;
 import java.io.UnsupportedEncodingException;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
+import org.jboss.netty.handler.codec.embedder.EncoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
 
 public class IcapChunkSeparatorTest extends AbstractIcapTest {
 
-	private DecoderEmbedder<Object> embedder;
+	private EncoderEmbedder<Object> embedder;
 	
 	@Before
 	public void setUp() throws UnsupportedEncodingException {
-		embedder = new DecoderEmbedder<Object>(new IcapChunkSeparator(20));
+		embedder = new EncoderEmbedder<Object>(new IcapChunkSeparator(20));
 	}
 	
 	@Test

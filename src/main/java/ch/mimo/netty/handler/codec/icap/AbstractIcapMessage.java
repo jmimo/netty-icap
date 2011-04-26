@@ -199,15 +199,21 @@ public abstract class AbstractIcapMessage implements IcapMessage {
         if(httpRequest != null) {
         	buf.append("--- encapsulated HTTP Request ---").append(StringUtil.NEWLINE);
         	buf.append(httpRequest.toString());
+        	if(httpRequest.getContent() != null & httpRequest.getContent().readableBytes() > 0) {
+        		buf.append(StringUtil.NEWLINE).append("--> HTTP Request contains [" + httpRequest.getContent().readableBytes() + "] bytes of data").append(StringUtil.NEWLINE);
+        	}
         }
         
         if(httpResponse != null) {
         	buf.append("--- encapsulated HTTP Response ---").append(StringUtil.NEWLINE);
         	buf.append(httpResponse.toString());
+        	if(httpResponse.getContent() != null & httpResponse.getContent().readableBytes() > 0) {
+        		buf.append(StringUtil.NEWLINE).append("--> HTTP Response contains [" + httpResponse.getContent().readableBytes() + "] bytes of data").append(StringUtil.NEWLINE);;
+        	}
         }
         
         if(isPreviewMessage()) {
-        	buf.append("--- Preview ---");
+        	buf.append("--- Preview ---").append(StringUtil.NEWLINE);
         	buf.append("Preview size: " + getHeader(IcapHeaders.Names.PREVIEW));
         }
         

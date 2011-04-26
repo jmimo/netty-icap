@@ -23,11 +23,20 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.jboss.netty.logging.InternalLogger;
+import org.jboss.netty.logging.InternalLoggerFactory;
 
 public abstract class IcapMessageEncoder extends OneToOneEncoder {
 	
+	private final InternalLogger LOG;
+	
+	public IcapMessageEncoder() {
+		LOG = InternalLoggerFactory.getInstance(getClass());
+	}
+	
 	@Override
 	protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
+		LOG.debug("Encoding [" + msg.getClass().getName() + "]");
 		if(msg instanceof IcapMessage) {
 			IcapMessage message = (IcapMessage)msg;
             ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(channel.getConfig().getBufferFactory());

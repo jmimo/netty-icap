@@ -418,5 +418,46 @@ public abstract class SocketTests extends AbstractSocketTest {
 		sendREQMODWithPreviewAndReturn100Continue(PipelineType.TRICKLE);
 	}
 
+	private class SendREQMODWithGetRequestAndDataServerHandler extends AbstractHandler {
+
+		private boolean requestReceived = false;
+		private boolean dataReceived = false;
+		
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapRequest) {
+				IcapRequest request = (IcapRequest)msg;
+				requestReceived = true;
+				dataReceived = request.getHttpRequest().getContent().readableBytes() > 0;
+				channel.write(DataMockery.createREQMODWithDataIcapResponse());
+			}
+			return requestReceived & dataReceived;
+		}
+		
+	}
+	
+	private class SendREQMODWithGetRequestAndDataClientHandler extends AbstractHandler {
+
+		private boolean responseReceived = false;
+		private boolean dataReceived = false;
+		
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapResponse) {
+				IcapResponse response = (IcapResponse)msg;
+				responseReceived = true;
+				dataReceived = response.getHttpRequest().getContent().readableBytes() > 0;
+			}
+			return responseReceived & dataReceived;
+		}
+		
+	}
+	
+	@Test
+	public void aggregatorSeparatorCombinationTest() {
+		runSocketTest(new SendREQMODWithGetRequestAndDataServerHandler(),new SendREQMODWithGetRequestAndDataClientHandler(),new Object[]{DataMockery.createREQMODWithGetRequestAndDataIcapMessage()},PipelineType.SEPARATOR_AGGREGATOR);
+	}
 }
 

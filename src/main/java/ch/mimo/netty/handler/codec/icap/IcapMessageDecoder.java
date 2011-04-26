@@ -22,7 +22,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 // TODO add reset function in case of unexpected exception
 public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 
-	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapMessageDecoder.class);
+	private final InternalLogger LOG;
 	
     protected final int maxInitialLineLength;
     protected final int maxIcapHeaderSize;
@@ -32,6 +32,8 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	protected IcapMessage message;
 	
 	protected int currentChunkSize;
+	
+	
 	
     /**
      * Creates a new instance with the default
@@ -47,6 +49,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
      */
     protected IcapMessageDecoder(int maxInitialLineLength, int maxIcapHeaderSize, int maxHttpHeaderSize, int maxChunkSize) {
         super(StateEnum.SKIP_CONTROL_CHARS,true);
+        LOG = InternalLoggerFactory.getInstance(getClass());
         if (maxInitialLineLength <= 0) {
             throw new IllegalArgumentException("maxInitialLineLength must be a positive integer: " + maxInitialLineLength);
         }
