@@ -20,6 +20,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
+import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
@@ -35,12 +36,14 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * @author Michael Mimo Moratti
  *
  */
+
+// TODO options body
 public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 
 	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapChunkAggregator.class);
 	
 	private long maxContentLength;
-	private IcapMessage message;
+	private IcapMessageWrapper message;
 	
 	public IcapChunkAggregator(long maxContentLength) {
 		this.maxContentLength = maxContentLength;
@@ -52,9 +55,9 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     	if(msg instanceof IcapMessage) {
     		LOG.debug("Aggregation of message [" + msg.getClass().getName() + "] ");
     		IcapMessage currentMessage = (IcapMessage)msg;
-    		message = currentMessage;
-    		if(message.getBody() == null || message.getBody().equals(IcapMessageElementEnum.NULLBODY)) {
-    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
+    		message = new IcapMessageWrapper(currentMessage);
+    		if(!message.hasBody()) {
+    			Channels.fireMessageReceived(ctx,message.getIcapMessage(),e.getRemoteAddress());
     			message = null;
     			return;
     		}
@@ -66,14 +69,10 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     			IcapChunkTrailer trailer = (IcapChunkTrailer)msg;
     			if(trailer.getHeaderNames().size() > 0) {		
     				for(String name : trailer.getHeaderNames()) {
-    					if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
-    						message.getHttpRequest().addHeader(name,trailer.getHeader(name));
-    					} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
-    						message.getHttpResponse().addHeader(name,trailer.getHeader(name));
-    					}	
+    					message.addHeader(name,trailer.getHeader(name));
     				}
     			}
-    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
+    			Channels.fireMessageReceived(ctx,message.getIcapMessage(),e.getRemoteAddress());
     		}
     	} else if(msg instanceof IcapChunk) {
     		LOG.debug("Aggregation of chunk [" + msg.getClass().getName() + "] ");
@@ -81,32 +80,11 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     		if(message == null) {
     			ctx.sendUpstream(e);
     		} else if(chunk.isLast()) {
-    			Channels.fireMessageReceived(ctx,message,e.getRemoteAddress());
+    			Channels.fireMessageReceived(ctx,message.getIcapMessage(),e.getRemoteAddress());
     			message = null;
     		} else {
 	    		ChannelBuffer chunkBuffer = chunk.getContent();
-	    		ChannelBuffer content = null;
-    			if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
-    				if(message.getHttpRequest() != null) {
-    					if(message.getHttpRequest().getContent().readableBytes() <= 0) {
-    						message.getHttpRequest().setContent(ChannelBuffers.dynamicBuffer());
-    					}
-    					content = message.getHttpRequest().getContent();
-    				} else {
-    					throw new IcapDecodingError("unable attaching chunked content to http request, beaause it does not exist");
-    				}
-    			} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
-    				if(message.getHttpResponse() != null) {
-    					if(message.getHttpResponse().getContent().readableBytes() <= 0) {
-    						message.getHttpResponse().setContent(ChannelBuffers.dynamicBuffer());
-    					}
-    					content = message.getHttpResponse().getContent();
-    				} else {
-    					throw new IcapDecodingError("unable attaching chunked content to http response, beaause it does not exist");
-    				}
-    			} else {
-    				throw new IcapDecodingError("Invalid encapsulation value found [" + message.getBody().name() + "]");
-    			}
+	    		ChannelBuffer content = message.getContent();
     			if(content.readableBytes() > maxContentLength - chunkBuffer.readableBytes()) {
     				throw new TooLongFrameException("ICAP content length exceeded [" + maxContentLength + "] bytes");
     			} else {
@@ -115,6 +93,54 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     		}
     	} else {
     		ctx.sendUpstream(e);
+    	}
+    }
+    
+    private final class IcapMessageWrapper {
+    	
+    	private IcapMessage message;
+    	private HttpMessage relevantHttpMessage;
+    	private boolean messageWithBody;
+    	
+    	public IcapMessageWrapper(IcapMessage message) {
+    		this.message = message;
+    		if(message.getBody() != null) {
+	    		if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
+	    			relevantHttpMessage = message.getHttpRequest();
+	    			messageWithBody = true;
+	    		} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
+	    			relevantHttpMessage = message.getHttpResponse();
+	    			messageWithBody = true;
+	    		}
+    		}
+    		if(messageWithBody) {
+    			if(relevantHttpMessage.getContent() == null || relevantHttpMessage.getContent().readableBytes() <= 0) {
+    				relevantHttpMessage.setContent(ChannelBuffers.dynamicBuffer());
+    			}
+    		}
+    	}
+    	
+    	public boolean hasBody() {
+    		return messageWithBody;
+    	}
+    	
+    	public IcapMessage getIcapMessage() {
+    		return message;
+    	}
+    	
+    	public void addHeader(String name, String value) {
+    		if(messageWithBody) {
+    			relevantHttpMessage.addHeader(name,value);
+    		} else {
+    			throw new IcapDecodingError("A message without body cannot carrie trailing headers.");
+    		}
+    	}
+    	
+    	public ChannelBuffer getContent() {
+    		if(messageWithBody) {
+    			return relevantHttpMessage.getContent();
+    		}
+    		throw new IcapDecodingError("Message stated that there is a body but nothing found in message.");
     	}
     }
 }

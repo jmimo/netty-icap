@@ -46,13 +46,7 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 	    			boolean isPreview = message.isPreviewMessage();
 	    			boolean isEarlyTerminated = false;
 	    			if(isPreview) {
-	    				int amount = 0;
-	    				try {
-	    					amount = Integer.parseInt(message.getHeader(IcapHeaders.Names.PREVIEW));
-	    				} catch(NumberFormatException nfe) {
-	    					// TODO throw exception
-	    				}
-	    				isEarlyTerminated = content.readableBytes() < amount;
+	    				isEarlyTerminated = content.readableBytes() < parsePreview(message);
 	    			}
 	    			boolean dataWasSent = false;
 					while(content.readableBytes() > 0) {
@@ -73,6 +67,7 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 						trailer.setEarlyTermination(isEarlyTerminated);
 						// TODO we are currently unable to handle trailing headers. for this we have to specify in the message that there are 
 						// trailing headers and what they are named.
+						// This is not required in the moment.
 						fireDownstreamEvent(ctx,trailer,msgEvent);
 					}
 	    		}
@@ -102,10 +97,24 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 		return content;
 	}
 	
+	private int parsePreview(IcapMessage message) {
+		int amount = 0;
+		if(message.getHeader(IcapHeaders.Names.PREVIEW) != null) {
+			String amountString = message.getHeader(IcapHeaders.Names.PREVIEW);
+			try {
+				amount = Integer.parseInt(amountString);
+			} catch(NumberFormatException nfe) {
+				throw new IcapDecodingError("Preview amount is not a number [" + amountString + "]",nfe);
+			}
+		} else {
+			amount = 0;
+		}
+		return amount;
+	}
+	
     private void fireDownstreamEvent(ChannelHandlerContext ctx, Object message, MessageEvent messageEvent) {
-    	DownstreamMessageEvent downstreamMessageEvent = new DownstreamMessageEvent(ctx.getChannel(),
-    																				messageEvent.getFuture(),
-    																				message,messageEvent.getRemoteAddress());
+    	DownstreamMessageEvent downstreamMessageEvent = 
+    		new DownstreamMessageEvent(ctx.getChannel(),messageEvent.getFuture(),message,messageEvent.getRemoteAddress());
     	ctx.sendDownstream(downstreamMessageEvent);
     }
 }
