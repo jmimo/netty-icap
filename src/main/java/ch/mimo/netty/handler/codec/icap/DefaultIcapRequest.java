@@ -21,7 +21,7 @@ public class DefaultIcapRequest extends AbstractIcapMessage implements IcapReque
 	
 	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri, String host) {
 		super(icapVersion,method,uri);
-		addHeader(IcapHeaders.Names.HOST,host);
+		addHeader(IcapHeader.Names.HOST,host);
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public class ReadIcapHeaderState extends State<Object> {
 			icapMessageDecoder.message.addHeader(header[0],header[1]);
 		}
 		validateMandatoryMessageHeaders(icapMessageDecoder.message,icapMessageDecoder.isDecodingResponse());
-		Encapsulated encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
+		Encapsulated encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeader.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
 		// TODO find less complex and more generic solution. This statement assumes that there is a res hds always after the reqhdr.
 		// this by the way is correct when assuming the other end is adhering 100% to the rfc!
@@ -79,11 +79,11 @@ public class ReadIcapHeaderState extends State<Object> {
 	
 	private void validateMandatoryMessageHeaders(IcapMessage message, boolean isDecodingResponse) {
 		if(!isDecodingResponse) {
-			if(!message.containsHeader(IcapHeaders.Names.HOST)) {
+			if(!message.containsHeader(IcapHeader.Names.HOST)) {
 				throw new IcapDecodingError("Mandatory ICAP message header [Host] is missing");
 			}
 		}
-		if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+		if(!message.containsHeader(IcapHeader.Names.ENCAPSULATED)) {
 			throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
 		}
 	}

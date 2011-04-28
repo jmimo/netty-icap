@@ -42,7 +42,7 @@ public interface IcapMessage {
      * @return the {@link List} of header values.  An empty list if there is no
      *         such header.
      */
-    List<String> getHeaders(String name);
+    Set<String> getHeaders(String name);
 
     /**
      * Returns the all header names and values that this message contains.
@@ -50,7 +50,7 @@ public interface IcapMessage {
      * @return the {@link List} of the header name-value pairs.  An empty list
      *         if there is no header in this message.
      */
-    List<Map.Entry<String, String>> getHeaders();
+    Set<Map.Entry<String, String>> getHeaders();
 
     /**
      * @param header name
@@ -91,6 +91,8 @@ public interface IcapMessage {
      * Removes the header with the specified name.
      */
     void removeHeader(String name);
+    
+    int getPreviewAmount();
 
     /**
      * Removes all headers from this message.

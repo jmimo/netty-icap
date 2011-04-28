@@ -46,7 +46,7 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 	    			boolean isPreview = message.isPreviewMessage();
 	    			boolean isEarlyTerminated = false;
 	    			if(isPreview) {
-	    				isEarlyTerminated = content.readableBytes() < parsePreview(message);
+	    				isEarlyTerminated = content.readableBytes() < message.getPreviewAmount();
 	    			}
 	    			boolean dataWasSent = false;
 					while(content.readableBytes() > 0) {
@@ -95,21 +95,6 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 			message.setBody(IcapMessageElementEnum.RESBODY);
 		}
 		return content;
-	}
-	
-	private int parsePreview(IcapMessage message) {
-		int amount = 0;
-		if(message.getHeader(IcapHeaders.Names.PREVIEW) != null) {
-			String amountString = message.getHeader(IcapHeaders.Names.PREVIEW);
-			try {
-				amount = Integer.parseInt(amountString);
-			} catch(NumberFormatException nfe) {
-				throw new IcapDecodingError("Preview amount is not a number [" + amountString + "]",nfe);
-			}
-		} else {
-			amount = 0;
-		}
-		return amount;
 	}
 	
     private void fireDownstreamEvent(ChannelHandlerContext ctx, Object message, MessageEvent messageEvent) {

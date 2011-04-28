@@ -13,7 +13,6 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,8 +25,8 @@ import org.jboss.netty.util.internal.StringUtil;
 
 
 public abstract class AbstractIcapMessage implements IcapMessage {
-	
-	private IcapHeaders icapHeaders;
+
+	private IcapHeader icapHeader;
 	private HttpVersion version;
 	private HttpMethod method;
 	private String uri;
@@ -40,7 +39,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	
 	public AbstractIcapMessage(HttpVersion version) {
 		this.version = version;
-		icapHeaders = new IcapHeaders();
+		icapHeader = new IcapHeader();
 	}
 	
     public AbstractIcapMessage(HttpVersion icapVersion, HttpMethod method, String uri) {
@@ -51,55 +50,60 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 
 	@Override
 	public String getHeader(String name) {
-		return icapHeaders.getHeader(name);
+		return icapHeader.getHeader(name);
 	}
 
 	@Override
-	public List<String> getHeaders(String name) {
-		return icapHeaders.getHeaders(name);
+	public Set<String> getHeaders(String name) {
+		return icapHeader.getHeaders(name);
 	}
 
 	@Override
-	public List<Entry<String, String>> getHeaders() {
-		return icapHeaders.getHeaders();
+	public Set<Entry<String, String>> getHeaders() {
+		return icapHeader.getHeaders();
 	}
 
 	@Override
 	public boolean containsHeader(String name) {
-		return icapHeaders.containsHeader(name);
+		return icapHeader.containsHeader(name);
 	}
 
 	@Override
 	public Set<String> getHeaderNames() {
-		return icapHeaders.getHeaderNames();
+		return icapHeader.getHeaderNames();
 	}
 
 	@Override
 	public void addHeader(String name, Object value) {
 		validateHeader(name);
-		icapHeaders.addHeader(name,value);
+		icapHeader.addHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Object value) {
 		validateHeader(name);
-		icapHeaders.setHeader(name,value);
+		icapHeader.setHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Iterable<?> values) {
 		validateHeader(name);
-		icapHeaders.setHeader(name,values);
+		icapHeader.setHeader(name,values);
 	}
 
 	@Override
 	public void removeHeader(String name) {
-		icapHeaders.removeHeader(name);
+		icapHeader.removeHeader(name);
+	}
+	
+	@Override
+	public int getPreviewAmount() {
+		return icapHeader.getPreviewHeaderValue();
 	}
 
 	@Override
 	public void clearHeaders() {
-		icapHeaders.clearHeaders();
+		icapHeader.clearHeaders();
 	}
 
 	@Override
@@ -169,7 +173,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	
 	@Override
 	public boolean isPreviewMessage() {
-		return containsHeader(IcapHeaders.Names.PREVIEW);
+		return icapHeader.getPreviewHeaderValue() > 0;
 	}
 	
 	public void setBody(IcapMessageElementEnum body) {
@@ -214,7 +218,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
         
         if(isPreviewMessage()) {
         	buf.append("--- Preview ---").append(StringUtil.NEWLINE);
-        	buf.append("Preview size: " + getHeader(IcapHeaders.Names.PREVIEW));
+        	buf.append("Preview size: " + icapHeader.getPreviewHeaderValue());
         }
         
         return buf.toString();
