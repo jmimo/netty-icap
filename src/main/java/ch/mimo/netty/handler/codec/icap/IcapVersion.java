@@ -15,6 +15,12 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
+/**
+ * Provides translation and handling for Icap version string.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public final class IcapVersion {
 
 	public static final HttpVersion ICAP_1_0 = new HttpVersion("ICAP", 1, 0, true);

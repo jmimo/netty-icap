@@ -14,10 +14,7 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import java.nio.charset.Charset;
-import java.util.List;
 
-import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.util.CharsetUtil;
 
 
@@ -25,7 +22,7 @@ import org.jboss.netty.util.CharsetUtil;
  * This class is an exact copy of @see HttpCodecUtil
  * Once the ICAP codec will be integrated into netty this has to be consolidated.
  */
-final class IcapCodecUtil {
+public final class IcapCodecUtil {
 	
 	// 0; ieof
 	static final Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
@@ -92,6 +89,7 @@ final class IcapCodecUtil {
     private IcapCodecUtil() {
     }
 
+    // TODO could also be in IcapHeader class
     static void validateHeaderName(String name) {
         if (name == null) {
             throw new NullPointerException("name");
@@ -113,7 +111,7 @@ final class IcapCodecUtil {
             }
         }
     }
-
+    // TODO could also be in IcapHeader class
     static void validateHeaderValue(String value) {
         if (value == null) {
             throw new NullPointerException("value");
@@ -175,19 +173,5 @@ final class IcapCodecUtil {
             throw new IllegalArgumentException(
                     "value must not end with '\\r' or '\\n':" + value);
         }
-    }
-
-    static boolean isTransferEncodingChunked(HttpMessage m) {
-        List<String> chunked = m.getHeaders(HttpHeaders.Names.TRANSFER_ENCODING);
-        if (chunked.isEmpty()) {
-            return false;
-        }
-
-        for (String v: chunked) {
-            if (v.equalsIgnoreCase(HttpHeaders.Values.CHUNKED)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

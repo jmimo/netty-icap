@@ -22,8 +22,12 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
-// TODO create super inteface that defines the getHEader and addHeader method in order to simplyfi the parsing
-// effort for IcapMessage, IcapChunkTrailer
+/**
+ * An ICAP message that contains common operations for @see {@link IcapRequest} and @see {@link IcapResponse}.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public interface IcapMessage {
 
     /**
@@ -92,6 +96,9 @@ public interface IcapMessage {
      */
     void removeHeader(String name);
     
+    /**
+     * @return the @see {@link Integer} preview header value.
+     */
     int getPreviewAmount();
 
     /**
@@ -137,21 +144,54 @@ public interface IcapMessage {
 	 */
 	HttpResponse getHttpResponse();
 	
+	/**
+	 * Adds a @see {@link HttpResponse} to the Icap message.
+	 * 
+	 * @param response the @see {@link HttpResponse}
+	 */
 	void setHttpResponse(HttpResponse response);
 	
+	/**
+	 * Sets the operation method for this icap request.
+	 * @param method the @see {@link HttpMethod} provided by @see {@link IcapMethod}
+	 */
 	void setMethod(HttpMethod method);
 
+	/**
+	 * @return This operations method
+	 */
 	HttpMethod getMethod();
 	
+	/**
+	 * Sets the operations uri.
+	 * @param uri 
+	 */
 	void setUri(String uri);
 	
+	/**
+	 * @return String uri for this message
+	 */
 	String getUri();
 	
+	/**
+	 * Sets the @see {@link Encapsulated} Encapsulation header for this message
+	 * @param encapsulated @see {@link Encapsulated} instance
+	 */
 	void setEncapsulatedHeader(Encapsulated encapsulated);
 	
+	/**
+	 * @return @see {@link Encapsulated} Encapsulated header value
+	 */
 	Encapsulated getEncapsulatedHeader();
 	
+	/**
+	 * Sets the indication that this icap message contains a body of some kind.
+	 * @param body @see {@link IcapMessageElementEnum}
+	 */
 	void setBody(IcapMessageElementEnum body);
 
+	/**
+	 * @return @see {@link IcapMessageElementEnum} message body indicator.
+	 */
 	IcapMessageElementEnum getBody();
 }
