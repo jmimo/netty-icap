@@ -97,7 +97,7 @@ public final class Encapsulated {
 			buffer.writeBytes(Integer.toString(entry.getPosition()).getBytes(IcapCodecUtil.ASCII_CHARSET));
 			if(entryIterator.hasNext()) {
 				buffer.writeByte(',');
-				buffer.writeByte(IcapCodecUtil.SP);
+				buffer.writeByte(IcapCodecUtil.SPACE);
 			}
 		}
         buffer.writeBytes(IcapCodecUtil.CRLF);

@@ -15,8 +15,6 @@ package ch.mimo.netty.handler.codec.icap;
 
 import java.nio.charset.Charset;
 
-import org.jboss.netty.util.CharsetUtil;
-
 
 /**
  * This class is an exact copy of @see HttpCodecUtil
@@ -25,94 +23,92 @@ import org.jboss.netty.util.CharsetUtil;
 public final class IcapCodecUtil {
 	
 	// 0; ieof
-	static final Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
+	public static final Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
 	
 	// TODO find other solution...
-	static final byte[] NATIVE_IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102};
+	public static final byte[] NATIVE_IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102};
 	
-	static final String IEOF_SEQUENCE_STRING = "0; ieof";
+	public static final String IEOF_SEQUENCE_STRING = "0; ieof";
 	
     //space ' '
-    static final byte SP = 32;
+	public static final byte SPACE = 32;
 
     //tab ' '
-    static final byte HT = 9;
+//	public static final byte TAB = 9;
 
     /**
      * Carriage return
      */
-    static final byte CR = 13;
+	public static final byte CR = 13;
 
     /**
      * Equals '='
      */
-    static final byte EQUALS = 61;
+//	public static final byte EQUALS = 61;
 
     /**
      * Line feed character
      */
-    static final byte LF = 10;
+	public static final byte LF = 10;
 
     /**
      * carriage return line feed
      */
-    static final byte[] CRLF = new byte[] { CR, LF };
+	public static final byte[] CRLF = new byte[] { CR, LF };
 
     /**
     * Colon ':'
     */
-    static final byte COLON = 58;
+	public static final byte COLON = 58;
 
     /**
     * Semicolon ';'
     */
-    static final byte SEMICOLON = 59;
+//	public static final byte SEMICOLON = 59;
 
      /**
     * comma ','
     */
-    static final byte COMMA = 44;
+//	public static final byte COMMA = 44;
 
-    static final byte DOUBLE_QUOTE = '"';
+//	public static final byte DOUBLE_QUOTE = '"';
 
-    static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
+//	public static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
     
-    static final Charset ASCII_CHARSET = Charset.forName("ASCII");
+	public static final Charset ASCII_CHARSET = Charset.forName("ASCII");
     
-    static final String ENCAPSULATION_ELEMENT_REQHDR = "req-hdr";
-    static final String ENCAPSULATION_ELEMENT_RESHDR = "res-hdr";
-    static final String ENCAPSULATION_ELEMENT_REQBODY = "req-body";
-    static final String ENCAPSULATION_ELEMENT_RESBODY = "res-body";
-    static final String ENCAPSULATION_ELEMENT_OPTBODY = "opt-body";
-    static final String ENCAPSULATION_ELEMENT_NULLBODY = "null-body";
+	public static final String ENCAPSULATION_ELEMENT_REQHDR = "req-hdr";
+	public static final String ENCAPSULATION_ELEMENT_RESHDR = "res-hdr";
+	public static final String ENCAPSULATION_ELEMENT_REQBODY = "req-body";
+	public static final String ENCAPSULATION_ELEMENT_RESBODY = "res-body";
+	public static final String ENCAPSULATION_ELEMENT_OPTBODY = "opt-body";
+	public static final String ENCAPSULATION_ELEMENT_NULLBODY = "null-body";
     
     private IcapCodecUtil() {
     }
 
     // TODO could also be in IcapHeader class
-    static void validateHeaderName(String name) {
+    public static void validateHeaderName(String name) {
         if (name == null) {
             throw new NullPointerException("name");
         }
         for (int i = 0; i < name.length(); i ++) {
-            char c = name.charAt(i);
-            if (c > 127) {
-                throw new IllegalArgumentException(
-                        "name contains non-ascii character: " + name);
+            char caracter = name.charAt(i);
+            if (caracter > 127) {
+                throw new IllegalArgumentException("name contains non-ascii character: " + name);
             }
 
             // Check prohibited characters.
-            switch (c) {
+            switch (caracter) {
             case '\t': case '\n': case 0x0b: case '\f': case '\r':
             case ' ':  case ',':  case ':':  case ';':  case '=':
-                throw new IllegalArgumentException(
-                        "name contains one of the following prohibited characters: " +
-                        "=,;: \\t\\r\\n\\v\\f: " + name);
+                throw new IllegalArgumentException("name contains one of the following prohibited characters: =,;: \\t\\r\\n\\v\\f: " + name);
             }
         }
     }
+
     // TODO could also be in IcapHeader class
-    static void validateHeaderValue(String value) {
+    public static void validateHeaderValue(String value) {
         if (value == null) {
             throw new NullPointerException("value");
         }
@@ -123,55 +119,38 @@ public final class IcapCodecUtil {
         int state = 0;
 
         for (int i = 0; i < value.length(); i ++) {
-            char c = value.charAt(i);
+            final char caracter = value.charAt(i);
 
             // Check the absolutely prohibited characters.
-            switch (c) {
-            case 0x0b: // Vertical tab
-                throw new IllegalArgumentException(
-                        "value contains a prohibited character '\\v': " + value);
-            case '\f':
-                throw new IllegalArgumentException(
-                        "value contains a prohibited character '\\f': " + value);
+            if(caracter == 0x0b | caracter == '\f') {
+            	throw new IllegalArgumentException("value contains a prohibited character " + caracter + ": " + value);
             }
 
             // Check the CRLF (HT | SP) pattern
-            switch (state) {
-            case 0:
-                switch (c) {
-                case '\r':
-                    state = 1;
-                    break;
-                case '\n':
-                    state = 2;
-                    break;
-                }
-                break;
-            case 1:
-                switch (c) {
-                case '\n':
-                    state = 2;
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            "Only '\\n' is allowed after '\\r': " + value);
-                }
-                break;
-            case 2:
-                switch (c) {
-                case '\t': case ' ':
-                    state = 0;
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            "Only ' ' and '\\t' are allowed after '\\n': " + value);
-                }
+            if(state == 0) {
+            	if(caracter == '\r') {
+            		state = 1;
+            	}
+            	if(caracter == '\n') {
+            		state = 2;
+            	}
+            } else if(state == 1) {
+            	if(caracter == '\n') {
+            		state = 2;
+            	} else {
+            		throw new IllegalArgumentException("Only '\\n' is allowed after '\\r': " + value);
+            	}
+            } else if(state == 2) {
+            	if(caracter == '\t') {
+            		state = 0;
+            	} else {
+            		throw new IllegalArgumentException("Only ' ' and '\\t' are allowed after '\\n': " + value);
+            	}
             }
         }
 
         if (state != 0) {
-            throw new IllegalArgumentException(
-                    "value must not end with '\\r' or '\\n':" + value);
+            throw new IllegalArgumentException("value must not end with '\\r' or '\\n':" + value);
         }
     }
 }

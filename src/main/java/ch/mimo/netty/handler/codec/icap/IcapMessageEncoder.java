@@ -102,9 +102,9 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		if(httpRequest != null) {
 			buffer.writeBytes(httpRequest.getMethod().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
-			buffer.writeByte(IcapCodecUtil.SP);
+			buffer.writeByte(IcapCodecUtil.SPACE);
 			buffer.writeBytes(httpRequest.getUri().getBytes(IcapCodecUtil.ASCII_CHARSET));
-			buffer.writeByte(IcapCodecUtil.SP);
+			buffer.writeByte(IcapCodecUtil.SPACE);
 			buffer.writeBytes(httpRequest.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeBytes(IcapCodecUtil.CRLF);
             for (Map.Entry<String, String> h: httpRequest.getHeaders()) {
@@ -118,7 +118,7 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		if(httpResponse != null) {
 			buffer.writeBytes(httpResponse.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
-			buffer.writeByte(IcapCodecUtil.SP);
+			buffer.writeByte(IcapCodecUtil.SPACE);
 			buffer.writeBytes(httpResponse.getStatus().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
 			buffer.writeBytes(IcapCodecUtil.CRLF);
             for (Map.Entry<String, String> h: httpResponse.getHeaders()) {
@@ -147,7 +147,7 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
     private void encodeHeader(ChannelBuffer buf, String header, String value) {
 		buf.writeBytes(header.getBytes(IcapCodecUtil.ASCII_CHARSET));
 		buf.writeByte(IcapCodecUtil.COLON);
-		buf.writeByte(IcapCodecUtil.SP);
+		buf.writeByte(IcapCodecUtil.SPACE);
 		buf.writeBytes(value.getBytes(IcapCodecUtil.ASCII_CHARSET));
 		buf.writeBytes(IcapCodecUtil.CRLF);
     }

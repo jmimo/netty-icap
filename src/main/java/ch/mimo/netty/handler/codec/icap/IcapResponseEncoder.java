@@ -22,7 +22,7 @@ public class IcapResponseEncoder extends IcapMessageEncoder {
 		IcapResponse request = (IcapResponse)message;
 		int index = buffer.readableBytes();
 		buffer.writeBytes(request.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
-        buffer.writeByte(IcapCodecUtil.SP);
+        buffer.writeByte(IcapCodecUtil.SPACE);
         request.getStatus().toResponseInitialLineValue(buffer);
         buffer.writeBytes(IcapCodecUtil.CRLF);
         return buffer.readableBytes() - index;

@@ -26,9 +26,9 @@ public class IcapRequestEncoder extends IcapMessageEncoder {
 		IcapMessage request = (IcapMessage) message;
 		int index = buffer.readableBytes();
         buffer.writeBytes(request.getMethod().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
-        buffer.writeByte(IcapCodecUtil.SP);
+        buffer.writeByte(IcapCodecUtil.SPACE);
         buffer.writeBytes(request.getUri().getBytes(IcapCodecUtil.ASCII_CHARSET));
-        buffer.writeByte(IcapCodecUtil.SP);
+        buffer.writeByte(IcapCodecUtil.SPACE);
         buffer.writeBytes(request.getProtocolVersion().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
         buffer.writeBytes(IcapCodecUtil.CRLF);
         return buffer.readableBytes() - index;

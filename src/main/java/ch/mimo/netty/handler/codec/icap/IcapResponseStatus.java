@@ -34,7 +34,7 @@ public enum IcapResponseStatus {
 	
 	public void toResponseInitialLineValue(ChannelBuffer buffer) {
 		buffer.writeBytes(Integer.toString(code).getBytes(IcapCodecUtil.ASCII_CHARSET));
-		buffer.writeByte(IcapCodecUtil.SP);
+		buffer.writeByte(IcapCodecUtil.SPACE);
 		buffer.writeBytes(status.getBytes(IcapCodecUtil.ASCII_CHARSET));
 	}
 	
