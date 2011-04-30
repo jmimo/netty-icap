@@ -16,6 +16,13 @@ package ch.mimo.netty.handler.codec.icap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunk;
 
+/**
+ * This is the main Chunk implementation class. It extends @see {@link DefaultHttpChunk} and adds
+ * all necessary methods and members for preview handling.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class DefaultIcapChunk extends DefaultHttpChunk implements IcapChunk {
 
 	private boolean preview;

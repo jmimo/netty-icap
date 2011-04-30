@@ -21,6 +21,14 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
+/**
+ * Decoder State that reads http response initial and headers.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class ReadHttpResponseInitalAndHeadersState extends State<Object> {
 
 	public ReadHttpResponseInitalAndHeadersState(String name) {

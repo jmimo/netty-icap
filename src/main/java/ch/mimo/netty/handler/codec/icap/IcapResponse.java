@@ -15,13 +15,36 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * ICAP response.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public interface IcapResponse extends IcapMessage {
 
+	/**
+	 * Sets the response status
+	 * @param status @see {@link IcapResponseStatus} value like 200 OK.
+	 */
 	void setStatus(IcapResponseStatus status);
 	
+	/**
+	 * Gets the response status for this message.
+	 * 
+	 * @return the response status as @see {@link IcapResponseStatus}
+	 */
 	IcapResponseStatus getStatus();
 	
+	/**
+	 * Sets an OPTIONS body to this message.
+	 * @param optionsContent @see {@link ChannelBuffer} containin the body.
+	 */
 	void setOptionsContent(ChannelBuffer optionsContent);
 
+	/**
+	 * Gets an OPTIONS body if present
+	 * @return @see {@link ChannelBuffer} or null
+	 */
 	ChannelBuffer getOptionsContent();
 }

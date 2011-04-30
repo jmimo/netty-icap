@@ -22,12 +22,24 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
+/**
+ * Separates a received ICAP message and body that is attached to either the HTTP request or response.
+ * 
+ * In other words. This handler allows to create a combined ICAP message containing HTTP request/response and
+ * the corresponding body as ChannelBuffer include in one of the HTTP relevant instances.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class IcapChunkSeparator implements ChannelDownstreamHandler {
 
 	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapChunkSeparator.class);
 	
 	private int chunkSize;
 	
+	/**
+	 * @param chunkSize defines the normal chunk size that is to be produced while separating.
+	 */
 	public IcapChunkSeparator(int chunkSize) {
 		this.chunkSize = chunkSize;
 	}

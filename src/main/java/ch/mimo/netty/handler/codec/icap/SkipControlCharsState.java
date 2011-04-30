@@ -15,7 +15,14 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-
+/**
+ * Decoder State that reads control chars and whitespaces.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class SkipControlCharsState extends State<Object> {
 
 	public SkipControlCharsState(String name) {

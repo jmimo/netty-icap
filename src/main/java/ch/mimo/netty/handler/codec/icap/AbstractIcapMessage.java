@@ -23,7 +23,13 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.internal.StringUtil;
 
-
+/**
+ * This is the main Icap message implementation where 
+ * all common @see {@link DefaultIcapRequest} and @see {@link DefaultIcapResponse} member are present.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public abstract class AbstractIcapMessage implements IcapMessage {
 
 	private IcapHeader icapHeader;
@@ -75,19 +81,16 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 
 	@Override
 	public void addHeader(String name, Object value) {
-		validateHeader(name);
 		icapHeader.addHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Object value) {
-		validateHeader(name);
 		icapHeader.setHeader(name,value);
 	}
 
 	@Override
 	public void setHeader(String name, Iterable<?> values) {
-		validateHeader(name);
 		icapHeader.setHeader(name,values);
 	}
 
@@ -187,8 +190,6 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 			return body;
 		}
 	}
-	
-	protected abstract void validateHeader(String name) throws IllegalArgumentException;
 	
     @Override
     public String toString() {

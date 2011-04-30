@@ -13,6 +13,13 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+/**
+ * State Enum which contains all Decoder states.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ */
 public enum StateEnum {
 	SKIP_CONTROL_CHARS(new SkipControlCharsState("SKIP_CONTROL_CHARS")),
 	READ_ICAP_INITIAL_STATE(new ReadIcapInitialState("READ_ICAP_INITIAL_STATE")),

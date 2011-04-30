@@ -15,6 +15,11 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * ICAP Response encoder which takes an @see {@link IcapResponse} or @see {@link IcapChunk} to encode.
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class IcapResponseEncoder extends IcapMessageEncoder {
 
 	@Override

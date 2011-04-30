@@ -15,6 +15,14 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * Decoder State that reads one huge chunk into many smaller chunks
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class ReadChunkedContentAsChunksState extends State<Object> {
 
 	public ReadChunkedContentAsChunksState(String name) {

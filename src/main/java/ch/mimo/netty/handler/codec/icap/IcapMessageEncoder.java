@@ -26,6 +26,14 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
+/**
+ * Main ICAP message encoder. This encoder is based on @see {@link OneToOneEncoder}
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapRequestEncoder
+ * @see IcapResponseEncoder
+ */
 public abstract class IcapMessageEncoder extends OneToOneEncoder {
 	
 	private final InternalLogger LOG;

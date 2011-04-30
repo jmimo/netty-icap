@@ -15,6 +15,14 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 
+/**
+ * This class is used to track the size in bytes of headers.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapDecoderUtil
+ * @see ReadTrailingHeadersState
+ */
 public class SizeDelimiter {
 
 	private int counter = 0;

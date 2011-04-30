@@ -18,11 +18,29 @@ import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 
+/**
+ * A combination of @see {@link IcapRequestEncoder} and @see {@link IcapResponseDecoder}
+ * which enables easier client side ICAP implementation.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapRequestEncoder
+ * @see IcapResponseDecoder
+ * @see IcapServerCodec
+ */
 public class IcapClientCodec implements ChannelUpstreamHandler, ChannelDownstreamHandler {
 
 	private final IcapRequestEncoder encoder = new IcapRequestEncoder();
 	private final IcapResponseDecoder decoder;
 	
+	/**
+	 * @see IcapMessageDecoder IcapMessageDecoder constructor for more details.
+	 * 
+	 * @param maxInitialLineLength
+	 * @param maxIcapHeaderSize
+	 * @param maxHttpHeaderSize
+	 * @param maxChunkSize
+	 */
 	public IcapClientCodec(int maxInitialLineLength, int maxIcapHeaderSize, int maxHttpHeaderSize, int maxChunkSize) {
 		decoder = new IcapResponseDecoder(maxInitialLineLength,maxIcapHeaderSize,maxHttpHeaderSize,maxChunkSize);
 	}

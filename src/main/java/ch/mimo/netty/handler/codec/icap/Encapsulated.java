@@ -22,6 +22,13 @@ import java.util.StringTokenizer;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * This class parses, creates and provides the very important Encapsulated header to the Decoder and
+ * encapsulates the complexity of that header.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public final class Encapsulated {
 	
 	private List<Entry> entries;
@@ -30,11 +37,22 @@ public final class Encapsulated {
 		entries = new ArrayList<Encapsulated.Entry>();
 	}
 	
+	/**
+	 * Creates an instance based on the value given.
+	 * 
+	 * @param headerValue valid Encapsulated value.
+	 */
 	public Encapsulated(String headerValue) {
 		this();
 		parseHeaderValue(headerValue);
 	}
 	
+	/**
+	 * Gets whether a given entry exists in the header value.
+	 * 
+	 * @param entity the entity such as REQHDR, RESHDR and so on.
+	 * @return boolean true if the entity in question is present.
+	 */
 	public boolean containsEntry(IcapMessageElementEnum entity) {
 		for(Entry entry : entries) {
 			if(entry.getName().equals(entity)) {
@@ -44,6 +62,13 @@ public final class Encapsulated {
 		return false;
  	}
 	
+	/**
+	 * Gets whether the message contains a body entity. This can be any valid body entry
+	 * including the null-body entity which indicates that the message does not contain.
+	 * a body.
+	 * 
+	 * @return the correct @see {@link IcapMessageElementEnum} value.
+	 */
 	public IcapMessageElementEnum containsBodyEntry() {
 		IcapMessageElementEnum body = null;
 		for(Entry entry : entries) {
@@ -64,6 +89,14 @@ public final class Encapsulated {
 		return body;
 	}
 	
+	/**
+	 * Iterator method. This method will provide the next available
+	 * Entry. Eventually it will return null.
+	 * Whether to return the next valid entry in the list dependens on the
+	 * @see Encapsulated#setEntryAsProcessed(IcapMessageElementEnum) method.
+	 * 
+	 * @return @see {@link IcapMessageElementEnum} or null if no more entries are available.
+	 */
 	public IcapMessageElementEnum getNextEntry() {
 		IcapMessageElementEnum entryName = null;
 		for(Entry entry : entries) {
@@ -75,16 +108,35 @@ public final class Encapsulated {
 		return entryName;
 	}
 	
+	/**
+	 * reports that a given entry was processed and that the @see Encapsulated#getNextEntry()
+	 * can now return the next entry in line or null if no more are present.
+	 * 
+	 * @param entryName the entry that was procesed.
+	 */
 	public void setEntryAsProcessed(IcapMessageElementEnum entryName) {
 		Entry entry = getEntryByName(entryName);
 		entry.setIsProcessed();
 	}
 	
+	/**
+	 * Sets an entry with it's corresponding position.
+	 * 
+	 * @param name the name of the Entry.
+	 * @param position the position of the entry within the icap message.
+	 */
 	public void addEntry(IcapMessageElementEnum name, int position) {
 		Entry entry = new Entry(name,position);
 		entries.add(entry);
 	}
 	
+	/**
+	 * This method encodes an {@link Encapsulated} instance into an Icap Message.
+	 * 
+	 * @param buffer the Channelbuffer to encode into.
+	 * @return the amount of bytes that where written to the buffer while encoding.
+	 * @throws UnsupportedEncodingException If a character cannot be encoded in ASCII.
+	 */
 	public int encode(ChannelBuffer buffer) throws UnsupportedEncodingException {
 		int index = buffer.readableBytes();
 		Collections.sort(entries);

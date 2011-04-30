@@ -15,7 +15,16 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-
+/**
+ * Abstract state implementation for all Decoder states.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @param <T>
+ * 
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public abstract class State<T extends Object> {
 	
 	private String name;

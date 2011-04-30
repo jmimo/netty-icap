@@ -17,6 +17,14 @@ import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * Decoder State that reads icap headers.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class ReadIcapHeaderState extends State<Object> {
 
 	public ReadIcapHeaderState(String name) {

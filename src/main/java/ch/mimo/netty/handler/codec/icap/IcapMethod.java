@@ -18,6 +18,12 @@ import java.util.Map;
 
 import org.jboss.netty.handler.codec.http.HttpMethod;
 
+/**
+ * ICAP methods that are valid to use in messages.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public final class IcapMethod {
 	
 	/**

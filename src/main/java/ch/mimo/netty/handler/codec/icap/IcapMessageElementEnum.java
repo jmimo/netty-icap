@@ -13,7 +13,13 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-
+/**
+ * This enum contains all valid ICAP message element names that can occur in
+ * an @see {@link Encapsulated} header.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public enum IcapMessageElementEnum {
 	REQHDR(IcapCodecUtil.ENCAPSULATION_ELEMENT_REQHDR),
 	RESHDR(IcapCodecUtil.ENCAPSULATION_ELEMENT_RESHDR),

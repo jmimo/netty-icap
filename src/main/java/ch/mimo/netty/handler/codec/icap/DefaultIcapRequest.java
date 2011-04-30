@@ -13,21 +13,28 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 
+/**
+ * Main Icap Request implementation. This is the starting point to create a Icap request.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class DefaultIcapRequest extends AbstractIcapMessage implements IcapRequest {
 	
+	/**
+	 * This will create an initial icap request with all necessary details.
+	 * 
+	 * @param icapVersion the version of this request.
+	 * @param method the method.
+	 * @param uri the uri to reach with this request.
+	 * @param host the host from where this request originates from. Because this is a mandatory Icap header
+	 * you have to give a value and it will be directly added to the icap request as Host: header.
+	 */
 	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri, String host) {
 		super(icapVersion,method,uri);
 		addHeader(IcapHeader.Names.HOST,host);
-	}
-
-	@Override
-	protected void validateHeader(String name) throws IllegalArgumentException {
-		if(name.equalsIgnoreCase(HttpHeaders.Names.TRANSFER_ENCODING)) {
-			throw new IllegalArgumentException("The header [" + name + "] is not allowed in a ICAP request");
-		}
 	}
 }

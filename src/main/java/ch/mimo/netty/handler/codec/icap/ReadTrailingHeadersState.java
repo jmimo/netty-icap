@@ -19,6 +19,14 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpChunkTrailer;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 
+/**
+ * Decoder State that reads http trailing headers.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class ReadTrailingHeadersState extends State<Object> {
 
 	public ReadTrailingHeadersState(String name) {

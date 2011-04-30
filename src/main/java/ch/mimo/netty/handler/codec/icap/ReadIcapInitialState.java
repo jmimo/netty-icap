@@ -15,7 +15,14 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-
+/**
+ * Decoder State that reads icap initial.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class ReadIcapInitialState extends State<Object> {
 
 	public ReadIcapInitialState(String name) {

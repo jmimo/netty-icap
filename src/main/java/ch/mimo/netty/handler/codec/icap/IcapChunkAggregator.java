@@ -25,18 +25,15 @@ import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
 /**
- * This Icap chunk aggregator will receive the icap message and store the body
- * If it exists into the respective http request or response that is transported
- * with this icap message.
+ * This ICAP chunk aggregator will combine an received ICAP message with all body chunks.
+ * the body is the to be found attached to the correct HTTP request or response instance
+ * within the ICAP message.
  * 
- * If the received icap message is a preview no action is taken!
- * QUESTION: we could allow that a preview message is collected and kept.
- * Once the 100 continue is sent the message is completed.
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
  * 
- * @author Michael Mimo Moratti
+ * @see IcapChunkSeparator
  *
  */
-
 // TODO options body
 public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 
@@ -45,6 +42,10 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 	private long maxContentLength;
 	private IcapMessageWrapper message;
 	
+	/**
+	 * @param maxContentLength defines the maximum length of the body content that is allowed. 
+	 * If the length is exceeded an exception is thrown.
+	 */
 	public IcapChunkAggregator(long maxContentLength) {
 		this.maxContentLength = maxContentLength;
 	}

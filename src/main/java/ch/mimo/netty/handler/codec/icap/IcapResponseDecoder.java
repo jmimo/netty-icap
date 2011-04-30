@@ -13,12 +13,26 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+/**
+ * ICAP Response decoder which creates an @see {@link IcapResponse} instance.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class IcapResponseDecoder extends IcapMessageDecoder {
 
 	public IcapResponseDecoder() {
 		super();
 	}
 
+	/**
+	 * @see IcapMessageDecoder IcapMessageDecoder constructor for more details.
+	 * 
+	 * @param maxInitialLineLength
+	 * @param maxIcapHeaderSize
+	 * @param maxHttpHeaderSize
+	 * @param maxChunkSize
+	 */
 	public IcapResponseDecoder (int maxInitialLineLength, int maxIcapHeaderSize, int maxHttpHeaderSize, int maxChunkSize) {
 		super(maxInitialLineLength, maxIcapHeaderSize, maxHttpHeaderSize, maxChunkSize);
 	}

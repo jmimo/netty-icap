@@ -19,6 +19,20 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
+
+/**
+ * Main ICAP message decoder implementation. this decoder is bases on a @see {@link ReplayingDecoder}
+ * 
+ * Due to the complexity of an ICAP message the decoder was implement with individual states that reside
+ * in their own classes.
+ * 
+ * For a full list of states that are used within this decoder: @see {@link StateEnum}  
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapRequestDecoder
+ * @see IcapResponseDecoder
+ */
 // TODO add reset function in case of unexpected exception
 public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 
@@ -46,6 +60,10 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
     
     /**
      * Creates a new instance with the specified parameters.
+     * @param maxInitialLineLength
+     * @param maxIcapHeaderSize
+     * @param maxHttpHeaderSize
+     * @param maxChunkSize
      */
     protected IcapMessageDecoder(int maxInitialLineLength, int maxIcapHeaderSize, int maxHttpHeaderSize, int maxChunkSize) {
         super(StateEnum.SKIP_CONTROL_CHARS,true);

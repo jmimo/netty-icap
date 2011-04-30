@@ -15,6 +15,12 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 
+/**
+ * @see IcapChunkTrailer implementation.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class DefaultIcapChunkTrailer extends DefaultHttpChunkTrailer implements IcapChunkTrailer {
 	
 	private boolean preview;

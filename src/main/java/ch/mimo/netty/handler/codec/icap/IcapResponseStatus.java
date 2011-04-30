@@ -15,7 +15,14 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * ICAP response status enum. contains all valid response codes. like 200, 204 and others.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public enum IcapResponseStatus {
+	// TODO add missing response codes.
 	CONTINUE(100,"Continue"),
 	OK(200,"OK"),
 	NO_CONTENT(204,"No Content");

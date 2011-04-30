@@ -15,6 +15,14 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * Decoder State that reads chunk size
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> {
 
 	public static enum DecisionState {

@@ -15,7 +15,14 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-
+/**
+ * Decoder State that reads chunk content
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see StateEnum
+ */
 public class ReadChunkState extends State<Object> {
 	
 	public ReadChunkState(String name) {

@@ -17,34 +17,34 @@ import java.nio.charset.Charset;
 
 
 /**
- * This class is an exact copy of @see HttpCodecUtil
- * Once the ICAP codec will be integrated into netty this has to be consolidated.
+ * This Codec class provides all required special characters such as space and linefeed.
+ * It also provides validation methods for icap header name and value validation.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
  */
 public final class IcapCodecUtil {
-	
-	// 0; ieof
+
+	/**
+	 * Preview early termination sequence
+	 * 
+	 * 0; ieof
+	 */
 	public static final Byte[] IEOF_SEQUENCE = new Byte[]{48,59,32,105,101,111,102};
 	
-	// TODO find other solution...
 	public static final byte[] NATIVE_IEOF_SEQUENCE = new byte[]{48,59,32,105,101,111,102};
 	
 	public static final String IEOF_SEQUENCE_STRING = "0; ieof";
 	
-    //space ' '
+	/**
+	 * Space
+	 */
 	public static final byte SPACE = 32;
-
-    //tab ' '
-//	public static final byte TAB = 9;
 
     /**
      * Carriage return
      */
 	public static final byte CR = 13;
-
-    /**
-     * Equals '='
-     */
-//	public static final byte EQUALS = 61;
 
     /**
      * Line feed character
@@ -61,19 +61,6 @@ public final class IcapCodecUtil {
     */
 	public static final byte COLON = 58;
 
-    /**
-    * Semicolon ';'
-    */
-//	public static final byte SEMICOLON = 59;
-
-     /**
-    * comma ','
-    */
-//	public static final byte COMMA = 44;
-
-//	public static final byte DOUBLE_QUOTE = '"';
-
-//	public static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
     
 	public static final Charset ASCII_CHARSET = Charset.forName("ASCII");
     
@@ -87,7 +74,11 @@ public final class IcapCodecUtil {
     private IcapCodecUtil() {
     }
 
-    // TODO could also be in IcapHeader class
+    /**
+     * Valiation method for Icap header names.
+     * 
+     * @param name to be validated
+     */
     public static void validateHeaderName(String name) {
         if (name == null) {
             throw new NullPointerException("name");
@@ -107,7 +98,11 @@ public final class IcapCodecUtil {
         }
     }
 
-    // TODO could also be in IcapHeader class
+    /**
+     * Validation method for Icap header values
+     * 
+     * @param value to be validated
+     */
     public static void validateHeaderValue(String value) {
         if (value == null) {
             throw new NullPointerException("value");

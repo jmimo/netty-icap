@@ -13,6 +13,14 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+/**
+ * Return value encapsulation used in all message decoder states.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapMessageDecoder
+ * @see State
+ */
 public class StateReturnValue {
 	
 	private boolean relevance;

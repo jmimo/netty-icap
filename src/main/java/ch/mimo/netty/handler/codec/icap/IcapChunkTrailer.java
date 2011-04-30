@@ -17,6 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Icap chunk trailer. @see {@link HttpChunkTrailer}
+ * In comparison to Http this will always be the last chunk in any transmission. With or without trailing
+ * hedaers.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public interface IcapChunkTrailer extends IcapChunk {
 
     /**

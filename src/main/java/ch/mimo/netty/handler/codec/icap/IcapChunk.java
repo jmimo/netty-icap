@@ -15,13 +15,40 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.handler.codec.http.HttpChunk;
 
+/**
+ * This is the main Icap Chunk. In essence it is a @see {@link HttpChunk} with the addition of 
+ * Preview controlls and members.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public interface IcapChunk extends HttpChunk {
 
+	/**
+	 * Toggles whether this chunk belongs to a preview message.
+	 * 
+	 * @param preview boolean true to indicate it is a preview chunk
+	 */
 	void setPreviewChunk(boolean preview);
 	
+	/**
+	 * Gets whether this chunk belongs to a preview message.
+	 * 
+	 * @return boolean true if this chunk is preview.
+	 */
 	boolean isPreviewChunk();
 	
+	/**
+	 * Toggles whether this chunk belongs to a early terminated preview message.
+	 * 
+	 * @param earlyTermination boolean true if the preview message is early terminated.
+	 */
 	void setEarlyTermination(boolean earlyTermination);
 	
+	/**
+	 * Gets whether this chunk belongs to a early terminated preview message.
+	 * 
+	 * @return boolean true if the preview message is early terminated.
+	 */
 	boolean isEarlyTerminated();
 }

@@ -13,6 +13,12 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-
+/**
+ * Defines a ICAP Request.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see DefaultIcapRequest
+ */
 public interface IcapRequest extends IcapMessage {
 }

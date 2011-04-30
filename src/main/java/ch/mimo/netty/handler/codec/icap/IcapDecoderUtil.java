@@ -19,6 +19,12 @@ import java.util.List;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 
+/**
+ * Utility that provides decoding support for ICAP messages.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public final class IcapDecoderUtil {
 
 	private IcapDecoderUtil() {
@@ -40,6 +46,13 @@ public final class IcapDecoderUtil {
         }
     }
 	
+    /**
+     * reads a line until CR / LF / CRLF
+     * @param buffer
+     * @param maxLineLength
+     * @return
+     * @throws TooLongFrameException
+     */
     public static String readLine(ChannelBuffer buffer, int maxLineLength) throws TooLongFrameException {
         StringBuilder sb = new StringBuilder(64);
         int lineLength = 0;
@@ -64,6 +77,11 @@ public final class IcapDecoderUtil {
         }
     }
 	
+    /**
+     * Splits an initial line.
+     * @param sb
+     * @return
+     */
 	public static String[] splitInitialLine(String sb) {
 		int aStart;
 		int aEnd;
@@ -86,6 +104,12 @@ public final class IcapDecoderUtil {
 				cStart < cEnd ? sb.substring(cStart, cEnd) : "" };
 	}
 
+	/**
+	 * finds the first occurrence of a non whitespace character.
+	 * @param sb
+	 * @param offset
+	 * @return
+	 */
 	public static int findNonWhitespace(String sb, int offset) {
 		int result;
 		for (result = offset; result < sb.length(); result++) {
@@ -96,6 +120,12 @@ public final class IcapDecoderUtil {
 		return result;
 	}
 
+	/**
+	 * finds the first occurrence of a whitespace character
+	 * @param sb
+	 * @param offset
+	 * @return
+	 */
 	public static int findWhitespace(String sb, int offset) {
 		int result;
 		for (result = offset; result < sb.length(); result++) {
@@ -106,6 +136,11 @@ public final class IcapDecoderUtil {
 		return result;
 	}
 
+	/**
+	 * finds the end of a string.
+	 * @param sb
+	 * @return
+	 */
 	public static int findEndOfString(String sb) {
 		int result;
 		for (result = sb.length(); result > 0; result--) {
@@ -116,6 +151,12 @@ public final class IcapDecoderUtil {
 		return result;
 	}
 	
+	/**
+	 * parses the chunk size from a line.
+	 * 
+	 * @param line
+	 * @return -1 if the chunk size indicates that a preview message is early terminated.
+	 */
     public static int getChunkSize(String line) {
         String hex = line.trim();
         if(hex.equals(IcapCodecUtil.IEOF_SEQUENCE_STRING)) {
@@ -131,6 +172,13 @@ public final class IcapDecoderUtil {
         return Integer.parseInt(hex, 16);
     }
 	
+    /**
+     * parses all available message headers.
+     * @param buffer
+     * @param maxSize
+     * @return
+     * @throws TooLongFrameException
+     */
 	public static List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
 		List<String[]> headerList = new ArrayList<String[]>();
 		SizeDelimiter sizeDelimiter = new SizeDelimiter(maxSize);
@@ -190,6 +238,11 @@ public final class IcapDecoderUtil {
 		return sb.toString();
 	}
 	
+	/**
+	 * Splits one header into key|value
+	 * @param sb
+	 * @return
+	 */
     public static String[] splitHeader(String sb) {
         final int length = sb.length();
         int nameStart;

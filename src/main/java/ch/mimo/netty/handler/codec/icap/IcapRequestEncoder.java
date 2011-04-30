@@ -15,6 +15,12 @@ package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+/**
+ * Encodes an ICAP Request which takes an @see {@link IcapRequest} or @see {@link IcapChunk} to encode.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class IcapRequestEncoder extends IcapMessageEncoder {
 
 	public IcapRequestEncoder() {
