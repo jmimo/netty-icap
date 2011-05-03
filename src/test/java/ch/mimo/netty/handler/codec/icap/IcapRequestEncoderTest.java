@@ -34,8 +34,6 @@ public class IcapRequestEncoderTest extends AbstractEncoderTest {
 		assertNull("poll should return null",embedder.poll());
 	}
 	
-	// TODO write test to force unsupported encoding exceptions while encoding
-	
 	@Test
 	public void encodeOPTIONSRequest() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createOPTIONSIcapRequest());

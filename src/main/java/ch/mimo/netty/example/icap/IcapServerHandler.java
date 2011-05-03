@@ -13,17 +13,67 @@
  *******************************************************************************/
 package ch.mimo.netty.example.icap;
 
+import java.nio.charset.Charset;
+
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
+
+import ch.mimo.netty.handler.codec.icap.DefaultIcapResponse;
+import ch.mimo.netty.handler.codec.icap.IcapHeader;
+import ch.mimo.netty.handler.codec.icap.IcapMessageElementEnum;
+import ch.mimo.netty.handler.codec.icap.IcapRequest;
+import ch.mimo.netty.handler.codec.icap.IcapResponse;
+import ch.mimo.netty.handler.codec.icap.IcapResponseStatus;
+import ch.mimo.netty.handler.codec.icap.IcapVersion;
 
 public class IcapServerHandler extends SimpleChannelUpstreamHandler {
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-			throws Exception {
-		// TODO Auto-generated method stub
-		super.messageReceived(ctx, e);
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+		IcapRequest request = (IcapRequest)e.getMessage();
+		
+		System.out.println(request.toString());
+		
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		IcapMessageElementEnum bodyType = request.getBody();
+		
+		if(request.getHttpRequest() != null) {
+			request.getHttpRequest().addHeader(HttpHeaders.Names.VIA,"icap://my.icap.server");
+			response.setHttpRequest(request.getHttpRequest());
+		}
+		if(request.getHttpResponse() != null) {
+			request.getHttpResponse().addHeader(HttpHeaders.Names.VIA,"icap://my.icap.server");
+			response.setHttpResponse(request.getHttpResponse());
+		}
+		response.addHeader(IcapHeader.Names.ISTAG,"SimpleServer-version-1.0");
+		
+		// TODO we could put this as a convenience method into IcapMessage.
+		ChannelBuffer buffer = null;
+		switch (bodyType) {
+		case NULLBODY:
+			// No body in request
+			break;
+		case REQBODY:
+			// http request body in request
+			buffer = request.getHttpRequest().getContent();
+			break;
+		case RESBODY:
+			// http response body in request
+			buffer = request.getHttpResponse().getContent();
+			break;
+		default:
+			// cannot reach here.
+			break;
+		}
+		
+		if(buffer != null) {
+			System.out.println(buffer.toString(Charset.defaultCharset()));
+		}
+		
+		ctx.getChannel().write(response);
 	}
 
 }

@@ -220,8 +220,6 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 		assertTrue("last chunk is not marked as such",chunk13.isLast());
 	}
 	
-	// TODO chunking test with preview message
-	
 	@Test
 	public void decodeRESPMODWithGetRequestAndPreviewAndHugeChunk() throws UnsupportedEncodingException {
 		DecoderEmbedder<Object> embedder = new DecoderEmbedder<Object>(new IcapRequestDecoder(4000,4000,4000,10));

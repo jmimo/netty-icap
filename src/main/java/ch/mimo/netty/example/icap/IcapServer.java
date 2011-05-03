@@ -19,6 +19,13 @@ import java.util.concurrent.Executors;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
+/**
+ * An ICAP Server that prints the request and sends back the content of the request that was receveid.
+ * OPTIONS is not supported.
+ * 
+ * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ */
 public class IcapServer {
 
 	public static void main(String[] args) {

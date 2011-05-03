@@ -50,7 +50,7 @@ public final class IcapDecoderUtil {
      * reads a line until CR / LF / CRLF
      * @param buffer
      * @param maxLineLength
-     * @return
+     * @return the first line found in the buffer.
      * @throws TooLongFrameException
      */
     public static String readLine(ChannelBuffer buffer, int maxLineLength) throws TooLongFrameException {
@@ -80,7 +80,7 @@ public final class IcapDecoderUtil {
     /**
      * Splits an initial line.
      * @param sb
-     * @return
+     * @return string array containing all elements found in the initial line.
      */
 	public static String[] splitInitialLine(String sb) {
 		int aStart;
@@ -106,9 +106,9 @@ public final class IcapDecoderUtil {
 
 	/**
 	 * finds the first occurrence of a non whitespace character.
-	 * @param sb
-	 * @param offset
-	 * @return
+	 * @param sb string to find non-whitespaces in
+	 * @param offset the offset to start searching from.
+	 * @return the position of the first non-whitespace
 	 */
 	public static int findNonWhitespace(String sb, int offset) {
 		int result;
@@ -122,9 +122,9 @@ public final class IcapDecoderUtil {
 
 	/**
 	 * finds the first occurrence of a whitespace character
-	 * @param sb
-	 * @param offset
-	 * @return
+	 * @param sb string to find whitespaces in.
+	 * @param offset to search from within the string.
+	 * @return the position of the first whitespace.
 	 */
 	public static int findWhitespace(String sb, int offset) {
 		int result;
@@ -138,8 +138,8 @@ public final class IcapDecoderUtil {
 
 	/**
 	 * finds the end of a string.
-	 * @param sb
-	 * @return
+	 * @param sb string to find the end from
+	 * @return the end position.
 	 */
 	public static int findEndOfString(String sb) {
 		int result;
@@ -174,10 +174,10 @@ public final class IcapDecoderUtil {
 	
     /**
      * parses all available message headers.
-     * @param buffer
-     * @param maxSize
-     * @return
-     * @throws TooLongFrameException
+     * @param buffer @see {@link ChannelBuffer} that contains the headers.
+     * @param maxSize the maximum size of all headers concatenated.
+     * @return a list of String arrays containing [0] key [1] value of each header.
+     * @throws TooLongFrameException if the maximum size is reached.
      */
 	public static List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
 		List<String[]> headerList = new ArrayList<String[]>();
@@ -241,7 +241,7 @@ public final class IcapDecoderUtil {
 	/**
 	 * Splits one header into key|value
 	 * @param sb
-	 * @return
+	 * @return string array containing the key [0] and value [1] separated.
 	 */
     public static String[] splitHeader(String sb) {
         final int length = sb.length();

@@ -57,7 +57,7 @@ public interface IcapMessage {
     Set<Map.Entry<String, String>> getHeaders();
 
     /**
-     * @param header name
+     * @param name header name
      * @return {@code true} if and only if there is a header with the specified
      * header name.
      */

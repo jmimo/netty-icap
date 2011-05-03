@@ -97,6 +97,11 @@ public final class IcapHeader {
          * {@code "Preview"}
          */
 		public static final String PREVIEW = "Preview";
+		
+		/**
+		 * {@code "ISTag"}
+		 */
+		public static final String ISTAG = "ISTag";
 	}
 	
 	public IcapHeader() {
@@ -145,7 +150,7 @@ public final class IcapHeader {
 	 * Headers with the same name that are already in the list will be removed first!
 	 * 
 	 * @param name Icap message header name
-	 * @param value Icap message header value. Can also be null
+	 * @param values Icap message header value. Can also be null
 	 */
 	public void setHeader(String name, Iterable<?> values) {
 		removeHeader(name);
@@ -197,7 +202,7 @@ public final class IcapHeader {
 	/**
 	 * retrieval method for all headers that are currently in this list.
 	 * 
-	 * @return Set of @see {@link Entry}
+	 * @return Set of Map Entry instances.
 	 */
 	public Set<Map.Entry<String, String>> getHeaders() {
 		Set<Map.Entry<String, String>> headers = new LinkedHashSet<Map.Entry<String,String>>();
