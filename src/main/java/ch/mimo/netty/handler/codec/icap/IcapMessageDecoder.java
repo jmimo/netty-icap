@@ -97,8 +97,6 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 			LOG.debug("Return value from state [" + state + "] = [" + returnValue + "]");
 			StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
 			LOG.debug("Next State [" + nextState + "]");
-			// TODO set checkpoint only if required. see preview chunk reading
-			// TODO re-reading
 			if(nextState != null) {
 				checkpoint(nextState);
 			} else {
