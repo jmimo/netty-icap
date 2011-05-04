@@ -23,12 +23,7 @@ import java.util.Map;
  *
  */
 public final class IcapMethod {
-	
-	/**
-	 * Is used as identifier when decoding any response.
-	 */
-	static final IcapMethod RESPONSE = new IcapMethod("RESPONSE"); 
-	
+
 	/**
 	 * Request Modification
 	 */
@@ -55,7 +50,7 @@ public final class IcapMethod {
 	
 	private String name;
 	
-	private IcapMethod(String name) {
+	IcapMethod(String name) {
 		this.name = name;
 	}
 	

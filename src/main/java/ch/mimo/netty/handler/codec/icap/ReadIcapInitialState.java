@@ -39,7 +39,7 @@ public class ReadIcapInitialState extends State<Object> {
 		String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength));
 		icapMessageDecoder.message = icapMessageDecoder.createMessage(initialLine);
 		if(icapMessageDecoder.isDecodingResponse()) {
-			icapMessageDecoder.message.setMethod(IcapMethod.RESPONSE);
+			icapMessageDecoder.message.setMethod(new IcapMethod("dummy"));
 		}
 		return StateReturnValue.createIrrelevantResult();
 	}
