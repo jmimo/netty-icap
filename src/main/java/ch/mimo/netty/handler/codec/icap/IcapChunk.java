@@ -16,8 +16,8 @@ package ch.mimo.netty.handler.codec.icap;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 
 /**
- * This is the main Icap Chunk. In essence it is a @see {@link HttpChunk} with the addition of 
- * Preview controlls and members.
+ * This is the main ICAP Chunk. In essence it is a @see {@link HttpChunk} with the addition of 
+ * Preview controls and members.
  * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *

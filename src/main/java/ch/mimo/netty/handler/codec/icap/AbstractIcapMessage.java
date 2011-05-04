@@ -17,10 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.internal.StringUtil;
 
 /**
@@ -33,8 +31,8 @@ import org.jboss.netty.util.internal.StringUtil;
 public abstract class AbstractIcapMessage implements IcapMessage {
 
 	private IcapHeader icapHeader;
-	private HttpVersion version;
-	private HttpMethod method;
+	private IcapVersion version;
+	private IcapMethod method;
 	private String uri;
 	private Encapsulated encapsulated;
 	
@@ -43,12 +41,12 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	
 	private IcapMessageElementEnum body;
 	
-	public AbstractIcapMessage(HttpVersion version) {
+	public AbstractIcapMessage(IcapVersion version) {
 		this.version = version;
 		icapHeader = new IcapHeader();
 	}
 	
-    public AbstractIcapMessage(HttpVersion icapVersion, HttpMethod method, String uri) {
+    public AbstractIcapMessage(IcapVersion icapVersion, IcapMethod method, String uri) {
     	this(icapVersion);
     	this.method = method;
     	this.uri = uri;
@@ -110,12 +108,12 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	}
 
 	@Override
-	public HttpVersion getProtocolVersion() {
+	public IcapVersion getProtocolVersion() {
 		return version;
 	}
 
 	@Override
-	public void setProtocolVersion(HttpVersion version) {
+	public void setProtocolVersion(IcapVersion version) {
 		this.version = version;
 	}
 
@@ -148,11 +146,11 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 		this.httpResponse = response;
 	}
 
-	public void setMethod(HttpMethod method) {
+	public void setMethod(IcapMethod method) {
 		this.method = method;
 	}
 
-	public HttpMethod getMethod() {
+	public IcapMethod getMethod() {
 		return method;
 	}
 

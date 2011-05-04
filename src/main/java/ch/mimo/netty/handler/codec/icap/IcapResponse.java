@@ -20,6 +20,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
  * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
+ * @see IcapMessage
+ * @see DefaultIcapResponse
  */
 public interface IcapResponse extends IcapMessage {
 

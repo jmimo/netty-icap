@@ -14,7 +14,6 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 
 /**
  * Main Icap Response implementation. This is the starting point to create any Icap response.
@@ -33,7 +32,7 @@ public class DefaultIcapResponse extends AbstractIcapMessage implements IcapResp
 	 * @param version the version of the response.
 	 * @param status the Status code that has to be reported back. (200 OK...)
 	 */
-	public DefaultIcapResponse(HttpVersion version, IcapResponseStatus status) {
+	public DefaultIcapResponse(IcapVersion version, IcapResponseStatus status) {
 		super(version);
 		this.status = status;
 	}

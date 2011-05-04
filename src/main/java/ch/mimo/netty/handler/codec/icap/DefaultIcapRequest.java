@@ -13,8 +13,6 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 
 /**
  * Main Icap Request implementation. This is the starting point to create a Icap request.
@@ -33,7 +31,7 @@ public class DefaultIcapRequest extends AbstractIcapMessage implements IcapReque
 	 * @param host the host from where this request originates from. Because this is a mandatory Icap header
 	 * you have to give a value and it will be directly added to the icap request as Host: header.
 	 */
-	public DefaultIcapRequest(HttpVersion icapVersion, HttpMethod method, String uri, String host) {
+	public DefaultIcapRequest(IcapVersion icapVersion, IcapMethod method, String uri, String host) {
 		super(icapVersion,method,uri);
 		addHeader(IcapHeader.Names.HOST,host);
 	}

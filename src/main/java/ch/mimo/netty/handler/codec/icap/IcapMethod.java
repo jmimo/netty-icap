@@ -16,8 +16,6 @@ package ch.mimo.netty.handler.codec.icap;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jboss.netty.handler.codec.http.HttpMethod;
-
 /**
  * ICAP methods that are valid to use in messages.
  * 
@@ -29,25 +27,25 @@ public final class IcapMethod {
 	/**
 	 * Is used as identifier when decoding any response.
 	 */
-	static final HttpMethod RESPONSE = new HttpMethod("RESPONSE"); 
+	static final IcapMethod RESPONSE = new IcapMethod("RESPONSE"); 
 	
 	/**
 	 * Request Modification
 	 */
-	public static final HttpMethod REQMOD = new HttpMethod("REQMOD");
+	public static final IcapMethod REQMOD = new IcapMethod("REQMOD");
 	
 	/**
 	 * Response Modification
 	 */
-	public static final HttpMethod RESPMOD = new HttpMethod("RESPMOD");
+	public static final IcapMethod RESPMOD = new IcapMethod("RESPMOD");
 	
 	/**
 	 * learn about configuration
 	 */
-	public static final HttpMethod OPTIONS = HttpMethod.OPTIONS;
+	public static final IcapMethod OPTIONS = new IcapMethod("OPTIONS");
 	
-    private static final Map<String, HttpMethod> METHOD_MAP =
-        new HashMap<String, HttpMethod>();
+    private static final Map<String, IcapMethod> METHOD_MAP =
+        new HashMap<String, IcapMethod>();
 
 	static {
 		METHOD_MAP.put(REQMOD.toString(),REQMOD);
@@ -55,16 +53,18 @@ public final class IcapMethod {
 	    METHOD_MAP.put(OPTIONS.toString(),OPTIONS);
 	}
 	
-	private IcapMethod() {
-		super();
+	private String name;
+	
+	private IcapMethod(String name) {
+		this.name = name;
 	}
 	
     /**
-     * Returns the {@link HttpMethod} represented by the specified name.
+     * Returns the {@link IcapMethod} represented by the specified name.
      * If the specified name is a standard RTSP method name, a cached instance
      * will be returned.  Otherwise, a new instance will be returned.
      */
-    public static HttpMethod valueOf(String name) {
+    public static IcapMethod valueOf(String name) {
         if (name == null) {
             throw new NullPointerException("name");
         }
@@ -74,11 +74,16 @@ public final class IcapMethod {
             throw new IllegalArgumentException("empty name");
         }
 
-        HttpMethod result = METHOD_MAP.get(name);
+        IcapMethod result = METHOD_MAP.get(name);
         if (result != null) {
             return result;
         } else {
-            return new HttpMethod(name);
+            return new IcapMethod(name);
         }
+    }
+    
+    @Override
+    public String toString() {
+    	return name;
     }
 }

@@ -20,7 +20,6 @@ import java.util.Set;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 
 /**
  * An ICAP message that contains common operations for @see {@link IcapRequest} and @see {@link IcapResponse}.
@@ -109,13 +108,13 @@ public interface IcapMessage {
     /**
      * @return the protocol version of this message.
      */
-    HttpVersion getProtocolVersion();
+    IcapVersion getProtocolVersion();
 
     /**
      * Sets the protocol version of this message.
-     * @param version @see {@link HttpVersion}
+     * @param version @see {@link IcapVersion}
      */
-    void setProtocolVersion(HttpVersion version);
+    void setProtocolVersion(IcapVersion version);
     
     /**
      * @return whether this message is a preview of the actual message.
@@ -155,12 +154,12 @@ public interface IcapMessage {
 	 * Sets the operation method for this icap request.
 	 * @param method the @see {@link HttpMethod} provided by @see {@link IcapMethod}
 	 */
-	void setMethod(HttpMethod method);
+	void setMethod(IcapMethod method);
 
 	/**
 	 * @return This operations method
 	 */
-	HttpMethod getMethod();
+	IcapMethod getMethod();
 	
 	/**
 	 * Sets the operations uri.

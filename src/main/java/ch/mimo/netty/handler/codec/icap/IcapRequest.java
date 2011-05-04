@@ -18,6 +18,7 @@ package ch.mimo.netty.handler.codec.icap;
  * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
+ * @see IcapMessage
  * @see DefaultIcapRequest
  */
 public interface IcapRequest extends IcapMessage {
