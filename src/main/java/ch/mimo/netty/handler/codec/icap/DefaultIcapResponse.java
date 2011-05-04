@@ -48,11 +48,11 @@ public class DefaultIcapResponse extends AbstractIcapMessage implements IcapResp
 		return status;
 	}
 
-	public void setOptionsContent(ChannelBuffer optionsContent) {
+	public void setContent(ChannelBuffer optionsContent) {
 		this.optionsContent = optionsContent;
 	}
 
-	public ChannelBuffer getOptionsContent() {
+	public ChannelBuffer getContent() {
 		return optionsContent;
 	}
 

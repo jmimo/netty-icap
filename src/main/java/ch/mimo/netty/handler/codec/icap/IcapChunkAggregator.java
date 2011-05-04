@@ -34,13 +34,31 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * @see IcapChunkSeparator
  *
  */
-// TODO options body
 public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 
 	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapChunkAggregator.class);
 	
 	private long maxContentLength;
 	private IcapMessageWrapper message;
+	
+	/**
+	 * Convenience method to retrieve a HTTP request,response or 
+	 * an ICAP options response body from an aggregated IcapMessage. 
+	 * @param message
+	 * @return null or @see {@link ChannelBuffer} if a body exists.
+	 */
+	public static ChannelBuffer extractHttpBodyContentFromIcapMessage(IcapMessage message) {
+		ChannelBuffer buffer = null;
+		if(message.getBody().equals(IcapMessageElementEnum.REQBODY) && message.getHttpRequest() != null) {
+			buffer = message.getHttpRequest().getContent();
+		} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY) && message.getHttpResponse() != null) {
+			buffer = message.getHttpResponse().getContent();
+		} else if(message instanceof IcapResponse && message.getBody().equals(IcapMessageElementEnum.OPTBODY)) {
+			IcapResponse response = (IcapResponse)message;
+			buffer = response.getContent();
+		}
+		return buffer;
+	}
 	
 	/**
 	 * @param maxContentLength defines the maximum length of the body content that is allowed. 
@@ -101,6 +119,7 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     	
     	private IcapMessage message;
     	private HttpMessage relevantHttpMessage;
+    	private IcapResponse icapResponse;
     	private boolean messageWithBody;
     	
     	public IcapMessageWrapper(IcapMessage message) {
@@ -112,11 +131,20 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 	    		} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
 	    			relevantHttpMessage = message.getHttpResponse();
 	    			messageWithBody = true;
+	    		} else if(message instanceof IcapResponse && message.getBody().equals(IcapMessageElementEnum.OPTBODY)) {
+	    			icapResponse = (IcapResponse)message;
+	    			messageWithBody = true;
 	    		}
     		}
     		if(messageWithBody) {
-    			if(relevantHttpMessage.getContent() == null || relevantHttpMessage.getContent().readableBytes() <= 0) {
-    				relevantHttpMessage.setContent(ChannelBuffers.dynamicBuffer());
+    			if(relevantHttpMessage != null) {
+	    			if(relevantHttpMessage.getContent() == null || relevantHttpMessage.getContent().readableBytes() <= 0) {
+	    				relevantHttpMessage.setContent(ChannelBuffers.dynamicBuffer());
+	    			}
+    			} else if(icapResponse != null) {
+    				if(icapResponse.getContent() == null || icapResponse.getContent().readableBytes() <= 0) {
+    					icapResponse.setContent(ChannelBuffers.dynamicBuffer());
+    				}
     			}
     		}
     	}
@@ -133,13 +161,17 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     		if(messageWithBody) {
     			relevantHttpMessage.addHeader(name,value);
     		} else {
-    			throw new IcapDecodingError("A message without body cannot carrie trailing headers.");
+    			throw new IcapDecodingError("A message without body cannot carry trailing headers.");
     		}
     	}
     	
     	public ChannelBuffer getContent() {
     		if(messageWithBody) {
-    			return relevantHttpMessage.getContent();
+    			if(relevantHttpMessage != null) {
+    				return relevantHttpMessage.getContent();
+    			} else if(icapResponse != null) {
+    				return icapResponse.getContent();
+    			}
     		}
     		throw new IcapDecodingError("Message stated that there is a body but nothing found in message.");
     	}

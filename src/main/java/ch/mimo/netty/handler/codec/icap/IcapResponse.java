@@ -38,13 +38,13 @@ public interface IcapResponse extends IcapMessage {
 	
 	/**
 	 * Sets an OPTIONS body to this message.
-	 * @param optionsContent @see {@link ChannelBuffer} containin the body.
+	 * @param optionsContent @see {@link ChannelBuffer} containing the body.
 	 */
-	void setOptionsContent(ChannelBuffer optionsContent);
+	void setContent(ChannelBuffer optionsContent);
 
 	/**
 	 * Gets an OPTIONS body if present
 	 * @return @see {@link ChannelBuffer} or null
 	 */
-	ChannelBuffer getOptionsContent();
+	ChannelBuffer getContent();
 }

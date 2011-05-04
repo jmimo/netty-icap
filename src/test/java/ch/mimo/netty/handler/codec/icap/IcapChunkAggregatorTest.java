@@ -14,7 +14,9 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,38 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 	@Test
 	public void offerUnknownObject() {
 		embedder.offer("The ultimate answer is 42");
+	}
+	
+	@Test
+	public void retrieveOptionsBody() {
+		ChannelBuffer buffer = IcapChunkAggregator.extractHttpBodyContentFromIcapMessage(DataMockery.createOPTIONSResponseWithBodyAndContentIcapResponse());
+		assertNotNull("buffer was null",buffer);
+	}
+	
+	@Test
+	public void retrieveHttpRequestBody() {
+		ChannelBuffer buffer = IcapChunkAggregator.extractHttpBodyContentFromIcapMessage(DataMockery.createREQMODWithBodyContentIcapMessage());
+		assertNotNull("buffer was null",buffer);
+	}
+	
+	@Test
+	public void retrieveHttpResponseBody() {
+		ChannelBuffer buffer = IcapChunkAggregator.extractHttpBodyContentFromIcapMessage(DataMockery.createRESPMODWithPreviewDataIcapRequest());
+		assertNotNull("buffer was null",buffer);
+	}
+	
+	
+	@Test
+	public void aggregatorOPTIONSResponseWithBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createOPTIONSResponseWithBodyIcapResponse());
+		embedder.offer(DataMockery.createOPTIONSRequestWithBodyBodyChunkIcapChunk());
+		embedder.offer(DataMockery.createOPTIONSRequestWithBodyLastChunkIcapChunk());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		assertNotNull("response was null",response);
+		assertEquals("wrong body value in response",IcapMessageElementEnum.OPTBODY,response.getBody());
+		assertNotNull("no body in options response",response.getContent());
+		ChannelBuffer buffer = response.getContent();
+		assertEquals("body was wrong","This is a options body chunk.",buffer.toString(Charset.defaultCharset()));
 	}
 	
 	@Test

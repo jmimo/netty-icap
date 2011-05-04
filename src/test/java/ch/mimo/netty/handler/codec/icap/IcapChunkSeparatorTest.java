@@ -147,6 +147,4 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		IcapChunkTrailer trailer = (IcapChunkTrailer)embedder.poll();
 		assertNotNull("chunk trailer was null",trailer);
 	}
-
-	// TODO test options body
 }

@@ -93,9 +93,9 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
     
 	private ChannelBuffer extractContentFromMessage(IcapMessage message) {
 		ChannelBuffer content = null;
-		if(message instanceof IcapResponse && ((IcapResponse)message).getOptionsContent() != null) {
+		if(message instanceof IcapResponse && ((IcapResponse)message).getContent() != null) {
 			IcapResponse response = (IcapResponse)message;
-			content = response.getOptionsContent();
+			content = response.getContent();
 			if(content != null) {
 				message.setBody(IcapMessageElementEnum.OPTBODY);
 			}

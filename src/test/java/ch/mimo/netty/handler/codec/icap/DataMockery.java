@@ -133,6 +133,19 @@ public final class DataMockery extends Assert {
 		return response;
 	}
 	
+	public static final IcapResponse createOPTIONSResponseWithBodyIcapResponse() {
+		IcapResponse response = createOPTIONSIcapResponseWithBody();
+		response.addHeader("Encapsulated","opt-body=0");
+		return response;
+	}
+	
+	public static final IcapResponse createOPTIONSResponseWithBodyAndContentIcapResponse() {
+		IcapResponse response = createOPTIONSIcapResponseWithBody();
+		response.addHeader("Encapsulated","opt-body=0");
+		response.setContent(ChannelBuffers.wrappedBuffer("Hello World".getBytes()));
+		return response;
+	}
+	
 	public static final ChannelBuffer createOPTIONSResponseWithBody() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		addLine(buffer,"ICAP/1.0 200 OK");
@@ -569,6 +582,13 @@ public final class DataMockery extends Assert {
 	public static final IcapMessage createREQMODWithTwoChunkBodyAndEncapsulationHeaderIcapMessage() {
 		IcapMessage request = createREQMODWithTwoChunkBodyIcapMessage();
 		request.addHeader("Encapsulated","req-hdr=0, req-body=171");
+		return request;
+	}
+	
+	public static final IcapMessage createREQMODWithBodyContentIcapMessage() {
+		IcapMessage request = createREQMODWithTwoChunkBodyIcapMessage();
+		request.addHeader("Encapsulated","req-hdr=0, req-body=171");
+		request.getHttpRequest().setContent(ChannelBuffers.wrappedBuffer("Hello World".getBytes()));
 		return request;
 	}
 	
@@ -1208,7 +1228,7 @@ public final class DataMockery extends Assert {
 		response.addHeader("Opt-body-type","Simple-text");
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
 		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
-		response.setOptionsContent(buffer);
+		response.setContent(buffer);
 		return response;
 	}
 	

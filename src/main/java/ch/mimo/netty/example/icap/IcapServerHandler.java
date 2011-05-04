@@ -50,7 +50,6 @@ public class IcapServerHandler extends SimpleChannelUpstreamHandler {
 		}
 		response.addHeader(IcapHeader.Names.ISTAG,"SimpleServer-version-1.0");
 		
-		// TODO we could put this as a convenience method into IcapMessage.
 		ChannelBuffer buffer = null;
 		switch (bodyType) {
 		case NULLBODY:
@@ -68,6 +67,11 @@ public class IcapServerHandler extends SimpleChannelUpstreamHandler {
 			// cannot reach here.
 			break;
 		}
+		
+		/*
+		 * There is also a convenience method that extracts a body from any http message.
+		 * @See IcapChunkAggregator#extractHttpBodyContentFromIcapMessage(IcapMessage message).
+		 */
 		
 		if(buffer != null) {
 			System.out.println(buffer.toString(Charset.defaultCharset()));
