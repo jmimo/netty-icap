@@ -11,7 +11,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package ch.mimo.netty.example.icap;
+package ch.mimo.netty.example.icap.simple;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
