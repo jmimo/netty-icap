@@ -99,4 +99,6 @@ public class IcapResponseDecoderTest extends AbstractIcapTest {
 		assertNotNull("The decoded icap request instance is null",result);
 		assertEquals("wrong response status code",IcapResponseStatus.NO_CONTENT,result.getStatus());
 	}
+	
+	// TODO add more test where several responses are decoded subsequently.
 }

@@ -250,5 +250,7 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 		assertTrue("last chunk is not marked as such",chunk8.isLast());
 		assertTrue("last chunk is not marked as preview chunk",chunk8.isPreviewChunk());
 	}
+	
+	// TODO add test where several requests are decoded subsequently.
 }
 
