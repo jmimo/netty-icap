@@ -53,7 +53,7 @@ public final class IcapDecoderUtil {
      * @return the first line found in the buffer.
      * @throws TooLongFrameException
      */
-    public static String readLine(ChannelBuffer buffer, int maxLineLength) throws TooLongFrameException {
+    public static String readLine(ChannelBuffer buffer, int maxLineLength) throws DecodingException {
         StringBuilder sb = new StringBuilder(64);
         int lineLength = 0;
         while (true) {
@@ -67,9 +67,9 @@ public final class IcapDecoderUtil {
                 return sb.toString();
             } else {
                 if (lineLength >= maxLineLength) {
-                    throw new TooLongFrameException(
+                    throw new DecodingException(new TooLongFrameException(
                             "An HTTP line is larger than " + maxLineLength +
-                            " bytes.");
+                            " bytes."));
                 }
                 lineLength ++;
                 sb.append((char) nextByte);
@@ -179,7 +179,7 @@ public final class IcapDecoderUtil {
      * @return a list of String arrays containing [0] key [1] value of each header.
      * @throws TooLongFrameException if the maximum size is reached.
      */
-	public static List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws TooLongFrameException {
+	public static List<String[]> readHeaders(ChannelBuffer buffer, int maxSize) throws DecodingException {
 		List<String[]> headerList = new ArrayList<String[]>();
 		SizeDelimiter sizeDelimiter = new SizeDelimiter(maxSize);
 		String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
@@ -218,7 +218,7 @@ public final class IcapDecoderUtil {
 	 * @return one complete header containing key and value.
 	 * @throws TooLongFrameException In case the total header length is exceeded.
 	 */
-	public static String readSingleHeaderLine(ChannelBuffer buffer, SizeDelimiter sizeDelimiter) throws TooLongFrameException {
+	public static String readSingleHeaderLine(ChannelBuffer buffer, SizeDelimiter sizeDelimiter) throws DecodingException {
 		StringBuilder sb = new StringBuilder(64);
 		loop: for (;;) {
 			char nextByte = (char) buffer.readByte();

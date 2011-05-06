@@ -49,11 +49,11 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 	}
 	
 	@Override
-	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 	}
 
 	@Override
-	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 		String line = IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength);
 		int chunkSize = IcapDecoderUtil.getChunkSize(line);
 		icapMessageDecoder.currentChunkSize = chunkSize;
@@ -84,7 +84,7 @@ public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> 
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, DecisionState decisionInformation) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, DecisionState decisionInformation) throws DecodingException {
 		return decisionInformation.getNextState();
 	}
 }

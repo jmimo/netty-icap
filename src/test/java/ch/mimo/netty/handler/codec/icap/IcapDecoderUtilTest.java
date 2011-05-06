@@ -15,12 +15,11 @@ package ch.mimo.netty.handler.codec.icap;
 
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 public class IcapDecoderUtilTest extends Assert {
 
@@ -45,7 +44,7 @@ public class IcapDecoderUtilTest extends Assert {
 		String line = null;
 		try {
 			line = IcapDecoderUtil.readLine(buffer,100);
-		} catch (TooLongFrameException e) {
+		} catch (DecodingException e) {
 			e.printStackTrace();
 			fail();
 		}
@@ -59,7 +58,7 @@ public class IcapDecoderUtilTest extends Assert {
 		String line = null;
 		try {
 			line = IcapDecoderUtil.readLine(buffer,100);
-		} catch (TooLongFrameException e) {
+		} catch (DecodingException e) {
 			e.printStackTrace();
 			fail();
 		}
@@ -73,7 +72,7 @@ public class IcapDecoderUtilTest extends Assert {
 		boolean exception = false;
 		try {
 			IcapDecoderUtil.readLine(buffer,42);
-		} catch (TooLongFrameException e) {
+		} catch (DecodingException e) {
 			exception = true;
 		}
 		assertTrue("No maximum length reached exception was thrown!",exception);
@@ -159,7 +158,7 @@ public class IcapDecoderUtilTest extends Assert {
 			header = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
 			assertEquals("Host header was expected","Host: icap.mimo.ch",header);
 			assertEquals("total length of parsed headers is wrong",75,sizeDelimiter.getSize());
-		} catch (TooLongFrameException e) {
+		} catch (DecodingException e) {
 			e.printStackTrace();
 			fail();
 		}
@@ -176,7 +175,7 @@ public class IcapDecoderUtilTest extends Assert {
 		try {
 			SizeDelimiter sizeDelimiter = new SizeDelimiter(40);
 			IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
-		} catch (TooLongFrameException e) {
+		} catch (DecodingException e) {
 			exception = true;
 		}
 		assertTrue("No exception was thrown",exception);
@@ -203,7 +202,7 @@ public class IcapDecoderUtilTest extends Assert {
 			assertEquals("header length is not null",0,header.length());
 			byte bite = buffer.getByte(buffer.readerIndex());
 			assertEquals("...",'G',(char)bite);
-		} catch (TooLongFrameException e) {
+		} catch (DecodingException e) {
 			e.printStackTrace();
 			fail();
 		}
@@ -254,7 +253,7 @@ public class IcapDecoderUtilTest extends Assert {
 			resultBuilder.append("\t").append("NonSimpleValue3");
 			assertEquals("header value was wrong",header3[1],resultBuilder.toString());
 		
-		} catch(TooLongFrameException tlfe) {
+		} catch(DecodingException tlfe) {
 			fail("unexpected frame exception");
 		}
 	}

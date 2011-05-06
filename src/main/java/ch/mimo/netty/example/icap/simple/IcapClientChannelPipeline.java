@@ -23,15 +23,15 @@ import ch.mimo.netty.handler.codec.icap.IcapChunkSeparator;
 import ch.mimo.netty.handler.codec.icap.IcapRequestEncoder;
 import ch.mimo.netty.handler.codec.icap.IcapResponseDecoder;
 
-public class IcapClientChannlePipeline implements ChannelPipelineFactory {
+public class IcapClientChannelPipeline implements ChannelPipelineFactory {
 
 	@Override
 	public ChannelPipeline getPipeline() throws Exception {
 		ChannelPipeline pipeline = pipeline();
     	pipeline.addLast("encoder",new IcapRequestEncoder());
-    	pipeline.addLast("chunkSeparator",new IcapChunkSeparator(4021));
+    	pipeline.addLast("chunkSeparator",new IcapChunkSeparator(4096));
       	pipeline.addLast("decoder",new IcapResponseDecoder());
-      	pipeline.addLast("chunkAggregator",new IcapChunkAggregator(4012));
+      	pipeline.addLast("chunkAggregator",new IcapChunkAggregator(4096));
       	pipeline.addLast("handler",new IcapClientHandler());
       	return pipeline;
 	}

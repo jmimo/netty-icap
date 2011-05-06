@@ -25,6 +25,7 @@ import java.util.Set;
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
  */
+// FIXME setHeader has shown that it might removes all the previous headers....
 public final class IcapHeader {
 	
 	private Entry base;

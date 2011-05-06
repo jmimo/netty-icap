@@ -1139,10 +1139,17 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final ChannelBuffer create204NoContentResponse() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 204 NoContent");
+		addLine(buffer,"Encapsulated: null-body=0");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
 	public static final IcapRequest createREQMODWithGetRequestAndDataIcapMessage() {
 		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.GET,"/");
-//		request.setBody(IcapMessageElementEnum.REQBODY);
 		request.setHttpRequest(httpRequest);
 		httpRequest.addHeader("Host","www.origin-server.com");
 		httpRequest.addHeader("Accept","text/html, text/plain");

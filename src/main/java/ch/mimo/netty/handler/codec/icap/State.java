@@ -36,19 +36,19 @@ public abstract class State<T extends Object> {
 	/**
 	 * Preparation method
 	 */
-	public abstract void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception;
+	public abstract void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException;
 	
 	/**
 	 * execution method
 	 * @return @see {@link StateReturnValue} that contains, dependent on the relevance a return value.
 	 */
-	public abstract StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception;
+	public abstract StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException;
 	
 	/**
 	 * Flow decision method
 	 * @return has to return a valid next state. Can be itself.
 	 */
-	public abstract StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, T decisionInformation) throws Exception;
+	public abstract StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, T decisionInformation) throws DecodingException;
 
 	public String toString() {
 		return name;

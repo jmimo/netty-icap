@@ -26,20 +26,20 @@ import org.jboss.netty.buffer.ChannelBuffer;
  * @see StateEnum
  */
 public class ReadIcapHeaderState extends State<Object> {
-
+	
 	public ReadIcapHeaderState(String name) {
 		super(name);
 	}
 	
 	@Override
-	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 		if(icapMessageDecoder.message == null) {
 			throw new IllegalArgumentException("This state requires a valid IcapMessage instance");
 		}
 	}
 
 	@Override
-	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 		List<String[]> headerList = IcapDecoderUtil.readHeaders(buffer,icapMessageDecoder.maxIcapHeaderSize);
 		icapMessageDecoder.message.clearHeaders();
 		for(String[] header : headerList) {
@@ -50,17 +50,20 @@ public class ReadIcapHeaderState extends State<Object> {
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
 		// TODO find less complex and more generic solution. This statement assumes that there is a res hds always after the reqhdr.
 		// this by the way is correct when assuming the other end is adhering 100% to the rfc!
-		if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
+		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
-		} else if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
-			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
+		} else if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
+			return StateReturnValue.createRelevantResult(icapMessageDecoder.reset());
 		}
 		return StateReturnValue.createIrrelevantResult();
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws DecodingException {
 		IcapMessage message = icapMessageDecoder.message;
+		if(message == null) {
+			return null;
+		}
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
 		if(message.getMethod().equals(IcapMethod.OPTIONS)) {
 			if(encapsulated.containsEntry(IcapMessageElementEnum.OPTBODY)) {

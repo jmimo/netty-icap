@@ -33,7 +33,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * @see IcapRequestDecoder
  * @see IcapResponseDecoder
  */
-// TODO add reset function in case of unexpected exception
+
 public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 
 	private final InternalLogger LOG;
@@ -90,24 +90,40 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	@Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, StateEnum stateEnumValue) throws Exception {
 		if(stateEnumValue != null) {
-			State state = stateEnumValue.getState();
-			LOG.debug("Executing state [" + state + ']');
-			state.onEntry(buffer,this);
-			StateReturnValue returnValue = state.execute(buffer,this);
-			LOG.debug("Return value from state [" + state + "] = [" + returnValue + "]");
-			StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
-			LOG.debug("Next State [" + nextState + "]");
-			if(nextState != null) {
-				checkpoint(nextState);
-			} else {
-				checkpoint();
-			}
-			if(returnValue.isRelevant()) {
-				return returnValue.getValue();
+			try {
+				State state = stateEnumValue.getState();
+				LOG.debug("Executing state [" + state + ']');
+				state.onEntry(buffer,this);
+				StateReturnValue returnValue = state.execute(buffer,this);
+				LOG.debug("Return value from state [" + state + "] = [" + returnValue + "]");
+				StateEnum nextState = state.onExit(buffer,this,returnValue.getDecisionInformation());
+				LOG.debug("Next State [" + nextState + "]");
+				if(nextState != null) {
+					checkpoint(nextState);
+				} else {
+					checkpoint();
+				}
+				if(returnValue.isRelevant()) {
+					return returnValue.getValue();
+				}
+			} catch(DecodingException e) {
+				reset();
+				throw e;
 			}
 		}
 		return null;
 	}
+	
+	/**
+	 * set the decoders message to NULL and the next checkpoint to @see {@link StateEnum#SKIP_CONTROL_CHARS}
+	 * @return the message which was set to null in the instance.
+	 */
+    protected Object reset() {
+        Object message = this.message;
+        this.message = null;
+        checkpoint(StateEnum.SKIP_CONTROL_CHARS);
+        return message;
+    }
 	
 	public abstract boolean isDecodingResponse();
 	

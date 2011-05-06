@@ -30,11 +30,11 @@ public class ReadChunkedContentAsChunksState extends State<Object> {
 	}
 	
 	@Override
-	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 	}
 
 	@Override
-	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 		IcapChunk chunk = null;
 		if(icapMessageDecoder.currentChunkSize > icapMessageDecoder.maxChunkSize) {
 			chunk = new DefaultIcapChunk(buffer.readBytes(icapMessageDecoder.maxChunkSize));
@@ -52,7 +52,7 @@ public class ReadChunkedContentAsChunksState extends State<Object> {
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws DecodingException {
 		if(icapMessageDecoder.currentChunkSize == 0) {
 			return StateEnum.READ_CHUNK_DELIMITER_STATE;
 		}

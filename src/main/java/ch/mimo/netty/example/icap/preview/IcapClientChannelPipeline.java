@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2011 Michael Mimo Moratti.
- *  
+ *
  * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at:
@@ -11,17 +11,24 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  *******************************************************************************/
-package ch.mimo.netty.handler.codec.icap;
+package ch.mimo.netty.example.icap.preview;
 
-import junit.framework.Assert;
+import static org.jboss.netty.channel.Channels.pipeline;
 
-import org.junit.BeforeClass;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
 
-public class AbstractJDKLoggerPreparation extends Assert {
+import ch.mimo.netty.handler.codec.icap.IcapRequestEncoder;
+import ch.mimo.netty.handler.codec.icap.IcapResponseDecoder;
 
-	@BeforeClass
-	public static final void configureJDKLogger() {
-//		System.setProperty("icap.test.output","true");
-		System.setProperty("java.util.logging.config.class","ch.mimo.netty.handler.codec.icap.JDKLoggerConfiguration");
+public class IcapClientChannelPipeline implements ChannelPipelineFactory {
+	
+	@Override
+	public ChannelPipeline getPipeline() throws Exception {
+		ChannelPipeline pipeline = pipeline();
+    	pipeline.addLast("encoder",new IcapRequestEncoder());
+      	pipeline.addLast("decoder",new IcapResponseDecoder());
+      	pipeline.addLast("handler",new IcapClientHandler());
+      	return pipeline;
 	}
 }

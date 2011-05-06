@@ -52,7 +52,7 @@ public class IcapClient {
 	                        Executors.newCachedThreadPool()));
 
 	        // Set up the event pipeline factory.
-	        bootstrap.setPipelineFactory(new IcapClientChannlePipeline());
+	        bootstrap.setPipelineFactory(new IcapClientChannelPipeline());
 
 	        // Start the connection attempt.
 	        ChannelFuture future = bootstrap.connect(new InetSocketAddress(host,port));

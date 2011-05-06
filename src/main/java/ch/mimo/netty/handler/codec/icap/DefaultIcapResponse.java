@@ -14,6 +14,7 @@
 package ch.mimo.netty.handler.codec.icap;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.util.internal.StringUtil;
 
 /**
  * Main Icap Response implementation. This is the starting point to create any Icap response.
@@ -55,4 +56,8 @@ public class DefaultIcapResponse extends AbstractIcapMessage implements IcapResp
 		return optionsContent;
 	}
 
+	@Override
+	public String toString() {
+		return super.toString() + StringUtil.NEWLINE + "Response Status: " + status.name();
+	}
 }

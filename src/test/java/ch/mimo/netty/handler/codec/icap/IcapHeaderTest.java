@@ -39,7 +39,9 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	@Test
 	public void containsHeader() {
 		IcapHeader headers = new IcapHeader();
+		headers.addHeader("MIMOx","JOGGEL");
 		headers.addHeader("MIMO","JOGGEL");
+		headers.addHeader("MIMOy","JOGGEL");
 		assertTrue("contains returned false",headers.containsHeader("mimo"));
 	}
 	

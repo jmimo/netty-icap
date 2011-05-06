@@ -34,11 +34,11 @@ public class ReadTrailingHeadersState extends State<Object> {
 	}
 	
 	@Override
-	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public void onEntry(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 	}
 
 	@Override
-	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws Exception {
+	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 		SizeDelimiter sizeDelimiter = new SizeDelimiter(icapMessageDecoder.maxHttpHeaderSize);
 		boolean preview = icapMessageDecoder.message.isPreviewMessage();
         String line = IcapDecoderUtil.readSingleHeaderLine(buffer,sizeDelimiter);
@@ -76,7 +76,7 @@ public class ReadTrailingHeadersState extends State<Object> {
 	}
 
 	@Override
-	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws Exception {
+	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws DecodingException {
 		return null;
 	}
 }

@@ -34,12 +34,12 @@ public class SizeDelimiter {
 		this.errorMessage = "limit exeeded by: ";
 	}
 	
-	public synchronized void increment(int count) throws TooLongFrameException {
+	public synchronized void increment(int count) throws DecodingException {
 		counter += count;
 		checkLimit();
 	}
 	
-	public void increment() throws TooLongFrameException {
+	public void increment() throws DecodingException {
 		this.increment(1);
 	}
 	
@@ -47,9 +47,9 @@ public class SizeDelimiter {
 		return counter;
 	}
 	
-	private void checkLimit() throws TooLongFrameException {
+	private void checkLimit() throws DecodingException {
 		if(counter >= limit) {
-			throw new TooLongFrameException(errorMessage + "[" + (counter - limit) + "] counts");
+			throw new DecodingException(new TooLongFrameException(errorMessage + "[" + (counter - limit) + "] counts"));
 		}
 	}
 }

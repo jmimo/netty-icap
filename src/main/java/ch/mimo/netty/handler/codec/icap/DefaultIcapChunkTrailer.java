@@ -56,4 +56,8 @@ public class DefaultIcapChunkTrailer extends DefaultHttpChunkTrailer implements 
 	public boolean isEarlyTerminated() {
 		return earlyTerminated;
 	}
+	
+	public String toString() {
+		return "DeafultIcapChunkTrailer: [isPreviewChunk=" + preview + "] [wasEarlyTerminated=" + earlyTerminated + "]";
+	}
 }

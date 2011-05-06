@@ -79,4 +79,24 @@ public class IcapResponseDecoderTest extends AbstractIcapTest {
 		doOutput(lastChunk.toString());
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewLastChunk(lastChunk);
 	}
+	
+	@Test
+	public void decode100Continue() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.create100ContinueResponse());
+		IcapResponse result = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		assertEquals("wrong response status code",IcapResponseStatus.CONTINUE,result.getStatus());
+	}
+	
+	@Test
+	public void decode100ContineFollowedBy204NoContent() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.create100ContinueResponse());
+		IcapResponse result = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		assertEquals("wrong response status code",IcapResponseStatus.CONTINUE,result.getStatus());
+		embedder.offer(DataMockery.create204NoContentResponse());
+		result = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		assertEquals("wrong response status code",IcapResponseStatus.NO_CONTENT,result.getStatus());
+	}
 }
