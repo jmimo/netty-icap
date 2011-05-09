@@ -79,6 +79,53 @@ public class IcapDecoderUtilTest extends Assert {
 	}
 	
 	@Test
+	public void testPreviewLine() {
+		StringBuilder builder = new StringBuilder("REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0").append(new String(IcapCodecUtil.CRLF)).append("NEW LINE");
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		try {
+			String line = IcapDecoderUtil.previewLine(buffer,100);
+			assertEquals("Line was not identified","REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0",line);
+			String secondLine = IcapDecoderUtil.previewLine(buffer,100);
+			assertEquals("Line was not identified","REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0",secondLine);
+			String readLine = IcapDecoderUtil.readLine(buffer,100);
+			assertEquals("Line was not identified","REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0",readLine);
+		} catch (DecodingException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testPreviewLineWithSingleLineBreak() {
+		StringBuilder builder = new StringBuilder("REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0").append(new String(new byte[]{IcapCodecUtil.LF})).append("NEW LINE");
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		try {
+			String line = IcapDecoderUtil.previewLine(buffer,100);
+			assertEquals("Line was not identified","REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0",line);
+			String secondLine = IcapDecoderUtil.previewLine(buffer,100);
+			assertEquals("Line was not identified","REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0",secondLine);
+			String readLine = IcapDecoderUtil.readLine(buffer,100);
+			assertEquals("Line was not identified","REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0",readLine);
+		} catch (DecodingException e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	@Test
+	public void testPreviewLineMaximumLengthReached() {
+		StringBuilder builder = new StringBuilder("REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0").append(new String(IcapCodecUtil.CRLF)).append("NEW LINE");
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		boolean exception = false;
+		try {
+			IcapDecoderUtil.previewLine(buffer,42);
+		} catch (DecodingException e) {
+			exception = true;
+		}
+		assertTrue("No maximum length reached exception was thrown!",exception);
+	}
+	
+	@Test
 	public void testFindNonWhitespace() {
 		String line = "  TESTSTRING";
 		int position = IcapDecoderUtil.findNonWhitespace(line,0);
@@ -259,26 +306,37 @@ public class IcapDecoderUtilTest extends Assert {
 	}
 	
 	@Test
-	public void testChunkSize() {
+	public void testChunkSize() throws DecodingException {
 		String line = "33";
 		assertEquals("wrong chunk size",51,IcapDecoderUtil.getChunkSize(line));
 	}
 	
 	@Test
-	public void testIEOFChunkSize() {
+	public void testIEOFChunkSize() throws DecodingException {
 		String line ="0; ieof";
 		assertEquals("wrong chunk size",-1,IcapDecoderUtil.getChunkSize(line));
 	}
 	
 	@Test
-	public void testChunkSizeWithTrailingSemicolon() {
+	public void testChunkSizeWithTrailingSemicolon() throws DecodingException {
 		String line = "0;";
 		assertEquals("wrong chunk size",0,IcapDecoderUtil.getChunkSize(line));
 	}
 	
 	@Test
-	public void testChunkSizeWithTrailingWhitespace() {
+	public void testChunkSizeWithTrailingWhitespace() throws DecodingException {
 		String line = "0 ";
 		assertEquals("wrong chunk size",0,IcapDecoderUtil.getChunkSize(line));
+	}
+	
+	@Test
+	public void testChunkSizeWithUnparseableValues() {
+		boolean exception = false;
+		try {
+			IcapDecoderUtil.getChunkSize("HELLO");
+		} catch(DecodingException de) {
+			exception = true;
+		}
+		assertTrue("No exception was thrown",exception);
 	}
 }

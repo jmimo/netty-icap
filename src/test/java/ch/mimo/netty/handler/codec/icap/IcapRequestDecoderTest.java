@@ -252,5 +252,105 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 	}
 	
 	// TODO add test where several requests are decoded subsequently.
+	
+	@Test
+	public void decodeREQMODfollowedByRESPMODbothWithoutBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());
+		Object object = embedder.poll();
+		assertNotNull("REQMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest reqmodRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.REQMOD,reqmodRequest.getMethod());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBody());
+		object = embedder.poll();
+		assertNotNull("RESPMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest respmodRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.RESPMOD,respmodRequest.getMethod());
+	}
+	
+	@Test
+	public void decodeREQMODFollowedByRESPMODWithPreviewFollowedByRESPMODFollowedByOPTIONS() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());
+		Object object = embedder.poll();
+		assertNotNull("REQMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest reqmodRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.REQMOD,reqmodRequest.getMethod());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreview());
+		object = embedder.poll();
+		assertNotNull("RESPMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest respmodRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.RESPMOD,respmodRequest.getMethod());
+		object = embedder.poll();
+		assertNotNull("RESPMOD preview chunk was null",object);
+		assertTrue("wrong object type",object instanceof IcapChunk);
+		IcapChunk chunk = (IcapChunk)object;
+		assertTrue("chunk is not preview",chunk.isPreviewChunk());
+		object = embedder.poll();
+		assertNotNull("preview chunk trailer is null",object);
+		assertTrue("wrong object type",object instanceof IcapChunkTrailer);
+		IcapChunkTrailer trailer = (IcapChunkTrailer)object;
+		assertTrue("chunk trailer is not marked as preview",trailer.isPreviewChunk());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBody());
+		object = embedder.poll();
+		assertNotNull("RESPMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest respmodRequest1 = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.RESPMOD,respmodRequest1.getMethod());
+		embedder.offer(DataMockery.createOPTIONSRequest());
+		object = embedder.poll();
+		assertNotNull("options request is null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest optionsRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.OPTIONS,optionsRequest.getMethod());
+	}
+	
+	@Test
+	public void decodeREQMODWithTwoChunkBodyFollowedByRESPMODWithPreviewFollowedByRESMODNoBodyFollowedByOPTIONSRequest() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithTwoChunkBody());
+		Object object = embedder.poll();
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest respmodRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.REQMOD,respmodRequest.getMethod());
+		object = embedder.poll();
+		assertNotNull("REQMOD preview chunk was null",object);
+		assertTrue("wrong object type",object instanceof IcapChunk);
+		object = embedder.poll();
+		assertNotNull("REQMOD preview chunk was null",object);
+		assertTrue("wrong object type",object instanceof IcapChunk);
+		object = embedder.poll();
+		assertNotNull("preview chunk trailer is null",object);
+		assertTrue("wrong object type",object instanceof IcapChunkTrailer);
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreview());
+		object = embedder.poll();
+		assertNotNull("RESPMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		respmodRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.RESPMOD,respmodRequest.getMethod());
+		object = embedder.poll();
+		assertNotNull("RESPMOD preview chunk was null",object);
+		assertTrue("wrong object type",object instanceof IcapChunk);
+		IcapChunk chunk = (IcapChunk)object;
+		assertTrue("chunk is not preview",chunk.isPreviewChunk());
+		object = embedder.poll();
+		assertNotNull("preview chunk trailer is null",object);
+		assertTrue("wrong object type",object instanceof IcapChunkTrailer);
+		IcapChunkTrailer trailer = (IcapChunkTrailer)object;
+		assertTrue("chunk trailer is not marked as preview",trailer.isPreviewChunk());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBody());
+		object = embedder.poll();
+		assertNotNull("RESPMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest respmodRequest1 = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.RESPMOD,respmodRequest1.getMethod());
+		embedder.offer(DataMockery.createOPTIONSRequest());
+		object = embedder.poll();
+		assertNotNull("options request is null",object);
+		assertTrue("wrong object type",object instanceof IcapRequest);
+		IcapRequest optionsRequest = (IcapRequest)object;
+		assertEquals("wrong request method",IcapMethod.OPTIONS,optionsRequest.getMethod());
+	}
 }
 

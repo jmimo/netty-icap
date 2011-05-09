@@ -76,6 +76,39 @@ public final class IcapDecoderUtil {
             }
         }
     }
+    
+    /**
+     * previews a line until CR / LF / CRLF
+     * this will not increas the buffers readerIndex!
+     * @param buffer
+     * @param maxLineLength
+     * @return the first line found in the buffer
+     * @throws DecodingException
+     */
+    public static String previewLine(ChannelBuffer buffer, int maxLineLength) throws DecodingException {
+        StringBuilder sb = new StringBuilder(64);
+        int lineLength = 0;
+        for(int i = buffer.readerIndex() ; i < buffer.readableBytes() ; i++) {
+            byte nextByte = buffer.getByte(i);
+            if (nextByte == IcapCodecUtil.CR) {
+                nextByte = buffer.getByte(++i);
+                if (nextByte == IcapCodecUtil.LF) {
+                	break;
+                }
+            } else if (nextByte == IcapCodecUtil.LF) {
+            	break;
+            } else {
+                if (lineLength >= maxLineLength) {
+                    throw new DecodingException(new TooLongFrameException(
+                            "An HTTP line is larger than " + maxLineLength +
+                            " bytes."));
+                }
+                lineLength ++;
+                sb.append((char) nextByte);
+            }
+        }
+        return sb.toString();
+    }    
 	
     /**
      * Splits an initial line.
@@ -157,7 +190,7 @@ public final class IcapDecoderUtil {
 	 * @param line
 	 * @return -1 if the chunk size indicates that a preview message is early terminated.
 	 */
-    public static int getChunkSize(String line) {
+    public static int getChunkSize(String line) throws DecodingException {
         String hex = line.trim();
         if(hex.equals(IcapCodecUtil.IEOF_SEQUENCE_STRING)) {
         	return -1;
@@ -169,7 +202,11 @@ public final class IcapDecoderUtil {
                 break;
             }
         }
-        return Integer.parseInt(hex, 16);
+        try {
+        	return Integer.parseInt(hex, 16);
+        } catch(NumberFormatException nfe) {
+        	throw new DecodingException(nfe);
+        }
     }
 	
     /**

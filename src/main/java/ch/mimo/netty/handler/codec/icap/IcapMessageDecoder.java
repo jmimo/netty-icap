@@ -101,7 +101,7 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 				if(nextState != null) {
 					checkpoint(nextState);
 				} else {
-					checkpoint();
+					reset();
 				}
 				if(returnValue.isRelevant()) {
 					return returnValue.getValue();
@@ -116,13 +116,10 @@ public abstract class IcapMessageDecoder extends ReplayingDecoder<StateEnum> {
 	
 	/**
 	 * set the decoders message to NULL and the next checkpoint to @see {@link StateEnum#SKIP_CONTROL_CHARS}
-	 * @return the message which was set to null in the instance.
 	 */
-    protected Object reset() {
-        Object message = this.message;
+    private void reset() {
         this.message = null;
         checkpoint(StateEnum.SKIP_CONTROL_CHARS);
-        return message;
     }
 	
 	public abstract boolean isDecodingResponse();

@@ -100,5 +100,29 @@ public class IcapResponseDecoderTest extends AbstractIcapTest {
 		assertEquals("wrong response status code",IcapResponseStatus.NO_CONTENT,result.getStatus());
 	}
 	
-	// TODO add more test where several responses are decoded subsequently.
+	@Test
+	public void decodeRESPMODWithPreviewFollowedByREQPMODFollwedBy100Continue() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewResponse());
+		Object object = embedder.poll();
+		assertNotNull("RESPMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapResponse);
+		object = embedder.poll();
+		assertNotNull("RESPMOD preview chunk was null",object);
+		assertTrue("wrong object type",object instanceof IcapChunk);
+		IcapChunk chunk = (IcapChunk)object;
+		assertTrue("chunk is not preview",chunk.isPreviewChunk());
+		object = embedder.poll();
+		assertNotNull("preview chunk trailer is null",object);
+		assertTrue("wrong object type",object instanceof IcapChunkTrailer);
+		IcapChunkTrailer trailer = (IcapChunkTrailer)object;
+		assertTrue("chunk trailer is not marked as preview",trailer.isPreviewChunk());
+		embedder.offer(DataMockery.createREQMODWithGetRequestResponse());
+		object = embedder.poll();
+		assertNotNull("REQMOD request was null",object);
+		assertTrue("wrong object type",object instanceof IcapResponse);
+		embedder.offer(DataMockery.create100ContinueResponse());
+		IcapResponse result = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+		assertEquals("wrong response status code",IcapResponseStatus.CONTINUE,result.getStatus());
+	}	
 }

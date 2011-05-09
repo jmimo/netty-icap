@@ -57,7 +57,7 @@ public final class IcapVersion {
     	}
         Matcher m = VERSION_PATTERN.matcher(text.trim().toUpperCase());
         if (!m.matches()) {
-            throw new IllegalArgumentException("invalid version format: " + text);
+            throw new IllegalArgumentException("invalid version format: [" + text + "]");
         }
         protocolName = m.group(1);
         major = Integer.parseInt(m.group(2));

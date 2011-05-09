@@ -53,7 +53,7 @@ public class ReadIcapHeaderState extends State<Object> {
 		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		} else if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
-			return StateReturnValue.createRelevantResult(icapMessageDecoder.reset());
+			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		}
 		return StateReturnValue.createIrrelevantResult();
 	}
@@ -61,9 +61,6 @@ public class ReadIcapHeaderState extends State<Object> {
 	@Override
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws DecodingException {
 		IcapMessage message = icapMessageDecoder.message;
-		if(message == null) {
-			return null;
-		}
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
 		if(message.getMethod().equals(IcapMethod.OPTIONS)) {
 			if(encapsulated.containsEntry(IcapMessageElementEnum.OPTBODY)) {

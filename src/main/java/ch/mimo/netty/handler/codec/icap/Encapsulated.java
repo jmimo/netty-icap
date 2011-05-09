@@ -116,7 +116,9 @@ public final class Encapsulated {
 	 */
 	public void setEntryAsProcessed(IcapMessageElementEnum entryName) {
 		Entry entry = getEntryByName(entryName);
-		entry.setIsProcessed();
+		if(entry != null) {
+			entry.setIsProcessed();
+		}
 	}
 	
 	/**
