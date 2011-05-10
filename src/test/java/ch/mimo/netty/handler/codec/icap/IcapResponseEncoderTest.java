@@ -91,4 +91,11 @@ public class IcapResponseEncoderTest extends AbstractEncoderTest {
 		String chunk3 = getBufferContent(embedder.poll());
 		assertResponse(DataMockery.createREQMODWithTwoChunkBodyChunkThree(),chunk3);
 	}
+	
+	@Test
+	public void encodeREQMODResponseWithHttpResponse() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODResponseContainingHttpResponseIcapResponse());
+		String response = getBufferContent(embedder.poll());
+		assertResponse(DataMockery.createREQMODResponseContainingHttpResponse(),response);
+	}
 }

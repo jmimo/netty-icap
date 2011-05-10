@@ -80,6 +80,7 @@ public interface IcapMessage {
      * @param name header name
      * @param value for the given name
      */
+    // TODO fix the fact that if this method is used other headers disappear!
     void setHeader(String name, Object value);
 
     /**

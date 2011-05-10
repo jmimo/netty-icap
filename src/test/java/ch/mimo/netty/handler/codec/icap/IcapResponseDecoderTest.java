@@ -124,5 +124,12 @@ public class IcapResponseDecoderTest extends AbstractIcapTest {
 		IcapResponse result = (IcapResponse)embedder.poll();
 		assertNotNull("The decoded icap request instance is null",result);
 		assertEquals("wrong response status code",IcapResponseStatus.CONTINUE,result.getStatus());
-	}	
+	}
+	
+	@Test
+	public void decodeREQMODResponseWithHttpResponse() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODResponseContainingHttpResponse());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		DataMockery.assertREQMODResponseContainingHttpResponse(response);
+	}
 }
