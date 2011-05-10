@@ -28,6 +28,9 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * In other words. This handler allows to create a combined ICAP message containing HTTP request/response and
  * the corresponding body as ChannelBuffer include in one of the HTTP relevant instances.
  * 
+ * This separator cannot handle trailing headers at HTTP request or response bodies. If you have to
+ * send trailing headers then consider not using this separator but handling the message body by yourself.
+ * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
  */
@@ -77,9 +80,6 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 						IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
 						trailer.setPreviewChunk(isPreview);
 						trailer.setEarlyTermination(isEarlyTerminated);
-						// TODO we are currently unable to handle trailing headers. for this we have to specify in the message that there are 
-						// trailing headers and what they are named.
-						// This is not required at the moment.
 						fireDownstreamEvent(ctx,trailer,msgEvent);
 					}
 	    		}

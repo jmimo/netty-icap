@@ -459,8 +459,5 @@ public abstract class SocketTests extends AbstractSocketTest {
 	public void aggregatorSeparatorCombinationTest() {
 		runSocketTest(new SendREQMODWithGetRequestAndDataServerHandler(),new SendREQMODWithGetRequestAndDataClientHandler(),new Object[]{DataMockery.createREQMODWithGetRequestAndDataIcapMessage()},PipelineType.SEPARATOR_AGGREGATOR);
 	}
-	
-	// TODO add tests that cause exceptions and errors while decoding. And then validate
-	// what happens when reusing the decoder.
 }
 

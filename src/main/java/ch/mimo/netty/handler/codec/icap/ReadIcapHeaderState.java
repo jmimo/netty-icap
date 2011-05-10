@@ -48,8 +48,6 @@ public class ReadIcapHeaderState extends State<Object> {
 		validateMandatoryMessageHeaders(icapMessageDecoder.message,icapMessageDecoder.isDecodingResponse());
 		Encapsulated encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeader.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
-		// TODO find less complex and more generic solution. This statement assumes that there is a res hds always after the reqhdr.
-		// this by the way is correct when assuming the other end is adhering 100% to the rfc!
 		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		} else if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
