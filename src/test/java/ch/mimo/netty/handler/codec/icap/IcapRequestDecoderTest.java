@@ -251,8 +251,6 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 		assertTrue("last chunk is not marked as preview chunk",chunk8.isPreviewChunk());
 	}
 	
-	// TODO add test where several requests are decoded subsequently.
-	
 	@Test
 	public void decodeREQMODfollowedByRESPMODbothWithoutBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBody());

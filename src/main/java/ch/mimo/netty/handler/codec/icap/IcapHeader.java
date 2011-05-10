@@ -231,7 +231,7 @@ public final class IcapHeader {
 	 * @param name Icap message header name
 	 */
 	public void removeHeader(String name) {
-		if(base.after == null) {
+		if(base == null || base.after == null) {
 			base = null;
 			return;
 		}

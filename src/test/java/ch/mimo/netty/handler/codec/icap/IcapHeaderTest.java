@@ -79,12 +79,32 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void setSingleHeader() {
+		IcapHeader headers = new IcapHeader();
+		headers.setHeader("MIMO","JOGGEL");
+		assertEquals("wrong header value","JOGGEL",headers.getHeader("MIMO"));
+	}
+	
+	@Test
 	public void setHeader() {
 		IcapHeader headers = new IcapHeader();
 		headers.addHeader("MIMO","JOGGEL");
 		assertEquals("unexpected value for header","JOGGEL",headers.getHeader("MIMO"));
 		headers.setHeader("MIMO","JOGGEL1");
 		assertEquals("unexpected value for header","JOGGEL1",headers.getHeader("MIMO"));
+	}
+	
+	@Test
+	public void addAndSetHeader() {
+		IcapHeader headers = new IcapHeader();
+		headers.addHeader("FOO1","FOOV1");
+		headers.addHeader("FOO2","FOOV2");
+		headers.setHeader("FOO3","FOOV3");
+		headers.addHeader("FOO4","FOOV4");
+		assertEquals("wrong header value","FOOV1",headers.getHeader("FOO1"));
+		assertEquals("wrong header value","FOOV2",headers.getHeader("FOO2"));
+		assertEquals("wrong header value","FOOV3",headers.getHeader("FOO3"));
+		assertEquals("wrong header value","FOOV4",headers.getHeader("FOO4"));
 	}
 	
 	@Test

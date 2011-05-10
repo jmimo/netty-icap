@@ -79,7 +79,7 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 						trailer.setEarlyTermination(isEarlyTerminated);
 						// TODO we are currently unable to handle trailing headers. for this we have to specify in the message that there are 
 						// trailing headers and what they are named.
-						// This is not required in the moment.
+						// This is not required at the moment.
 						fireDownstreamEvent(ctx,trailer,msgEvent);
 					}
 	    		}

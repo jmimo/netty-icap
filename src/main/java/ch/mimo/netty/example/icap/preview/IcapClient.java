@@ -88,11 +88,7 @@ public class IcapClient {
         channel.write(request);
         channel.write(previewChunk);
         channel.write(previewTrailer);
-
-        
-        
-        // TODO insert wait in order to process the response and send the rest of the data.
-        
+     
         // Wait for the server to close the connection.
         channel.getCloseFuture().awaitUninterruptibly();
 
