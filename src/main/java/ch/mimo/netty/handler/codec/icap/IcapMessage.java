@@ -71,29 +71,33 @@ public interface IcapMessage {
      * Adds a new header with the specified name and value.
      * @param name header name
      * @param value for the given name
+     * @return self in order to chain the method calls
      */
-    void addHeader(String name, Object value);
+    IcapMessage addHeader(String name, Object value);
 
     /**
      * Sets a new header with the specified name and value.  If there is an
      * existing header with the same name, the existing header is removed.
      * @param name header name
      * @param value for the given name
+     * @return self in order to chain the method calls
      */
-    void setHeader(String name, Object value);
+    IcapMessage setHeader(String name, Object value);
 
     /**
      * Sets a new header with the specified name and values.  If there is an
      * existing header with the same name, the existing header is removed.
      * @param name header name
      * @param values for the given name
+     * @return self in order to chain the method calls
      */
-    void setHeader(String name, Iterable<?> values);
+    IcapMessage setHeader(String name, Iterable<?> values);
 
     /**
      * Removes the header with the specified name.
+     * @return self in order to chain the method calls
      */
-    void removeHeader(String name);
+    IcapMessage removeHeader(String name);
     
     /**
      * @return the @see {@link Integer} preview header value.
@@ -102,8 +106,9 @@ public interface IcapMessage {
 
     /**
      * Removes all headers from this message.
+     * @return self in order to chain the method calls
      */
-    void clearHeaders();
+    IcapMessage clearHeaders();
     
     /**
      * @return the protocol version of this message.
@@ -113,8 +118,9 @@ public interface IcapMessage {
     /**
      * Sets the protocol version of this message.
      * @param version @see {@link IcapVersion}
+     * @return self in order to chain the method calls
      */
-    void setProtocolVersion(IcapVersion version);
+    IcapMessage setProtocolVersion(IcapVersion version);
     
     /**
      * @return whether this message is a preview of the actual message.
@@ -131,7 +137,11 @@ public interface IcapMessage {
      */
 	HttpRequest getHttpRequest();
 	
-	void setHttpRequest(HttpRequest httpRequest);
+	/**
+	 * @param httpRequest
+	 * @return self in order to chain the method calls
+	 */
+	IcapMessage setHttpRequest(HttpRequest httpRequest);
 	
 	/**
 	 * @return true if a http response was delivered.
@@ -147,14 +157,16 @@ public interface IcapMessage {
 	 * Adds a @see {@link HttpResponse} to the Icap message.
 	 * 
 	 * @param response the @see {@link HttpResponse}
+	 * @return self in order to chain the method calls
 	 */
-	void setHttpResponse(HttpResponse response);
+	IcapMessage setHttpResponse(HttpResponse response);
 	
 	/**
 	 * Sets the operation method for this icap request.
 	 * @param method the @see {@link HttpMethod} provided by @see {@link IcapMethod}
+	 * @return self in order to chain the method calls
 	 */
-	void setMethod(IcapMethod method);
+	IcapMessage setMethod(IcapMethod method);
 
 	/**
 	 * @return This operations method
@@ -164,8 +176,9 @@ public interface IcapMessage {
 	/**
 	 * Sets the operations uri.
 	 * @param uri 
+	 * @return self in order to chain the method calls
 	 */
-	void setUri(String uri);
+	IcapMessage setUri(String uri);
 	
 	/**
 	 * @return String uri for this message
@@ -175,8 +188,9 @@ public interface IcapMessage {
 	/**
 	 * Sets the @see {@link Encapsulated} Encapsulation header for this message
 	 * @param encapsulated @see {@link Encapsulated} instance
+	 * @return self in order to chain the method calls
 	 */
-	void setEncapsulatedHeader(Encapsulated encapsulated);
+	IcapMessage setEncapsulatedHeader(Encapsulated encapsulated);
 	
 	/**
 	 * @return @see {@link Encapsulated} Encapsulated header value
@@ -186,8 +200,9 @@ public interface IcapMessage {
 	/**
 	 * Sets the indication that this icap message contains a body of some kind.
 	 * @param body @see {@link IcapMessageElementEnum}
+	 * @return self in order to chain the method calls
 	 */
-	void setBody(IcapMessageElementEnum body);
+	IcapMessage setBody(IcapMessageElementEnum body);
 
 	/**
 	 * @return @see {@link IcapMessageElementEnum} message body indicator.

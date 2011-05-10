@@ -78,23 +78,27 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	}
 
 	@Override
-	public void addHeader(String name, Object value) {
+	public IcapMessage addHeader(String name, Object value) {
 		icapHeader.addHeader(name,value);
+		return this;
 	}
 
 	@Override
-	public void setHeader(String name, Object value) {
+	public IcapMessage setHeader(String name, Object value) {
 		icapHeader.setHeader(name,value);
+		return this;
 	}
 
 	@Override
-	public void setHeader(String name, Iterable<?> values) {
+	public IcapMessage setHeader(String name, Iterable<?> values) {
 		icapHeader.setHeader(name,values);
+		return this;
 	}
 
 	@Override
-	public void removeHeader(String name) {
+	public IcapMessage removeHeader(String name) {
 		icapHeader.removeHeader(name);
+		return this;
 	}
 	
 	@Override
@@ -103,8 +107,9 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	}
 
 	@Override
-	public void clearHeaders() {
+	public IcapMessage clearHeaders() {
 		icapHeader.clearHeaders();
+		return this;
 	}
 
 	@Override
@@ -113,8 +118,9 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	}
 
 	@Override
-	public void setProtocolVersion(IcapVersion version) {
+	public IcapMessage setProtocolVersion(IcapVersion version) {
 		this.version = version;
+		return this;
 	}
 
 	@Override
@@ -128,8 +134,9 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	}
 	
 	@Override
-	public void setHttpRequest(HttpRequest httpRequest) {
+	public IcapMessage setHttpRequest(HttpRequest httpRequest) {
 		this.httpRequest = httpRequest;
+		return this;
 	}
 
 	@Override
@@ -142,20 +149,23 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 		return httpResponse;
 	}
 	
-	public void setHttpResponse(HttpResponse response) {
+	public IcapMessage setHttpResponse(HttpResponse response) {
 		this.httpResponse = response;
+		return this;
 	}
 
-	public void setMethod(IcapMethod method) {
+	public IcapMessage setMethod(IcapMethod method) {
 		this.method = method;
+		return this;
 	}
 
 	public IcapMethod getMethod() {
 		return method;
 	}
 
-	public void setUri(String uri) {
+	public IcapMessage setUri(String uri) {
 		this.uri = uri;
+		return this;
 	}
 
 	public String getUri() {
@@ -163,8 +173,9 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	}
 
 	@Override
-	public void setEncapsulatedHeader(Encapsulated encapsulated) {
+	public IcapMessage setEncapsulatedHeader(Encapsulated encapsulated) {
 		this.encapsulated = encapsulated;
+		return this;
 	}
 
 	@Override
@@ -177,8 +188,9 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 		return icapHeader.getPreviewHeaderValue() > 0;
 	}
 	
-	public void setBody(IcapMessageElementEnum body) {
+	public IcapMessage setBody(IcapMessageElementEnum body) {
 		this.body = body;
+		return this;
 	}
 
 	public IcapMessageElementEnum getBody() {
