@@ -25,6 +25,12 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public class ReadChunkSizeState extends State<ReadChunkSizeState.DecisionState> {
 
+	/**
+	 * Used to decide what state has to be processed next.
+	 * 
+	 * @author Michael Mimo Moratti (mimo@mimo.ch)
+	 *
+	 */
 	public static enum DecisionState {
 		READ_CHUNK(StateEnum.READ_CHUNK_STATE),
 		READ_HUGE_CHUNK_IN_SMALER_CHUNKS(StateEnum.READ_CHUNKED_CONTENT_AS_CHUNKS_STATE),

@@ -16,9 +16,12 @@ package ch.mimo.netty.handler.codec.icap;
 import org.jboss.netty.handler.codec.http.DefaultHttpChunkTrailer;
 
 /**
- * @see IcapChunkTrailer implementation.
+ * This class is used to indicate the end of a chunked data stream and to hold 
+ * trailing headers.
  * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
+ *
+ * @see IcapChunkTrailer implementation.
  *
  */
 public class DefaultIcapChunkTrailer extends DefaultHttpChunkTrailer implements IcapChunkTrailer {
