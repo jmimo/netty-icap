@@ -45,9 +45,9 @@
       <includes>
         <include>${project.build.finalName}*.jar</include>
       </includes>
-      <excludes>
+      <!-- excludes>
         <exclude>${project.build.finalName}*-javadoc.jar</exclude>
-      </excludes>
+      </excludes -->
     </fileSet>
 
     <!-- Documentation (API) -->
