@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright (c) 2011 Michael Mimo Moratti.
+ *
+ * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+-->
+<!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.docbook.org/xml/4.5/docbookx.dtd" [
+<!ENTITY % CustomDTD SYSTEM "../custom.dtd">
+%CustomDTD; 
+]>
+<preface id="preface">
+  <title>Preface</title>
+
+  <section>
+    <title>ICAP and the lack of java implementations</title>
+    <para>
+	  ICAP (Internet Content Adaptation Protocol) was designed to encapsulate HTTP requests
+	  and responses that they can be sent to a ICAP capable server which can either modify
+	  or notice the HTTP messages. With this in mind the Protocol is made for HTTP based 
+	  entry server and proxies like Squid to off load message processing. 
+    </para>
+    <para>
+      As seen above ICAP will never be as popular like HTTP. But since HTTP is so popular and
+      the demand for HTTP message processing in Security entities such as entry servers
+      or reverse proxies is getting bigger, ICAP has become a protocol that is relevant and
+      important.	
+    </para>
+    <para>
+      The initiator for this project of building a JBoss Netty ICAP codec was the simple fact
+      that there are roughly two ICAP implementations in Java, the problem is that both
+      implementations are bound within a complete server infrastructure. In other words, no
+      JEE environment is supported and therefore is the enterprise usage of ICAP as a server
+      almost not possible. When building such a server there are always demands such as
+      "load balancing", "administration via web-services", "jmx", "gui". These cannot be simply
+      meet by the current implementations.
+    </para>
+  </section>
+  
+  <section>
+  	<title>Goals</title>
+  	<para>
+  		<itemizedlist>
+  			<listitem>Full Java ICAP protocol implementation according to RFC3507.</listitem>
+  			<listitem>JEE and Servlet container implementation cababilites.</listitem>
+  			<listitem>Server and Client support.</listitem>
+  		</itemizedlist>
+  	</para>
+  </section>
+  <section>
+    <title>JBoss Netty (http://www.jboss.org/netty)</title>
+    <para>
+      In order to acheive the above goals we have decided to implement the ICAP protocol on top of
+      JBoss Netty as a codec. The advantage of doing this is that Netty is already providing a HTTP
+      codec which can be seamless integrated into the ICAP protocol codec. The encapsulated HTTP request
+      and response objects are therefore the Netty HTTP request and response implementations.
+    </para>
+    <para>
+      Netty can be used as a standalone server or client and you can integrate it into a servlet container
+      or JEE environment. NIO and OIO sockets and streams are supported out of the box and the entire 
+      socket api complexity is abstracted. The performance of Netty is outstanding and is therefore in
+      combination with our ICAP codec a real alternative to c or c++ based solutions.
+    </para>
+  </section>
+</preface>

@@ -399,6 +399,87 @@
 				</configuration>
 			</plugin>
 			<plugin>
+			    <groupId>org.jboss.maven.plugins</groupId>
+			    <artifactId>maven-jdocbook-plugin</artifactId>
+			    <version>2.2.1</version>
+			    <extensions>true</extensions>
+				<executions>
+					<execution>
+						<id>generate-docbook</id>
+						<phase>package</phase>
+						<goals>
+							<goal>resources</goal>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.jboss</groupId>
+						<artifactId>jbossorg-docbook-xslt</artifactId>
+						<version>1.1.0</version>
+						<exclusions>
+							<exclusion>
+								<groupId>org.eclipse.wst.css</groupId>
+								<artifactId>core</artifactId>
+							</exclusion>
+							<exclusion>
+								<groupId>org.eclipse.wst.sse</groupId>
+								<artifactId>core</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>org.jboss</groupId>
+						<artifactId>jbossorg-jdocbook-style</artifactId>
+						<version>1.1.0</version>
+						<type>jdocbook-style</type>
+						<exclusions>
+							<exclusion>
+								<groupId>org.eclipse.wst.css</groupId>
+								<artifactId>core</artifactId>
+							</exclusion>
+							<exclusion>
+								<groupId>org.eclipse.wst.sse</groupId>
+								<artifactId>core</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>org.jboss</groupId>
+						<artifactId>jbossorg-fonts</artifactId>
+						<version>1.0.0</version>
+						<type>jdocbook-style</type>
+					</dependency>
+				</dependencies>
+			    <configuration>
+					<sourceDocumentName>master.xml</sourceDocumentName>
+					<sourceDirectory>${basedir}/src/main/docbook</sourceDirectory>
+			        <formats>
+			            <format>
+			                <formatName>pdf</formatName>
+			                <stylesheetResource>file:///${basedir}/src/main/docbook/xslt/pdf.xsl</stylesheetResource>
+			                <finalName>icap.pdf</finalName>
+			            </format>
+						<format>
+							<formatName>html_single</formatName>
+							<finalName>index.html</finalName>
+						</format>
+			            <format>
+			                <formatName>html</formatName>
+			                <finalName>index.html</finalName>
+			            </format>
+			        </formats>
+					<options>
+						<xincludeSupported>true</xincludeSupported>
+						<xmlTransformerType>saxon</xmlTransformerType>
+						<docbookVersion>1.72.0</docbookVersion>
+						<localeSeparator>-</localeSeparator>
+						<autoDetectFonts>true</autoDetectFonts>
+					</options>
+			    </configuration>
+			</plugin>
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2</version>
 				<executions>
@@ -433,7 +514,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
+	<!-- repositories>
 		<repository>
 			<id>jboss-public-repository-group</id>
 			<name>JBoss Public Repository Group</name>
@@ -461,7 +542,7 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
-	</pluginRepositories>
+	</pluginRepositories -->
 	<distributionManagement>
 		<repository>
 			<id>sonatype-nexus-snapshots</id>

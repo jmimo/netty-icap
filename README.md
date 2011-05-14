@@ -3,6 +3,8 @@ ICAP Codec for JBoss Netty
 
 This project enables full ICAP 1.0 Support in combination with JBoss Netty.
 
+http://icap.mimo.ch
+
 Roadmap
 ------------
 
