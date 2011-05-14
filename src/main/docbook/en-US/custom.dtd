@@ -17,5 +17,13 @@
 <!ENTITY Home       "http://icap.mimo.ch/">
 <!ENTITY API		"http://icap.mimo.ch/api/">
 
+<!ENTITY IcapRequest  "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapRequest.html'><classname>IcapRequest</classname></ulink>">
+<!ENTITY IcapResponse  "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapResponse.html'><classname>IcapResponse</classname></ulink>">
+
+<!ENTITY IcapRequestEncoder  "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapRequestEncoder.html'><classname>IcapRequestEncoder</classname></ulink>">
+<!ENTITY IcapResponseEncoder  "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapResponseEncoder.html'><classname>IcapResponseEncoder</classname></ulink>">
+<!ENTITY IcapRequestDecoder  "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapRequestDecoder.html'><classname>IcapRequestDecoder</classname></ulink>">
+<!ENTITY IcapResponseDecoder  "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapResponseDecoder.html'><classname>IcapResponseDecoder</classname></ulink>">
+
 <!ENTITY IcapChunkAggregator  "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapChunkAggregator.html'><classname>IcapChunkAggregator</classname></ulink>">
 <!ENTITY IcapChunkSeparator   "<ulink url='&API;ch/mimo/netty/handler/codec/icap/IcapChunkSeparator.html'><classname>IcapChunkSeparator</classname></ulink>">

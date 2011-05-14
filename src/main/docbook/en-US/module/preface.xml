@@ -48,22 +48,28 @@
   	<title>Goals</title>
   	<para>
   		<itemizedlist>
-  			<listitem>Full Java ICAP protocol implementation according to RFC3507.</listitem>
-  			<listitem>JEE and Servlet container implementation cababilites.</listitem>
-  			<listitem>Server and Client support.</listitem>
+  			<listitem>
+  			  <para>Full Java ICAP protocol implementation according to RFC3507.</para>
+  			</listitem>
+  			<listitem>
+  			  <para>JEE and Servlet container implementation capabilities.</para>
+  			</listitem>
+  			<listitem>
+  			  <para>Server and Client support.</para>
+  			</listitem>
   		</itemizedlist>
   	</para>
   </section>
   <section>
     <title>JBoss Netty (http://www.jboss.org/netty)</title>
     <para>
-      In order to acheive the above goals we have decided to implement the ICAP protocol on top of
+      In order to achieve the above goals we have decided to implement the ICAP protocol on top of
       JBoss Netty as a codec. The advantage of doing this is that Netty is already providing a HTTP
-      codec which can be seamless integrated into the ICAP protocol codec. The encapsulated HTTP request
+      codec which can be integrated into the ICAP protocol codec. The encapsulated HTTP request
       and response objects are therefore the Netty HTTP request and response implementations.
     </para>
     <para>
-      Netty can be used as a standalone server or client and you can integrate it into a servlet container
+      Netty can be used as a stand alone server or client and you can integrate it into a servlet container
       or JEE environment. NIO and OIO sockets and streams are supported out of the box and the entire 
       socket api complexity is abstracted. The performance of Netty is outstanding and is therefore in
       combination with our ICAP codec a real alternative to c or c++ based solutions.
