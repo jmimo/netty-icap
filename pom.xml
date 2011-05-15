@@ -373,6 +373,26 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
 				<version>2.4</version>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+					<instrumentation>
+						<!-- ignores>
+							<ignore>ch.mimo.netty.example.icap.preview.*</ignore>
+							<ignore>ch.mimo.netty.example.icap.simple.*</ignore>
+						</ignores -->
+						<excludes>
+							<exclude>ch/mimo/netty/example/**/*.class</exclude>
+							<exclude>ch/mimo/netty/handler/codec/icap/Version.class</exclude>
+							<exclude>ch/mimo/netty/handler/codec/icap/socket/**/*.class</exclude>
+							<exclude>ch/mimo/netty/handler/codec/icap/**/*Test.class</exclude>
+							<exclude>ch/mimo/netty/handler/codec/icap/**/*Configuration.class</exclude>
+							<exclude>ch/mimo/netty/handler/codec/icap/**/*Preparation.class</exclude>
+						</excludes>
+					</instrumentation>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
