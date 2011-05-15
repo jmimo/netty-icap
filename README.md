@@ -8,7 +8,7 @@ http://icap.mimo.ch
 Roadmap
 ------------
 
-### Next (Initial Release)
+### Next (Initial Release) 1.0.0.RC1
 
 We are currently finishing the first release. The functionality is there.
 In order to provide a robust and sound solution code re-factoring and
