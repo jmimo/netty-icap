@@ -379,10 +379,6 @@
 						<format>xml</format>
 					</formats>
 					<instrumentation>
-						<!-- ignores>
-							<ignore>ch.mimo.netty.example.icap.preview.*</ignore>
-							<ignore>ch.mimo.netty.example.icap.simple.*</ignore>
-						</ignores -->
 						<excludes>
 							<exclude>ch/mimo/netty/example/**/*.class</exclude>
 							<exclude>ch/mimo/netty/handler/codec/icap/Version.class</exclude>
