@@ -30,3 +30,11 @@ This product depends on 'Netty'.
     * license/LICENSE.netty.txt
   * HOMEPAGE:
     * http://www.jboss.org/netty
+    
+This product optionally depends on 'Apache Felix', an open source OSGi
+framework implementation, which can be obtained at:
+
+  * LICENSE:
+    * license/LICENSE.felix.txt (Apache License 2.0)
+  * HOMEPAGE:
+    * http://felix.apache.org/
