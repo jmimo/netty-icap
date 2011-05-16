@@ -435,7 +435,7 @@
 			<plugin>
 			    <groupId>org.jboss.maven.plugins</groupId>
 			    <artifactId>maven-jdocbook-plugin</artifactId>
-			    <version>2.2.1</version>
+			    <version>2.3.5</version>
 			    <extensions>true</extensions>
 				<executions>
 					<execution>
@@ -534,6 +534,11 @@
 					<tarLongFileMode>gnu</tarLongFileMode>
 				</configuration>
 			</plugin>
+	        <plugin>
+	          <groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-deploy-plugin</artifactId>
+	          <version>2.6</version>
+	        </plugin>
 			<plugin>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.1</version>
