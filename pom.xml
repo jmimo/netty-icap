@@ -338,9 +338,6 @@
 										<checksum
 											file="${project.build.directory}/${project.build.finalName}-sources.jar"
 											algorithm="sha1" forceoverwrite="yes" />
-											
-										<!-- zip destfile="${project.build.directory}/${project.build.finalName}-javadoc.jar" 
-											 basedir="${project.build.directory}/api"/ -->
 										<checksum
 											file="${project.build.directory}/${project.build.finalName}-javadoc.jar"
 											algorithm="md5" forceoverwrite="yes" />		
