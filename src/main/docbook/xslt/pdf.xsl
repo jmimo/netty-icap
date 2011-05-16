@@ -19,4 +19,7 @@
   <xsl:import href="classpath:/xslt/org/jboss/pdf.xsl" />
   <xsl:import href="classpath:/xslt/org/jboss/xslt/fonts/pdf/fonts.xsl" />
 
+  <!-- Hide URL in links -->
+  <xsl:param name="ulink.show" select="0"/>
+
 </xsl:stylesheet>

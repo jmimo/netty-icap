@@ -20,9 +20,10 @@
   <title>Usage</title>
   <para>
   	The basic usage is identical to all JBoss Netty codecs. You have different Handlers available 
-  	for message encoding, decoding and message consolidation. As a prerequisite it is sensible to
+  	for message encoding, decoding. In addition to that we also provide handlers that allow the user
+  	to abstract from protocol details like the chunked transfer of all message bodies. We recomend to
   	read up on <ulink url="http://www.jboss.org/netty"><literal>JBoss Netty</literal></ulink> 
-  	in order to successfully this codec.
+  	in order to successfully use this codec.
   </para>
 
   <section>
@@ -33,36 +34,161 @@
 	  can use the aggregation and separation handlers to abstract from this protocol overhead.
       alongside the source code are examples that suggest how to use the provided handlers. The examples can be found in the package:
       <classname>ch.mimo.netty.example.icap.*</classname> All examples show how to create a server and client handler pipeline. It is
-      recommended to construct client and server pipelines according to the examples.
+      recommended to construct client and server pipelines according to these examples.
     </para>
     <para>
       The simple example shows how to best use the provided handlers. It implicitly uses the aggregation and separation
       handlers which take care of all message body transfer details. The below depicted piplelines are client and server
       pipelines:
     </para>
-    <programlisting>
-	@Override
+	<para>
+	  Note that at the end of each Pipeline is either a Server or Client handler that represents the so called Hub of the
+	  pipeline. This handler is responsible to receive messages process them and send the response back into the pipeline.
+	</para>
+  </section>
+  <section>
+  	<title>Client handler pipeline</title>
+  	<para>
+  	  A straight forward client handler pipeline consists of:
+  	  <itemizedlist>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapRequestEncoder; The Encoder will take a &IcapRequest; or &IcapChunk; and transfer them
+		  	  into a ascii string that represents the ICAP protocol. 	  			
+  	  		</para>
+  	  	</listitem>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapResponseDecoder; The Decoder has an ICAP protocol conmpliant ascii string as input and
+		  	  creates &IcapResponse; and &IcapChunk; instances. 	  			
+  	  		</para>
+  	  	</listitem>
+  	  </itemizedlist>
+  	</para>
+    <programlisting>@Override
 	public ChannelPipeline getPipeline() throws Exception {
 		ChannelPipeline pipeline = pipeline();
-    	pipeline.addLast("encoder",new IcapRequestEncoder());
-    	pipeline.addLast("chunkSeparator",new IcapChunkSeparator(4096));
-      	pipeline.addLast("decoder",new IcapResponseDecoder());
-      	pipeline.addLast("chunkAggregator",new IcapChunkAggregator(4096));
-      	pipeline.addLast("handler",new IcapClientHandler());
-      	return pipeline;
-	}
-    </programlisting>
-    <programlisting>
-    @Override
+		pipeline.addLast("encoder",new IcapRequestEncoder());
+		pipeline.addLast("decoder",new IcapResponseDecoder());
+		pipeline.addLast("handler",new IcapClientHandler());
+		return pipeline;
+	}</programlisting>
+  	<para>
+  	  You also have the possibility to abstract from the tedious message body chunk handling and
+  	  add two additional handlers which will take care of the chunked message body. It is important
+  	  to understand that in this scenario (if you plan to send a message body) you have to attach the
+  	  message body to the respective HTTP request or response.
+  	  <itemizedlist>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapChunkSeparator; This handler is useful when you create an &IcapRequest; instance
+		  	  containing http request/response and a body encapsulated with one of the http messages.
+		  	  The responsibility of this handler is then to extract the message body and send it as
+		  	  chunks to the receiving side.  			
+  	  		</para>
+  	  	</listitem>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapChunkAggregator; This handler is useful when you dont want to handle indiviual 
+		  	  &IcapChunk; insances but rather receive a combined &IcapResponse;  	  			
+  	  		</para>
+  	  	</listitem>
+  	  </itemizedlist>
+  	</para>
+    <programlisting>@Override
+	public ChannelPipeline getPipeline() throws Exception {
+		ChannelPipeline pipeline = pipeline();
+		pipeline.addLast("encoder",new IcapRequestEncoder());
+		pipeline.addLast("chunkSeparator",new IcapChunkSeparator(4096));
+		pipeline.addLast("decoder",new IcapResponseDecoder());
+		pipeline.addLast("chunkAggregator",new IcapChunkAggregator(4096));
+		pipeline.addLast("handler",new IcapClientHandler());
+		return pipeline;
+	}</programlisting>
+  </section>
+  <section>
+    <title>Server handler pipeline</title>
+    <para>
+    	A straight forward Server pipeline consists of:
+  	  <itemizedlist>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapRequestDecoder; The Decoder has an ICAP protocol conmpliant ascii string as input and
+		  	  creates &IcapRequest; and &IcapChunk; instances. 	  			
+  	  		</para>
+  	  	</listitem>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapResponseEncoder; The Encoder will take a &IcapResponse; or &IcapChunk; and transfer them
+		  	  into a ascii string that represents the ICAP protocol. 	  			
+  	  		</para>
+  	  	</listitem>
+  	  </itemizedlist>
+    </para>
+    <programlisting>@Override
     public ChannelPipeline getPipeline() throws Exception {
-        ChannelPipeline pipeline = pipeline();
-    	pipeline.addLast("decoder",new IcapRequestDecoder());
-    	pipeline.addLast("chunkAggregator",new IcapChunkAggregator(4096));
-    	pipeline.addLast("encoder",new IcapResponseEncoder());
-    	pipeline.addLast("chunkSeparator",new IcapChunkSeparator(4096));
-    	pipeline.addLast("handler",new IcapServerHandler());
-        return pipeline;
-    }
-    </programlisting>
+		ChannelPipeline pipeline = pipeline();
+		pipeline.addLast("decoder",new IcapRequestDecoder());
+		pipeline.addLast("encoder",new IcapResponseEncoder());
+		pipeline.addLast("handler",new IcapServerHandler());
+		return pipeline;
+    }</programlisting>
+    <para>
+      Analog to the Client example you also have the possibility to abstract from the tedious message 
+      body chunk handling and add two additional handlers which will take care of the chunked message body. 
+      It is important to understand that in this scenario (if you plan to send a message body) you have to 
+      attach the message body to the respective HTTP request or response.
+  	  <itemizedlist>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapChunkSeparator; This handler is useful when you create an &IcapRequest; instance
+		  	  containing http request/response and a body encapsulated with one of the http messages.
+		  	  The responsibility of this handler is then to extract the message body and send it as
+		  	  chunks to the receiving side.  			
+  	  		</para>
+  	  	</listitem>
+  	  	<listitem>
+  	  		<para>
+		  	  &IcapChunkAggregator; This handler is useful when you dont want to handle indiviual 
+		  	  &IcapChunk; insances but rather receive a combined &IcapResponse;  	  			
+  	  		</para>
+  	  	</listitem>
+  	  </itemizedlist>
+    </para>
+    <programlisting>@Override
+    public ChannelPipeline getPipeline() throws Exception {
+		ChannelPipeline pipeline = pipeline();
+		pipeline.addLast("decoder",new IcapRequestDecoder());
+		pipeline.addLast("chunkAggregator",new IcapChunkAggregator(4096));
+		pipeline.addLast("encoder",new IcapResponseEncoder());
+		pipeline.addLast("chunkSeparator",new IcapChunkSeparator(4096));
+		pipeline.addLast("handler",new IcapServerHandler());
+		return pipeline;
+    }</programlisting>
+  </section>
+  <section>
+  	<title>Preview</title>
+  	<para>
+  	  The ICAP protocol supports a special scenario wherby the client is enabled to send a pre-defined portion of the 
+  	  http message body to the server and wait for futher instructions. There server
+  	  can the ask for more data by responding with <code>100 Continue</code> which tells the client to send the rest of the
+  	  message body, or with <code>204 No Content</code> (If the client allows this!) and the client knows ok no modification
+  	  was made on the request. The Server is also capable of sending a normal <code>200 OK</code> message back to the client.
+  	  This circumstance complicates the protocol handling for a server or client. We have therfore made a simple example that
+  	  can be found under <classname>ch.mimo.netty.example.icap.preview.*</classname> which will help to understand the inner
+  	  workings of such a preview request for client and server.
+  	</para>
+  	<para>
+  	  In order to detect wheter a &IcapRequest; or &IcapChunk; belongs to a preview message we have added getters on each object
+  	  that indicate if a request or chunk participates on a preview interaction.
+  	</para>
+  	<programlisting>/**
+  	* @return whether this message is a preview of the actual message.
+  	*/
+  	boolean isPreviewMessage();</programlisting>
+  	<programlisting>/**
+	 * @return boolean true if this chunk is preview.
+	 */
+	boolean isPreviewChunk();</programlisting>
   </section>
 </chapter>
