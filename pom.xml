@@ -395,7 +395,7 @@
 					<instrumentation>
 						<excludes>
 							<exclude>ch/mimo/netty/example/**/*.class</exclude>
-							<exclude>ch/mimo/netty/container/**/*.class</exclude>
+							<exclude>ch/mimo/netty/icap/container/**/*.class</exclude>
 							<exclude>ch/mimo/netty/handler/codec/icap/Version.class</exclude>
 							<exclude>ch/mimo/netty/handler/codec/icap/socket/**/*.class</exclude>
 							<exclude>ch/mimo/netty/handler/codec/icap/**/*Test.class</exclude>
