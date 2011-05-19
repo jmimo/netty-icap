@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 
@@ -162,30 +161,6 @@ public interface IcapMessage {
 	IcapMessage setHttpResponse(HttpResponse response);
 	
 	/**
-	 * Sets the operation method for this icap request.
-	 * @param method the @see {@link HttpMethod} provided by @see {@link IcapMethod}
-	 * @return self in order to chain the method calls
-	 */
-	IcapMessage setMethod(IcapMethod method);
-
-	/**
-	 * @return This operations method
-	 */
-	IcapMethod getMethod();
-	
-	/**
-	 * Sets the operations uri.
-	 * @param uri 
-	 * @return self in order to chain the method calls
-	 */
-	IcapMessage setUri(String uri);
-	
-	/**
-	 * @return String uri for this message
-	 */
-	String getUri();
-	
-	/**
 	 * Sets the @see {@link Encapsulated} Encapsulation header for this message
 	 * @param encapsulated @see {@link Encapsulated} instance
 	 * @return self in order to chain the method calls
@@ -196,7 +171,7 @@ public interface IcapMessage {
 	 * @return @see {@link Encapsulated} Encapsulated header value
 	 */
 	Encapsulated getEncapsulatedHeader();
-	
+
 	/**
 	 * Sets the indication that this icap message contains a body of some kind.
 	 * @param body @see {@link IcapMessageElementEnum}

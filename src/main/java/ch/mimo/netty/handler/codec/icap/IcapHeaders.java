@@ -26,7 +26,7 @@ import java.util.Set;
  *
  */
 // FIXME setHeader has shown that it might removes all the previous headers....
-public final class IcapHeader {
+public final class IcapHeaders {
 	
 	private Entry base;
 	private Entry head;
@@ -105,7 +105,7 @@ public final class IcapHeader {
 		public static final String ISTAG = "ISTag";
 	}
 	
-	public IcapHeader() {
+	public IcapHeaders() {
 	}
 	
 	public void clearHeaders() {

@@ -38,9 +38,6 @@ public class ReadIcapInitialState extends State<Object> {
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 		String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength));
 		icapMessageDecoder.message = icapMessageDecoder.createMessage(initialLine);
-		if(icapMessageDecoder.isDecodingResponse()) {
-			icapMessageDecoder.message.setMethod(new IcapMethod("dummy"));
-		}
 		return StateReturnValue.createIrrelevantResult();
 	}
 

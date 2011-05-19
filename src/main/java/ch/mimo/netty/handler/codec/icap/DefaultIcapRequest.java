@@ -33,6 +33,6 @@ public class DefaultIcapRequest extends AbstractIcapMessage implements IcapReque
 	 */
 	public DefaultIcapRequest(IcapVersion icapVersion, IcapMethod method, String uri, String host) {
 		super(icapVersion,method,uri);
-		addHeader(IcapHeader.Names.HOST,host);
+		addHeader(IcapHeaders.Names.HOST,host);
 	}
 }

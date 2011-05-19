@@ -13,6 +13,9 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import org.jboss.netty.handler.codec.http.HttpMethod;
+
+
 /**
  * Defines a ICAP Request.
  * 
@@ -22,4 +25,28 @@ package ch.mimo.netty.handler.codec.icap;
  * @see DefaultIcapRequest
  */
 public interface IcapRequest extends IcapMessage {
+	
+	/**
+	 * Sets the operation method for this icap request.
+	 * @param method the @see {@link HttpMethod} provided by @see {@link IcapMethod}
+	 * @return self in order to chain the method calls
+	 */
+	IcapMessage setMethod(IcapMethod method);
+
+	/**
+	 * @return This operations method
+	 */
+	IcapMethod getMethod();
+	
+	/**
+	 * Sets the operations uri.
+	 * @param uri 
+	 * @return self in order to chain the method calls
+	 */
+	IcapMessage setUri(String uri);
+	
+	/**
+	 * @return String uri for this message
+	 */
+	String getUri();
 }

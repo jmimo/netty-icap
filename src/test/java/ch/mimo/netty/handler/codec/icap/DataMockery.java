@@ -44,7 +44,7 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
-	public static final void assertCreateWhiteSpacePrefixedOPTIONSRequest(IcapMessage message) {
+	public static final void assertCreateWhiteSpacePrefixedOPTIONSRequest(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap.google.com:1344",message);
 		assertHeaderValue("Encapsulated","null-body=0",message);
@@ -64,7 +64,7 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
-	public static final void assertCreateOPTIONSRequest(IcapMessage message) {
+	public static final void assertCreateOPTIONSRequest(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap.google.com:1344",message);
 		assertHeaderValue("Encapsulated","null-body=0",message);
@@ -188,7 +188,7 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
-	public static final void assertOPTIONSRequestWithBody(IcapMessage message) {
+	public static final void assertOPTIONSRequestWithBody(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertEquals("wrong request type",IcapMethod.OPTIONS,message.getMethod());
 		assertHeaderValue("Host","icap.google.com:1344",message);
@@ -273,7 +273,7 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
-	public static final void assertCreateREQMODWithGetRequestNoBody(IcapMessage message) {
+	public static final void assertCreateREQMODWithGetRequestNoBody(IcapRequest message) {
 		assertNotNull("the request was null",message);
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
@@ -422,7 +422,7 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
-	public static final void assertCreateRESPMODWithGetRequestNoBody(IcapMessage message) {
+	public static final void assertCreateRESPMODWithGetRequestNoBody(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, null-body=296",message);
@@ -527,7 +527,7 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}	
 	
-	public static final void assertCreateRESPMODWithGetRequestNoBodyAndReverseRequestAlignement(IcapMessage message) {
+	public static final void assertCreateRESPMODWithGetRequestNoBodyAndReverseRequestAlignement(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","res-hdr=0, req-hdr=137, null-body=296",message);
@@ -720,7 +720,7 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
-	public static final void assertCreateREQMODWithTwoChunkBody(IcapMessage message) {
+	public static final void assertCreateREQMODWithTwoChunkBody(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, req-body=171",message);
@@ -900,7 +900,7 @@ public final class DataMockery extends Assert {
 	
 	
 	
-	public static final void assertCreateREQMODWithPreview(IcapMessage message) {
+	public static final void assertCreateREQMODWithPreview(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, req-body=171",message);
@@ -1011,7 +1011,7 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
-	public static final void assertCreateREQMODWithEarlyTerminatedPreview(IcapMessage message) {
+	public static final void assertCreateREQMODWithEarlyTerminatedPreview(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, req-body=169",message);
@@ -1098,7 +1098,7 @@ public final class DataMockery extends Assert {
 		return trailer;
 	}
 	
-	public static final void assertCreateRESPMODWithGetRequestAndPreview(IcapMessage message) {
+	public static final void assertCreateRESPMODWithGetRequestAndPreview(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
 		assertHeaderValue("Encapsulated","req-hdr=0, res-hdr=137, res-body=296",message);

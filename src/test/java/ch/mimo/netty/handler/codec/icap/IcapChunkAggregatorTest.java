@@ -70,14 +70,14 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 	@Test
 	public void aggregatorREQMODWithGetRequestWithoutChunks() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyAndEncapsulationHeaderIcapMessage());
-		IcapMessage request = (IcapMessage)embedder.poll();
+		IcapRequest request = (IcapRequest)embedder.poll();
 		DataMockery.assertCreateREQMODWithGetRequestNoBody(request);
 	}
 	
 	@Test
 	public void aggregatorREQMODWithGetRequestWithoutChunksAndNullBodySet() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyAndEncapsulationHeaderAndNullBodySetIcapMessage());
-		IcapMessage request = (IcapMessage)embedder.poll();
+		IcapRequest request = (IcapRequest)embedder.poll();
 		DataMockery.assertCreateREQMODWithGetRequestNoBody(request);
 	}
 	
@@ -92,7 +92,7 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 	@Test
 	public void aggregatorMessageWithoutBodyFollowedByBodyChunk() {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyAndEncapsulationHeaderIcapMessage());
-		IcapMessage request = (IcapMessage)embedder.poll();
+		IcapRequest request = (IcapRequest)embedder.poll();
 		DataMockery.assertCreateREQMODWithGetRequestNoBody(request);
 		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunk());
 		IcapChunk chunk = (IcapChunk)embedder.poll();
@@ -106,7 +106,7 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkThree());
-		IcapMessage request = (IcapMessage)embedder.poll();
+		IcapRequest request = (IcapRequest)embedder.poll();
 		DataMockery.assertCreateREQMODWithTwoChunkBody(request);
 		String body = request.getHttpRequest().getContent().toString(IcapCodecUtil.ASCII_CHARSET);
 		StringBuilder builder = new StringBuilder();
@@ -122,7 +122,7 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIncludingEncapsulationHeaderIcapRequest());
 		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunk());
 		embedder.offer(DataMockery.crateRESPMODWithGetRequestAndPreviewLastIcapChunk());
-		IcapMessage request = (IcapMessage)embedder.poll();
+		IcapRequest request = (IcapRequest)embedder.poll();
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreview(request);
 		String body = request.getHttpResponse().getContent().toString(IcapCodecUtil.ASCII_CHARSET);
 		StringBuilder builder = new StringBuilder();
@@ -138,7 +138,7 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkTwo());
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyChunkThreeIcapChunkTrailer());
-		IcapMessage request = (IcapMessage)embedder.poll();
+		IcapRequest request = (IcapRequest)embedder.poll();
 		DataMockery.assertCreateREQMODWithTwoChunkBody(request);
 		assertTrue("Key does not exist [TrailingHeaderKey1]",request.getHttpRequest().containsHeader("TrailingHeaderKey1"));
 		assertEquals("The header: TrailingHeaderKey1 is invalid","TrailingHeaderValue1",request.getHttpRequest().getHeader("TrailingHeaderKey1"));

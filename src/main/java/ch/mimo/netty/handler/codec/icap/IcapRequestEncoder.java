@@ -29,7 +29,7 @@ public class IcapRequestEncoder extends IcapMessageEncoder {
 	
 	@Override
 	protected int encodeInitialLine(ChannelBuffer buffer, IcapMessage message) throws Exception {
-		IcapMessage request = (IcapMessage) message;
+		IcapRequest request = (IcapRequest) message;
 		int index = buffer.readableBytes();
         buffer.writeBytes(request.getMethod().toString().getBytes(IcapCodecUtil.ASCII_CHARSET));
         buffer.writeByte(IcapCodecUtil.SPACE);

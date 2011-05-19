@@ -46,9 +46,9 @@ public class ReadIcapHeaderState extends State<Object> {
 			icapMessageDecoder.message.addHeader(header[0],header[1]);
 		}
 		validateMandatoryMessageHeaders(icapMessageDecoder.message,icapMessageDecoder.isDecodingResponse());
-		Encapsulated encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeader.Names.ENCAPSULATED));
+		Encapsulated encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
 		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
-		if(icapMessageDecoder.message.getMethod().equals(IcapMethod.OPTIONS)) {
+		if(icapMessageDecoder.message instanceof IcapRequest && ((IcapRequest)icapMessageDecoder.message).getMethod().equals(IcapMethod.OPTIONS)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		} else if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
@@ -60,7 +60,7 @@ public class ReadIcapHeaderState extends State<Object> {
 	public StateEnum onExit(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder, Object decisionInformation) throws DecodingException {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
-		if(message.getMethod().equals(IcapMethod.OPTIONS)) {
+		if(message instanceof IcapRequest && ((IcapRequest)message).getMethod().equals(IcapMethod.OPTIONS)) {
 			if(encapsulated.containsEntry(IcapMessageElementEnum.OPTBODY)) {
 				return StateEnum.READ_CHUNK_SIZE_STATE;
 			} else {
@@ -85,11 +85,11 @@ public class ReadIcapHeaderState extends State<Object> {
 	
 	private void validateMandatoryMessageHeaders(IcapMessage message, boolean isDecodingResponse) {
 		if(!isDecodingResponse) {
-			if(!message.containsHeader(IcapHeader.Names.HOST)) {
+			if(!message.containsHeader(IcapHeaders.Names.HOST)) {
 				throw new IcapDecodingError("Mandatory ICAP message header [Host] is missing");
 			}
 		}
-		if(!message.containsHeader(IcapHeader.Names.ENCAPSULATED)) {
+		if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
 			throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
 		}
 	}

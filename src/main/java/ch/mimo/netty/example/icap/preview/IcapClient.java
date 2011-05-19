@@ -32,7 +32,7 @@ import ch.mimo.netty.handler.codec.icap.DefaultIcapChunkTrailer;
 import ch.mimo.netty.handler.codec.icap.DefaultIcapRequest;
 import ch.mimo.netty.handler.codec.icap.IcapChunk;
 import ch.mimo.netty.handler.codec.icap.IcapChunkTrailer;
-import ch.mimo.netty.handler.codec.icap.IcapHeader;
+import ch.mimo.netty.handler.codec.icap.IcapHeaders;
 import ch.mimo.netty.handler.codec.icap.IcapMessageElementEnum;
 import ch.mimo.netty.handler.codec.icap.IcapMethod;
 import ch.mimo.netty.handler.codec.icap.IcapRequest;
@@ -73,7 +73,7 @@ public class IcapClient {
         // Prepare the ICAP request.
         IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"/simple","localhost");
         request.setBody(IcapMessageElementEnum.REQBODY);
-        request.addHeader(IcapHeader.Names.PREVIEW,"50");
+        request.addHeader(IcapHeaders.Names.PREVIEW,"50");
         HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.POST,"/some/servers/uri");
         httpRequest.setHeader(HttpHeaders.Names.HOST,host);
         httpRequest.setHeader(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE);

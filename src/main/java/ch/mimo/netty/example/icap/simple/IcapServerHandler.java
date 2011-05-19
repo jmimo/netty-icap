@@ -22,7 +22,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 
 import ch.mimo.netty.handler.codec.icap.DefaultIcapResponse;
-import ch.mimo.netty.handler.codec.icap.IcapHeader;
+import ch.mimo.netty.handler.codec.icap.IcapHeaders;
 import ch.mimo.netty.handler.codec.icap.IcapMessageElementEnum;
 import ch.mimo.netty.handler.codec.icap.IcapRequest;
 import ch.mimo.netty.handler.codec.icap.IcapResponse;
@@ -48,7 +48,7 @@ public class IcapServerHandler extends SimpleChannelUpstreamHandler {
 			request.getHttpResponse().addHeader(HttpHeaders.Names.VIA,"icap://my.icap.server");
 			response.setHttpResponse(request.getHttpResponse());
 		}
-		response.addHeader(IcapHeader.Names.ISTAG,"SimpleServer-version-1.0");
+		response.addHeader(IcapHeaders.Names.ISTAG,"SimpleServer-version-1.0");
 		
 		ChannelBuffer buffer = null;
 		switch (bodyType) {

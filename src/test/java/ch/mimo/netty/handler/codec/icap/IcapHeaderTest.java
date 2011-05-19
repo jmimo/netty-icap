@@ -12,20 +12,20 @@ public class IcapHeaderTest extends AbstractIcapTest {
 
 	@Test
 	public void callGetterWithoutContent() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		assertNull("null was expected",headers.getHeader("MIMO"));
 	}
 	
 	@Test
 	public void addAndGetHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		assertEquals("unexpected value for header","JOGGEL",headers.getHeader("MIMO"));
 	}
 	
 	@Test
 	public void addAndGetMultipleHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL2");
@@ -38,7 +38,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void containsHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMOx","JOGGEL");
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMOy","JOGGEL");
@@ -47,7 +47,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void removeFirstHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL2");
@@ -58,7 +58,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void removeHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL2");
@@ -72,7 +72,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void removeOnlyHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.removeHeader("MIMO");
 		assertNull("expected null",headers.getHeader("MIMO"));
@@ -80,14 +80,14 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void setSingleHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.setHeader("MIMO","JOGGEL");
 		assertEquals("wrong header value","JOGGEL",headers.getHeader("MIMO"));
 	}
 	
 	@Test
 	public void setHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		assertEquals("unexpected value for header","JOGGEL",headers.getHeader("MIMO"));
 		headers.setHeader("MIMO","JOGGEL1");
@@ -96,7 +96,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void addAndSetHeader() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("FOO1","FOOV1");
 		headers.addHeader("FOO2","FOOV2");
 		headers.setHeader("FOO3","FOOV3");
@@ -109,7 +109,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void setHeaders() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		assertEquals("unexpected value for header","JOGGEL",headers.getHeader("MIMO"));
 		List<String> values = new ArrayList<String>();
@@ -128,7 +128,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void containsHeaderWithName() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL21");
@@ -137,7 +137,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void getAllHeaderValuesForOneName() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL21");
@@ -154,7 +154,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void retrieveHeaderNames() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL2");
@@ -168,7 +168,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void retrieveAllHeaders() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO1","JOGGEL11");
@@ -188,7 +188,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void exeedInternalBucketSize() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL2");
@@ -219,7 +219,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void clean() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO","JOGGEL");
 		headers.addHeader("MIMO1","JOGGEL1");
 		headers.addHeader("MIMO2","JOGGEL2");
@@ -230,7 +230,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void invalidPreviewValue() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("PREVIEW","JOGGEL");
 		boolean error = false;
 		try {
@@ -243,7 +243,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void validPreviewValue() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("PREVIEW","123");
 		boolean error = false;
 		try {
@@ -257,7 +257,7 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	
 	@Test
 	public void addHeaderWithoutValue() {
-		IcapHeader headers = new IcapHeader();
+		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("MIMO",null);
 		Set<String> headerNames = headers.getHeaderNames();
 		assertEquals("wrong amount of names",1,headerNames.size());

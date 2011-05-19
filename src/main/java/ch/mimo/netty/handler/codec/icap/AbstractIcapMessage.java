@@ -30,7 +30,7 @@ import org.jboss.netty.util.internal.StringUtil;
  */
 public abstract class AbstractIcapMessage implements IcapMessage {
 
-	private IcapHeader icapHeader;
+	private IcapHeaders icapHeader;
 	private IcapVersion version;
 	private IcapMethod method;
 	private String uri;
@@ -43,7 +43,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	
 	public AbstractIcapMessage(IcapVersion version) {
 		this.version = version;
-		icapHeader = new IcapHeader();
+		icapHeader = new IcapHeaders();
 	}
 	
     public AbstractIcapMessage(IcapVersion icapVersion, IcapMethod method, String uri) {
