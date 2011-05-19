@@ -22,6 +22,9 @@ package ch.mimo.netty.handler.codec.icap;
  */
 public class DefaultIcapRequest extends AbstractIcapMessage implements IcapRequest {
 	
+	private IcapMethod method;
+	private String uri;
+	
 	/**
 	 * This will create an initial icap request with all necessary details.
 	 * 
@@ -32,7 +35,27 @@ public class DefaultIcapRequest extends AbstractIcapMessage implements IcapReque
 	 * you have to give a value and it will be directly added to the icap request as Host: header.
 	 */
 	public DefaultIcapRequest(IcapVersion icapVersion, IcapMethod method, String uri, String host) {
-		super(icapVersion,method,uri);
+		super(icapVersion);
+		this.method = method;
+		this.uri = uri;
 		addHeader(IcapHeaders.Names.HOST,host);
+	}
+	
+	public IcapMessage setMethod(IcapMethod method) {
+		this.method = method;
+		return this;
+	}
+
+	public IcapMethod getMethod() {
+		return method;
+	}
+
+	public IcapMessage setUri(String uri) {
+		this.uri = uri;
+		return this;
+	}
+
+	public String getUri() {
+		return uri;
 	}
 }

@@ -32,8 +32,6 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 
 	private IcapHeaders icapHeader;
 	private IcapVersion version;
-	private IcapMethod method;
-	private String uri;
 	private Encapsulated encapsulated;
 	
 	private HttpRequest httpRequest;
@@ -45,12 +43,6 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 		this.version = version;
 		icapHeader = new IcapHeaders();
 	}
-	
-    public AbstractIcapMessage(IcapVersion icapVersion, IcapMethod method, String uri) {
-    	this(icapVersion);
-    	this.method = method;
-    	this.uri = uri;
-    }
 
 	@Override
 	public String getHeader(String name) {
@@ -152,24 +144,6 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	public IcapMessage setHttpResponse(HttpResponse response) {
 		this.httpResponse = response;
 		return this;
-	}
-
-	public IcapMessage setMethod(IcapMethod method) {
-		this.method = method;
-		return this;
-	}
-
-	public IcapMethod getMethod() {
-		return method;
-	}
-
-	public IcapMessage setUri(String uri) {
-		this.uri = uri;
-		return this;
-	}
-
-	public String getUri() {
-		return uri;
 	}
 
 	@Override
