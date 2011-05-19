@@ -268,4 +268,13 @@ public class IcapHeaderTest extends AbstractIcapTest {
 		assertEquals("wrong header name","MIMO",entry.getKey());
 		assertNull("value was not null",entry.getValue());
 	}
+	
+	@Test
+	public void addAndSetHeaderConsistencyTest() {
+		IcapRequest message = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"/foo","icap.somehost.com");
+		assertEquals("host entry does not match","icap.somehost.com",message.getHeader(IcapHeaders.Names.HOST));
+		message.setHeader(IcapHeaders.Names.PREVIEW,"42");
+		assertEquals("host entry does not match","icap.somehost.com",message.getHeader(IcapHeaders.Names.HOST));
+		assertEquals("host entry does not match","42",message.getHeader(IcapHeaders.Names.PREVIEW));
+	}
 }

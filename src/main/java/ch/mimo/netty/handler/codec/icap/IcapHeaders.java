@@ -231,11 +231,18 @@ public final class IcapHeaders {
 	 * @param name Icap message header name
 	 */
 	public void removeHeader(String name) {
-		if(base == null || base.after == null) {
-			base = null;
+		if(base == null) {
 			return;
 		}
-		Entry entry = base.after;
+		Entry entry = null;
+		if(base.after == null) {
+			if(identicalKeys(base.getKey(),name)) {
+				base = null;
+				return;
+			}
+		} else {
+			entry = base.after;
+		}
 		while(entry != null) {
 			if(identicalKeys(entry.getKey(),name)) {
 				Entry before = entry.before;
