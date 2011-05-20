@@ -45,12 +45,20 @@ public class ReadIcapHeaderState extends State<Object> {
 		for(String[] header : headerList) {
 			icapMessageDecoder.message.addHeader(header[0],header[1]);
 		}
-		validateMandatoryMessageHeaders(icapMessageDecoder.message,icapMessageDecoder.isDecodingResponse());
-		Encapsulated encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
-		icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
-		if(icapMessageDecoder.message instanceof IcapRequest && ((IcapRequest)icapMessageDecoder.message).getMethod().equals(IcapMethod.OPTIONS)) {
+		boolean isRequest = icapMessageDecoder.message instanceof IcapRequest;
+		boolean isOptionsRequest = isRequest && ((IcapRequest)icapMessageDecoder.message).getMethod().equals(IcapMethod.OPTIONS);
+		
+		validateMandatoryMessageHeaders(icapMessageDecoder.message,icapMessageDecoder.isDecodingResponse(),isOptionsRequest);
+		
+		Encapsulated encapsulated = null;
+		String headerValue = icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED);
+		if(headerValue != null) {
+			encapsulated = new Encapsulated(icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED));
+			icapMessageDecoder.message.setEncapsulatedHeader(encapsulated);
+		}
+		if(isOptionsRequest) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
-		} else if(!encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
+		} else if(encapsulated != null && !encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		}
 		return StateReturnValue.createIrrelevantResult();
@@ -61,7 +69,7 @@ public class ReadIcapHeaderState extends State<Object> {
 		IcapMessage message = icapMessageDecoder.message;
 		Encapsulated encapsulated = message.getEncapsulatedHeader();
 		if(message instanceof IcapRequest && ((IcapRequest)message).getMethod().equals(IcapMethod.OPTIONS)) {
-			if(encapsulated.containsEntry(IcapMessageElementEnum.OPTBODY)) {
+			if(encapsulated != null && encapsulated.containsEntry(IcapMessageElementEnum.OPTBODY)) {
 				return StateEnum.READ_CHUNK_SIZE_STATE;
 			} else {
 				return null;
@@ -83,14 +91,16 @@ public class ReadIcapHeaderState extends State<Object> {
 		return null;
 	}
 	
-	private void validateMandatoryMessageHeaders(IcapMessage message, boolean isDecodingResponse) {
+	private void validateMandatoryMessageHeaders(IcapMessage message, boolean isDecodingResponse, boolean isDecodingOptionsRequest) {
 		if(!isDecodingResponse) {
 			if(!message.containsHeader(IcapHeaders.Names.HOST)) {
 				throw new IcapDecodingError("Mandatory ICAP message header [Host] is missing");
 			}
 		}
-		if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
-			throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
+		if(!isDecodingOptionsRequest) {
+			if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+				throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
+			}
 		}
 	}
 

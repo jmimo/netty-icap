@@ -59,6 +59,14 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final ChannelBuffer createOPTIONSRequestWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"OPTIONS icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(buffer,"Host: icap.google.com:1344");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
 	public static final IcapRequest createOPTIONSIcapRequest() {
 		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.OPTIONS,"icap://icap.mimo.ch:1344/reqmod","icap.google.com:1344");
 		return request;

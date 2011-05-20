@@ -78,6 +78,13 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void decodeOPTIONSRequestWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createOPTIONSRequestWithoutEncapsulatedHeader());
+		IcapRequest result = (IcapRequest)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+	}
+	
+	@Test
 	public void stripPrefixingWhitespacesFromMessage() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createWhiteSpacePrefixedOPTIONSRequest());
 		IcapRequest result = (IcapRequest)embedder.poll();
