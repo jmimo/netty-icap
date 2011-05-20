@@ -25,7 +25,7 @@ import java.util.Set;
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
  */
-// FIXME setHeader has shown that it might removes all the previous headers....
+// TODO add setDateheader format: "Fri, 20 May 2011 15:36:30 GMT"
 public final class IcapHeaders {
 	
 	private Entry base;
