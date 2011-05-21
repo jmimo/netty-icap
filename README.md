@@ -10,10 +10,9 @@ Roadmap
 
 ### Next (Initial Release) 1.0.0.RC1
 
-We are currently finishing the first release. The functionality is there.
-In order to provide a robust and sound solution code re-factoring and
-negative testing is implemented. Further we Javadoc all necessary details
-into the source code.
+We are currently finishing the first release. 
+Netty ICAP codec is now successfully integration tested with squid 3.1.6
+It's not far now and we will release 1.0.0.RC1
 
 ### Future releases
 
