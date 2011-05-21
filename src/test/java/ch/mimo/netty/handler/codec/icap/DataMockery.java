@@ -228,7 +228,7 @@ public final class DataMockery extends Assert {
 	
 	public static final ChannelBuffer createOPTIONSRequestWithBodyLastChunk() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}
 	
@@ -569,7 +569,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,null);
 		addChunk(buffer,"This is data that was returned by an origin server.");
 		addChunk(buffer,"And this the second chunk which contains more information.");
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}
 	
@@ -588,7 +588,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,null);
 		addChunk(buffer,"This is data that was returned by an origin server.");
 		addChunk(buffer,"And this the second chunk which contains more information.");
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}
 	
@@ -680,7 +680,7 @@ public final class DataMockery extends Assert {
 	
 	public static final ChannelBuffer createREQMODWithTwoChunkBodyChunkThree() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}
 	
@@ -822,7 +822,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
 		addLine(buffer,null);
 		addChunk(buffer,"This is data that was returned by an origin server.");
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}
 	
@@ -902,7 +902,7 @@ public final class DataMockery extends Assert {
 	
 	public static final ChannelBuffer createREQMODWithPreviewLastChunk() throws UnsupportedEncodingException {
 		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}
 	
@@ -1068,7 +1068,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"Content-Length: 151");
 		addLine(buffer,null);
 		addChunk(buffer,"This is data that was returned by an origin server.");
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}	
 	
@@ -1145,7 +1145,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"Content-Length: 151");
 		addLine(buffer,null);
 		addChunk(buffer,"This is data that was returned by an origin server.");
-		addChunk(buffer,null);
+		addLastChunk(buffer);
 		return buffer;
 	}	
 	
@@ -1305,15 +1305,18 @@ public final class DataMockery extends Assert {
 	}
 	
 	private static void addChunk(ChannelBuffer buffer, String chunkData) throws UnsupportedEncodingException {
-		if(chunkData == null) {
-			addLine(buffer,"0");
-			addLine(buffer,null);
-		} else {
-			int length = chunkData.length();
-			String hex = Integer.toString(length,16);
-			addLine(buffer,hex);
-			addLine(buffer,chunkData);
-		}
+		int length = chunkData.length();
+		String hex = Integer.toString(length,16);
+		buffer.writeBytes(hex.getBytes("ASCII"));
+		buffer.writeBytes(IcapCodecUtil.CRLF);
+		buffer.writeBytes(chunkData.getBytes("ASCII"));
+		buffer.writeBytes(IcapCodecUtil.CRLF);
+	}
+	
+	private static void addLastChunk(ChannelBuffer buffer) throws UnsupportedEncodingException {
+		buffer.writeBytes("0".getBytes("ASCII"));
+		buffer.writeBytes(IcapCodecUtil.CRLF);
+		buffer.writeBytes(IcapCodecUtil.CRLF);
 	}
 	
 	private static void assertHeaderValue(String key, String expected, IcapMessage message) {

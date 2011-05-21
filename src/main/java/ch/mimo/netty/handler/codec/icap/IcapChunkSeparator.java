@@ -63,7 +63,6 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 	    			if(isPreview) {
 	    				isEarlyTerminated = content.readableBytes() < message.getPreviewAmount();
 	    			}
-	    			boolean dataWasSent = false;
 					while(content.readableBytes() > 0) {
 						IcapChunk chunk = null;
 						if(content.readableBytes() > chunkSize) {
@@ -74,13 +73,12 @@ public class IcapChunkSeparator implements ChannelDownstreamHandler {
 						chunk.setPreviewChunk(isPreview);
 						chunk.setEarlyTermination(isEarlyTerminated);
 						fireDownstreamEvent(ctx,chunk,msgEvent);
-						dataWasSent = true;
-					}
-					if(dataWasSent) {
-						IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
-						trailer.setPreviewChunk(isPreview);
-						trailer.setEarlyTermination(isEarlyTerminated);
-						fireDownstreamEvent(ctx,trailer,msgEvent);
+						if(chunk.isLast() | content.readableBytes() <= 0) {
+							IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
+							trailer.setPreviewChunk(isPreview);
+							trailer.setEarlyTermination(isEarlyTerminated);
+							fireDownstreamEvent(ctx,trailer,msgEvent);
+						}
 					}
 	    		}
 	    	} else {

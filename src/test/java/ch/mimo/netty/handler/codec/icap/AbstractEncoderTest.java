@@ -16,9 +16,25 @@ package ch.mimo.netty.handler.codec.icap;
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.junit.After;
+import org.junit.Before;
 
 public abstract class AbstractEncoderTest extends AbstractIcapTest {
 
+	private StringBuilder outputBuilder;
+	
+	@Before
+	public void prepareBuilder() {
+		outputBuilder = new StringBuilder();
+	}
+	
+	@After
+	public void printBuilderOutput() {
+		if(outputBuilder != null) {
+			doOutput(outputBuilder.toString());
+		}
+	}
+	
 	protected String getBufferContent(Object object) {
 		assertNotNull("poll returned null",object);
 		assertTrue("returned object from embedder is not of type ChannelBuffer",object instanceof ChannelBuffer);
@@ -27,6 +43,8 @@ public abstract class AbstractEncoderTest extends AbstractIcapTest {
 	}
 	
 	protected void assertResponse(ChannelBuffer expected, String request) {
-		assertEquals("encoded request is wrong",getBufferContent(expected),request);
+		String content = getBufferContent(expected);
+		outputBuilder.append(content);
+		assertEquals("encoded request is wrong",content,request);
 	}
 }

@@ -32,7 +32,6 @@ public class IcapResponseEncoderTest extends AbstractEncoderTest {
 	public void encode100ContinueResponse() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.create100ContinueIcapResponse());
 		String response = getBufferContent(embedder.poll());
-		doOutput(response);
 		assertResponse(DataMockery.create100ContinueResponse(),response);
 	}
 	
@@ -40,7 +39,6 @@ public class IcapResponseEncoderTest extends AbstractEncoderTest {
 	public void encodeOPTIONSResponse() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createOPTIONSIcapResponse());
 		String response = getBufferContent(embedder.poll());
-		doOutput(response);
 		assertResponse(DataMockery.createOPTIONSResponse(),response);
 	}
 	
@@ -48,15 +46,12 @@ public class IcapResponseEncoderTest extends AbstractEncoderTest {
 	public void encodeOPTIONSResponseWithBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createOPTIONSIcapResponseWithBody());
 		String response = getBufferContent(embedder.poll());
-		doOutput(response);
 		assertResponse(DataMockery.createOPTIONSResponseWithBody(),response);
 		embedder.offer(DataMockery.createOPTIONSIcapChunk());
 		String chunk1 = getBufferContent(embedder.poll());
-		doOutput(chunk1);
 		assertResponse(DataMockery.createOPTIONSChunk(),chunk1);
 		embedder.offer(DataMockery.createOPTIONSLastIcapChunk());
 		String lastChunk = getBufferContent(embedder.poll());
-		doOutput(lastChunk);
 		assertResponse(DataMockery.createOPTIONSLastChunk(),lastChunk);
 	}
 	
@@ -64,7 +59,6 @@ public class IcapResponseEncoderTest extends AbstractEncoderTest {
 	public void encodeREQMODResponseWithoutBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithGetRequestNoBodyIcapResponse());
 		String response = getBufferContent(embedder.poll());
-		doOutput(response);
 		assertResponse(DataMockery.createREQMODWithGetRequestResponse(),response);
 	}
 	
@@ -72,7 +66,6 @@ public class IcapResponseEncoderTest extends AbstractEncoderTest {
 	public void encodeRESPMODResponseWithoutBody() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createRESPMODWithGetRequestNoBodyIcapResponse());
 		String response = getBufferContent(embedder.poll());
-		doOutput(response);
 		assertResponse(DataMockery.createRESPMODWithGetRequestNoBodyResponse(),response);
 	}
 	

@@ -128,4 +128,6 @@ public class IcapRequestEncoderTest extends AbstractEncoderTest {
 		String lastChunk = getBufferContent(embedder.poll());
 		assertResponse(DataMockery.createREQMODWithEarlyTerminatedPreviewLastChunk(),lastChunk);
 	}
+	
+	
 }
