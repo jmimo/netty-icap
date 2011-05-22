@@ -224,12 +224,12 @@
 								<configuration>
 									<target>
 										<echo message="copy gnupg keyrings to build directory"/>
-										<copy todir="${project.build.directory}" verbose="true">
+										<copy todir="${project.build.directory}/gnupg" verbose="true">
 											<fileset dir="${gpg.homedir}"/>
 										</copy>
-										<chmod perm="700" file="${project.build.directory}/${gpg.homedir}" verbose="true"/>
+										<chmod perm="700" file="${project.build.directory}/gnupg" verbose="true"/>
 										<chmod perm="700">
-											<fileset dir="${project.build.directory}/${gpg.homedir}" verbose="true"/>
+											<fileset dir="${project.build.directory}/gnupg" verbose="true"/>
 										</chmod>							
 									</target>
 								</configuration>
