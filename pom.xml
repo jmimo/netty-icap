@@ -227,9 +227,8 @@
 										<copy todir="${project.build.directory}/gnupg" verbose="true">
 											<fileset dir="${gpg.homedir}"/>
 										</copy>
-										<chmod perm="700" file="${project.build.directory}/gnupg" verbose="true"/>
-										<chmod perm="700">
-											<fileset dir="${project.build.directory}/gnupg" verbose="true"/>
+										<chmod perm="700" verbose="true">
+											<fileset dir="${project.build.directory}/gnupg"/>
 										</chmod>							
 									</target>
 								</configuration>
