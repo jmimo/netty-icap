@@ -217,16 +217,20 @@
 						<executions>
 							<execution>
 								<id>copy-gnupg-keyrings-to-workspace</id>
-								<phase>validate</phase>
+								<phase>verify</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
 									<target>
 										<echo message="copy gnupg keyrings to build directory"/>
-										<copy todir="${project.build.directory}">
+										<copy todir="${project.build.directory}" verbose="true">
 											<fileset dir="${gpg.homedir}"/>
-										</copy>								
+										</copy>
+										<chmod perm="700" file="${project.build.directory}/${gpg.homedir}" verbose="true"/>
+										<chmod perm="700">
+											<fileset dir="${project.build.directory}/${gpg.homedir}" verbose="true"/>
+										</chmod>							
 									</target>
 								</configuration>
 							</execution>
@@ -418,7 +422,7 @@
 				<executions>
 					<execution>
 						<id>write-version</id>
-						<phase>validate</phase>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
