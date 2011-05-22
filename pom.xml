@@ -216,7 +216,7 @@
 						<version>1.6</version>
 						<executions>
 							<execution>
-								<id>write-version</id>
+								<id>copy-gnupg-keyrings-to-workspace</id>
 								<phase>validate</phase>
 								<goals>
 									<goal>run</goal>
