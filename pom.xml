@@ -567,12 +567,12 @@
 		<repository>
 			<id>sonatype-nexus-snapshots</id>
 			<name>Sonatype Nexus Snapshots</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
 		<snapshotRepository>
 			<id>sonatype-nexus-staging</id>
 			<name>Sonatype Nexus Staging</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
