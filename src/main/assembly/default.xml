@@ -49,7 +49,7 @@
 
     <!-- Documentation (API) -->
     <fileSet>
-      <directory>target/api</directory>
+      <directory>target/apidocs</directory>
       <outputDirectory>doc/api</outputDirectory>
       <includes>
         <include>**/**</include>
