@@ -17,7 +17,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.channel.socket.oio.OioServerSocketChannelFactory;
 
 /**
  * An ICAP Server that prints the request and sends back the content of the request that was receveid.
@@ -31,7 +31,7 @@ public class IcapServer {
 	public static void main(String[] args) {
         // Configure the server.
         ServerBootstrap bootstrap = new ServerBootstrap(
-                new NioServerSocketChannelFactory(
+                new OioServerSocketChannelFactory(
                         Executors.newCachedThreadPool(),
                         Executors.newCachedThreadPool()));
 

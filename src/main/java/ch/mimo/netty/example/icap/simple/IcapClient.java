@@ -20,7 +20,7 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -47,8 +47,7 @@ public class IcapClient {
 			
 	        // Configure the client.
 	        ClientBootstrap bootstrap = new ClientBootstrap(
-	                new NioClientSocketChannelFactory(
-	                        Executors.newCachedThreadPool(),
+	                new OioClientSocketChannelFactory(
 	                        Executors.newCachedThreadPool()));
 
 	        // Set up the event pipeline factory.
