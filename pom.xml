@@ -14,11 +14,11 @@
  -->
  <!--
  	Snapshot:
- 	$> mvn -Prelease clean deploy -Dgpg.passphrase=foo1234
+ 	$> mvn clean deploy
  	
  	Stage:
- 	$> mvn -Prelease release:clean release:prepare -Darguments=-Dgpg.passphrase=foo1234
- 	$> mvn -Prelease release:perform -Darguments=-Dgpg.passphrase=foo1234
+ 	$> mvn release:clean release:prepare 
+ 	$> mvn release:perform
  	
  	Release:
  	Login to: https://oss.sonatype.org
@@ -173,11 +173,11 @@
 						</dependencies>
 					    <configuration>
 							<sourceDocumentName>master.xml</sourceDocumentName>
-							<sourceDirectory>${basedir}/src/main/docbook</sourceDirectory>
+							<sourceDirectory>${basedir}/target/docbook</sourceDirectory>
 					        <formats>
 					            <format>
 					                <formatName>pdf</formatName>
-					                <stylesheetResource>file:///${basedir}/src/main/docbook/xslt/pdf.xsl</stylesheetResource>
+					                <stylesheetResource>file:///${basedir}/target/docbook/xslt/pdf.xsl</stylesheetResource>
 					                <finalName>icap.pdf</finalName>
 					            </format>
 								<format>
@@ -321,6 +321,22 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>
+						<id>copy-documentation</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/docbook</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/src/main/docbook</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -445,7 +461,6 @@
 									</else>
 								</if>
 								<echo message="Build number: ${buildNumber}"/>
-								<echo message="${project.version}" file="${project.build.directory}/version.txt"/>
 								<echo
 									message="// DO NOT MODIFY - WILL BE OVERWRITTEN DURING THE BUILD PROCESS${line.separator}package ch.mimo.netty.handler.codec.icap;${line.separator}/**${line.separator} * Provides the version information of this Project.${line.separator} */${line.separator}public final class Version {${line.separator} /** The version identifier. */${line.separator} public static final String ID = &quot;${project.version}-${buildNumber}&quot;;${line.separator} /** Prints out the version identifier to stdout. */${line.separator} public static void main(String[] args) { System.out.println(ID); }${line.separator} private Version() { super(); }${line.separator}}${line.separator}"
 									file="${basedir}/src/main/java/ch/mimo/netty/handler/codec/icap/Version.java"/>

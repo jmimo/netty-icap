@@ -25,12 +25,12 @@
 	  ICAP (Internet Content Adaptation Protocol) was designed to encapsulate HTTP requests
 	  and responses that they can be sent to a ICAP capable server which can either modify
 	  or notice the HTTP messages. With this in mind the Protocol is made for HTTP based 
-	  entry server and proxies like Squid to off load message processing. 
+	  entry server and proxy servers like Squid to off load message processing. 
     </para>
     <para>
       As seen above ICAP will never be as popular like HTTP. But since HTTP is so popular and
       the demand for HTTP message processing in Security entities such as entry servers
-      or reverse proxies is getting bigger, ICAP has become a protocol that is relevant and
+      or reverse proxy servers is getting bigger, ICAP has become a protocol that is relevant and
       important.	
     </para>
     <para>

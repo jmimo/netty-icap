@@ -21,7 +21,7 @@
   <para>
   	The basic usage is identical to all JBoss Netty codecs. You have different Handlers available 
   	for message encoding, decoding. In addition to that we also provide handlers that allow the user
-  	to abstract from protocol details like the chunked transfer of all message bodies. We recomend to
+  	to abstract from protocol details like the chunked transfer of all message bodies. We recommend to
   	read up on <ulink url="http://www.jboss.org/netty"><literal>JBoss Netty</literal></ulink> 
   	in order to successfully use this codec.
   </para>
@@ -38,7 +38,7 @@
     </para>
     <para>
       The simple example shows how to best use the provided handlers. It implicitly uses the aggregation and separation
-      handlers which take care of all message body transfer details. The below depicted piplelines are client and server
+      handlers which take care of all message body transfer details. The below depicted pipelines are client and server
       pipelines:
     </para>
 	<para>
@@ -54,13 +54,13 @@
   	  	<listitem>
   	  		<para>
 		  	  &IcapRequestEncoder; The Encoder will take a &IcapRequest; or &IcapChunk; and transfer them
-		  	  into a ascii string that represents the ICAP protocol. 	  			
+		  	  into a ASCII string that represents the ICAP protocol. 	  			
   	  		</para>
   	  	</listitem>
   	  	<listitem>
   	  		<para>
-		  	  &IcapResponseDecoder; The Decoder has an ICAP protocol conmpliant ascii string as input and
-		  	  creates &IcapResponse; and &IcapChunk; instances. 	  			
+		  	  &IcapResponseDecoder; The Decoder produces an ICAP protocol ASCII string as input and
+		  	  creates &IcapRequest; and &IcapChunk; instances. 		  			
   	  		</para>
   	  	</listitem>
   	  </itemizedlist>
@@ -89,8 +89,8 @@
   	  	</listitem>
   	  	<listitem>
   	  		<para>
-		  	  &IcapChunkAggregator; This handler is useful when you dont want to handle indiviual 
-		  	  &IcapChunk; insances but rather receive a combined &IcapResponse;  	  			
+		  	  &IcapChunkAggregator; This handler is useful when you don't want to handle individual 
+		  	  &IcapChunk; instances but rather receive a combined &IcapResponse;  	  			
   	  		</para>
   	  	</listitem>
   	  </itemizedlist>
@@ -113,14 +113,14 @@
   	  <itemizedlist>
   	  	<listitem>
   	  		<para>
-		  	  &IcapRequestDecoder; The Decoder has an ICAP protocol conmpliant ascii string as input and
+		  	  &IcapRequestDecoder; The Decoder produces an ICAP protocol ASCII string as input and
 		  	  creates &IcapRequest; and &IcapChunk; instances. 	  			
   	  		</para>
   	  	</listitem>
   	  	<listitem>
   	  		<para>
 		  	  &IcapResponseEncoder; The Encoder will take a &IcapResponse; or &IcapChunk; and transfer them
-		  	  into a ascii string that represents the ICAP protocol. 	  			
+		  	  into a ASCII string that represents the ICAP protocol. 	  			
   	  		</para>
   	  	</listitem>
   	  </itemizedlist>
@@ -142,15 +142,15 @@
   	  	<listitem>
   	  		<para>
 		  	  &IcapChunkSeparator; This handler is useful when you create an &IcapRequest; instance
-		  	  containing http request/response and a body encapsulated with one of the http messages.
+		  	  containing HTTP request/response and a body encapsulated with one of the HTTP messages.
 		  	  The responsibility of this handler is then to extract the message body and send it as
 		  	  chunks to the receiving side.  			
   	  		</para>
   	  	</listitem>
   	  	<listitem>
   	  		<para>
-		  	  &IcapChunkAggregator; This handler is useful when you dont want to handle indiviual 
-		  	  &IcapChunk; insances but rather receive a combined &IcapResponse;  	  			
+		  	  &IcapChunkAggregator; This handler is useful when you don't want to handle individual 
+		  	  &IcapChunk; instances but rather receive a combined &IcapResponse;  	  			
   	  		</para>
   	  	</listitem>
   	  </itemizedlist>
@@ -169,7 +169,7 @@
   <section>
   	<title>Preview</title>
   	<para>
-  	  The ICAP protocol supports a special scenario wherby the client is enabled to send a pre-defined portion of the 
+  	  The ICAP protocol supports a special scenario whereby the client is enabled to send a pre-defined portion of the 
   	  http message body to the server and wait for futher instructions. There server
   	  can the ask for more data by responding with <code>100 Continue</code> which tells the client to send the rest of the
   	  message body, or with <code>204 No Content</code> (If the client allows this!) and the client knows ok no modification
@@ -190,5 +190,10 @@
 	 * @return boolean true if this chunk is preview.
 	 */
 	boolean isPreviewChunk();</programlisting>
+	<para>
+	  The best way to handler preview requests is configuring a &IcapChunkAggregator; into your pipeline. This will guarantee that
+	  once you have sent the <code>100 Continue</code> response you will get the same &IcapRequest; instance containing the rest
+	  of the body that was not sent in the preview mode.
+	</para>
   </section>
 </chapter>
