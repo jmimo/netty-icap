@@ -82,7 +82,7 @@
   	  	<listitem>
   	  		<para>
 		  	  &IcapChunkSeparator; This handler is useful when you create an &IcapRequest; instance
-		  	  containing http request/response and a body encapsulated with one of the http messages.
+		  	  containing HTTP request/response and a body encapsulated with one of the http messages.
 		  	  The responsibility of this handler is then to extract the message body and send it as
 		  	  chunks to the receiving side.  			
   	  		</para>
@@ -170,16 +170,16 @@
   	<title>Preview</title>
   	<para>
   	  The ICAP protocol supports a special scenario whereby the client is enabled to send a pre-defined portion of the 
-  	  http message body to the server and wait for futher instructions. There server
+  	  HTTP message body to the server and wait for further instructions. There server
   	  can the ask for more data by responding with <code>100 Continue</code> which tells the client to send the rest of the
   	  message body, or with <code>204 No Content</code> (If the client allows this!) and the client knows ok no modification
   	  was made on the request. The Server is also capable of sending a normal <code>200 OK</code> message back to the client.
-  	  This circumstance complicates the protocol handling for a server or client. We have therfore made a simple example that
+  	  This circumstance complicates the protocol handling for a server or client. We have therefore made a simple example that
   	  can be found under <classname>ch.mimo.netty.example.icap.preview.*</classname> which will help to understand the inner
   	  workings of such a preview request for client and server.
   	</para>
   	<para>
-  	  In order to detect wheter a &IcapRequest; or &IcapChunk; belongs to a preview message we have added getters on each object
+  	  In order to detect whether a &IcapRequest; or &IcapChunk; belongs to a preview message we have added getters on each object
   	  that indicate if a request or chunk participates on a preview interaction.
   	</para>
   	<programlisting>/**
@@ -195,5 +195,14 @@
 	  once you have sent the <code>100 Continue</code> response you will get the same &IcapRequest; instance containing the rest
 	  of the body that was not sent in the preview mode.
 	</para>
+  </section>
+  <section>
+  	<title>Abstraction handlers and the NIO threading paradigm</title>
+  	<para>
+  	  You cannot use the NIO (non blocking) threading paradigm togehther with the two abstaction handlers &IcapChunkAggregator; and &IcapChunkSeparator;.
+  	  Both handlers are statefull and consider to be run by the same thread for one request only. As soon you will switch to NIO message content will
+  	  be exchanged between requests. In other words the two handlers are not threadsafe. The roadmap contains the enablement of both handlers to be NIO
+  	  capable.
+  	</para>
   </section>
 </chapter>
