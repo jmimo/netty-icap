@@ -28,15 +28,14 @@
   <!-- 
   	Author: Michael Mimo Moratti (mimo@mimo.ch)
    -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>ch.mimo</groupId>
 	<artifactId>netty-icap</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0.RC1-SNAPSHOT</version>
+	<version>1.0.0.RC1</version>
 
 	<name>The Netty ICAP Protocol Codec Project</name>
 	<url>http://icap.mimo.ch/</url>
@@ -81,7 +80,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<properties/>
+	<properties />
 	<profiles>
 		<profile>
 			<id>documentation</id>
@@ -223,12 +222,12 @@
 								</goals>
 								<configuration>
 									<target>
-										<echo message="copy gnupg keyrings to build directory"/>
+										<echo message="copy gnupg keyrings to build directory" />
 										<copy todir="${project.build.directory}/gnupg" verbose="true">
-											<fileset dir="${gpg.homedir}"/>
+											<fileset dir="${gpg.homedir}" />
 										</copy>
 										<chmod perm="700" verbose="true">
-											<fileset dir="${project.build.directory}/gnupg"/>
+											<fileset dir="${project.build.directory}/gnupg" />
 										</chmod>							
 									</target>
 								</configuration>
@@ -443,27 +442,23 @@
 						</goals>
 						<configuration>
 							<target>
-								<taskdef resource="net/sf/antcontrib/antlib.xml"/>
-								<exec executable="git" outputproperty="gitOutput"
-									resultproperty="gitExitCode" failonerror="false"
-									failifexecutionfails="false">
+								<taskdef resource="net/sf/antcontrib/antlib.xml" />
+								<exec executable="git" outputproperty="gitOutput" resultproperty="gitExitCode" failonerror="false" failifexecutionfails="false">
 									<arg value="log" />
 									<arg value="-1" />
-									<arg value="--format=format:%h"/>
+									<arg value="--format=format:%h" />
 								</exec>
 								<if>
-									<equals arg2="0" arg1="${gitExitCode}"/>
+									<equals arg2="0" arg1="${gitExitCode}" />
 									<then>
-										<property name="buildNumber" value="${gitOutput}"/>
+										<property name="buildNumber" value="${gitOutput}" />
 									</then>
 									<else>
-										<property name="buildNumber" value="unknown"/>
+										<property name="buildNumber" value="unknown" />
 									</else>
 								</if>
-								<echo message="Build number: ${buildNumber}"/>
-								<echo
-									message="// DO NOT MODIFY - WILL BE OVERWRITTEN DURING THE BUILD PROCESS${line.separator}package ch.mimo.netty.handler.codec.icap;${line.separator}/**${line.separator} * Provides the version information of this Project.${line.separator} */${line.separator}public final class Version {${line.separator} /** The version identifier. */${line.separator} public static final String ID = &quot;${project.version}-${buildNumber}&quot;;${line.separator} /** Prints out the version identifier to stdout. */${line.separator} public static void main(String[] args) { System.out.println(ID); }${line.separator} private Version() { super(); }${line.separator}}${line.separator}"
-									file="${basedir}/src/main/java/ch/mimo/netty/handler/codec/icap/Version.java"/>
+								<echo message="Build number: ${buildNumber}" />
+								<echo message="// DO NOT MODIFY - WILL BE OVERWRITTEN DURING THE BUILD PROCESS${line.separator}package ch.mimo.netty.handler.codec.icap;${line.separator}/**${line.separator} * Provides the version information of this Project.${line.separator} */${line.separator}public final class Version {${line.separator} /** The version identifier. */${line.separator} public static final String ID = &quot;${project.version}-${buildNumber}&quot;;${line.separator} /** Prints out the version identifier to stdout. */${line.separator} public static void main(String[] args) { System.out.println(ID); }${line.separator} private Version() { super(); }${line.separator}}${line.separator}" file="${basedir}/src/main/java/ch/mimo/netty/handler/codec/icap/Version.java" />
 							</target>
 						</configuration>
 					</execution>
@@ -482,61 +477,34 @@
 										<equals arg2="bundle" arg1="${project.packaging}" />
 									</or>
 									<then>
-										<move
-											file="${project.build.directory}/${project.build.finalName}.jar"
-											tofile="${project.build.directory}/${project.build.finalName}.orig.jar" />
+										<move file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/${project.build.finalName}.orig.jar" />
 										<zip destfile="${project.build.directory}/${project.build.finalName}.jar">
-											<zipfileset filemode="644"
-												src="${project.build.directory}/${project.build.finalName}.orig.jar"
-												dirmode="755">
+											<zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}.orig.jar" dirmode="755">
 												<include name="META-INF/MANIFEST.MF" />
 											</zipfileset>
-											<zipfileset filemode="644"
-												src="${project.build.directory}/${project.build.finalName}.orig.jar"
-												dirmode="755">
+											<zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}.orig.jar" dirmode="755">
 												<exclude name="META-INF/MANIFEST.MF" />
 												<exclude name="*/*/*/example/**" />
 											</zipfileset>
 										</zip>
-										<delete
-											file="${project.build.directory}/${project.build.finalName}.orig.jar" />
-										<checksum
-											file="${project.build.directory}/${project.build.finalName}.jar"
-											algorithm="md5" forceoverwrite="yes" />
-										<checksum
-											file="${project.build.directory}/${project.build.finalName}.jar"
-											algorithm="sha1" forceoverwrite="yes" />
-										<move
-											file="${project.build.directory}/${project.build.finalName}-sources.jar"
-											tofile="${project.build.directory}/${project.build.finalName}-sources.orig.jar" />
-										<zip
-											destfile="${project.build.directory}/${project.build.finalName}-sources.jar">
-											<zipfileset filemode="644"
-												src="${project.build.directory}/${project.build.finalName}-sources.orig.jar"
-												dirmode="755">
+										<delete file="${project.build.directory}/${project.build.finalName}.orig.jar" />
+										<checksum file="${project.build.directory}/${project.build.finalName}.jar" algorithm="md5" forceoverwrite="yes" />
+										<checksum file="${project.build.directory}/${project.build.finalName}.jar" algorithm="sha1" forceoverwrite="yes" />
+										<move file="${project.build.directory}/${project.build.finalName}-sources.jar" tofile="${project.build.directory}/${project.build.finalName}-sources.orig.jar" />
+										<zip destfile="${project.build.directory}/${project.build.finalName}-sources.jar">
+											<zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}-sources.orig.jar" dirmode="755">
 												<include name="META-INF/MANIFEST.MF" />
 											</zipfileset>
-											<zipfileset filemode="644"
-												src="${project.build.directory}/${project.build.finalName}-sources.orig.jar"
-												dirmode="755">
+											<zipfileset filemode="644" src="${project.build.directory}/${project.build.finalName}-sources.orig.jar" dirmode="755">
 												<exclude name="META-INF/MANIFEST.MF" />
 												<exclude name="*/*/*/example/**" />
 											</zipfileset>
 										</zip>
-										<delete
-											file="${project.build.directory}/${project.build.finalName}-sources.orig.jar" />
-										<checksum
-											file="${project.build.directory}/${project.build.finalName}-sources.jar"
-											algorithm="md5" forceoverwrite="yes" />
-										<checksum
-											file="${project.build.directory}/${project.build.finalName}-sources.jar"
-											algorithm="sha1" forceoverwrite="yes" />
-										<checksum
-											file="${project.build.directory}/${project.build.finalName}-javadoc.jar"
-											algorithm="md5" forceoverwrite="yes" />		
-										<checksum
-											file="${project.build.directory}/${project.build.finalName}-javadoc.jar"
-											algorithm="sha1" forceoverwrite="yes" />										
+										<delete file="${project.build.directory}/${project.build.finalName}-sources.orig.jar" />
+										<checksum file="${project.build.directory}/${project.build.finalName}-sources.jar" algorithm="md5" forceoverwrite="yes" />
+										<checksum file="${project.build.directory}/${project.build.finalName}-sources.jar" algorithm="sha1" forceoverwrite="yes" />
+										<checksum file="${project.build.directory}/${project.build.finalName}-javadoc.jar" algorithm="md5" forceoverwrite="yes" />		
+										<checksum file="${project.build.directory}/${project.build.finalName}-javadoc.jar" algorithm="sha1" forceoverwrite="yes" />										
 									</then>
 								</if>
 							</target>
