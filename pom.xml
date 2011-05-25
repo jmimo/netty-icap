@@ -579,7 +579,7 @@
 						the JavaDoc and source jars to be deployed twice. -->
 					<useReleaseProfile>false</useReleaseProfile>
 					<!-- Activate a custom profile called "release" -->
-					<arguments>-Prelease</arguments>
+					<!-- arguments>-PperformRelease=true</arguments -->
 					<mavenExecutorId>forked-path</mavenExecutorId>
 				</configuration>
 			</plugin>
