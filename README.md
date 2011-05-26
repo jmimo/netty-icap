@@ -25,7 +25,7 @@ Another future functionality will be the implementation of the RFC draft: "icap-
 Contributing
 ------------
 
-Please contact mimo@mimo.ch
+Please go to http://icap.mimo.ch and contact me via the contact form.
 
 License
 ------------
