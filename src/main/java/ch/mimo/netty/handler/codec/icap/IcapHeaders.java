@@ -13,7 +13,10 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,11 +28,12 @@ import java.util.Set;
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
  */
-// TODO add setDateheader format: "Fri, 20 May 2011 15:36:30 GMT"
 public final class IcapHeaders {
 	
 	private Entry base;
 	private Entry head;
+	
+	private static final String DATE_FORMAT = "E, dd MMM yyyy HH:mm:ss z";
 	
 	/**
 	 * The most common Icap Header names.
@@ -103,6 +107,51 @@ public final class IcapHeaders {
 		 * {@code "ISTag"}
 		 */
 		public static final String ISTAG = "ISTag";
+		
+		/**
+		 * {@code "Methods"}
+		 */
+		public static final String METHODS = "Methods";
+		
+		/**
+		 * {@code "Service"}
+		 */
+		public static final String SERVICE = "Service";
+		
+		/**
+		 * {@code "Opt-body-type"}
+		 */
+		public static final String OPT_BODY_TYPE = "Opt-body-type";
+		
+		/**
+		 * {@code "Max-connections"}
+		 */
+		public static final String MAX_CONNECTIONS = "Max-connections";
+		
+		/**
+		 * {@code "Options-TTL"}
+		 */
+		public static final String OPTIONS_TTL = "Options-TTL";
+		
+		/**
+		 * {@code "Service-ID"}
+		 */
+		public static final String SERVICE_ID = "Service-ID";
+		
+		/**
+		 * {@code "Transfer-Preview"}
+		 */
+		public static final String TRANSFER_PREVIEW = "Transfer-Preview";
+		
+		/**
+		 * {@code "Transfer-Ignore"}
+		 */
+		public static final String TRANSFER_IGNORE = "Transfer-Ignore";
+		
+		/**
+		 * {@code "Transfer-Complete"}
+		 */
+		public static final String TRANSFER_COMPLETE = "Transfer-Complete";
 	}
 	
 	public IcapHeaders() {
@@ -294,6 +343,11 @@ public final class IcapHeaders {
 			throw new IcapDecodingError("Unable to understand the preview amount value [" + value + "]");
 		}
 		return result;
+	}
+	
+	public void addDateHeader(Date date) {
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT,Locale.ENGLISH);
+		addHeader(Names.DATE,format.format(date));
 	}
 	
 	private boolean identicalKeys(String key1, String key2) {
