@@ -285,9 +285,18 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	public void addDateHeader() {
 		IcapHeaders headers = new IcapHeaders();
 		Date date = new Date();
-		headers.addDateHeader(date);
+		headers.addDateHeader(IcapHeaders.Names.DATE,date);
 		String dateValue = headers.getHeader(IcapHeaders.Names.DATE);
 		SimpleDateFormat format = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z",Locale.ENGLISH);
 		assertEquals("Date is not as expected",format.format(date),dateValue);
+	}
+	
+	@Test
+	public void getDateHeader() {
+		IcapHeaders headers = new IcapHeaders();
+		Date date = new Date();
+		headers.addDateHeader(IcapHeaders.Names.DATE,date);
+		Date returnedDate = headers.getDateHeader(IcapHeaders.Names.DATE);
+		assertNotNull("The returned date was null",returnedDate);
 	}
 }

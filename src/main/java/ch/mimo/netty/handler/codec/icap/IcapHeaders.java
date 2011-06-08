@@ -13,6 +13,7 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -183,6 +184,11 @@ public final class IcapHeaders {
 		}
 	}
 	
+	public void addDateHeader(String name, Date value) {
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT,Locale.ENGLISH);
+		addHeader(name,format.format(value));
+	}
+	
 	/**
 	 * Sets one header at the end of the list.
 	 * Headers with the same name that are already in the list will be removed first!
@@ -228,6 +234,29 @@ public final class IcapHeaders {
 			entry = entry.after;
 		}
 		return null;
+	}
+	
+	/**
+	 * retrieves a date header value as @see {@link Date}
+	 * If the header does not exist null is returned. 
+	 * If the date cannot be parsed a parsing exception is thrown.
+	 * 
+	 * @param name Icap message header name
+	 * @return if possible a valid @see {@link Date} instance or null
+	 * @throws IllegalArgumentException if the date string value cannot be parsed.
+	 */
+	public Date getDateHeader(String name) {
+		Date date = null;
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT,Locale.ENGLISH);
+		String value = getHeader(name);
+		if(value != null) {
+			try {
+				date = format.parse(value);
+			} catch (ParseException e) {
+				throw new IllegalArgumentException("The header value [" + value + "] is not a valid date",e);
+			}
+		}
+		return date;
 	}
 	
 	/**
@@ -343,11 +372,6 @@ public final class IcapHeaders {
 			throw new IcapDecodingError("Unable to understand the preview amount value [" + value + "]");
 		}
 		return result;
-	}
-	
-	public void addDateHeader(Date date) {
-		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT,Locale.ENGLISH);
-		addHeader(Names.DATE,format.format(date));
 	}
 	
 	private boolean identicalKeys(String key1, String key2) {
