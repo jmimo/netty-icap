@@ -17,8 +17,8 @@
  	$> mvn clean deploy
  	
  	Stage:
- 	$> mvn release:clean release:prepare 
- 	$> mvn release:perform
+ 	$> mvn -DperformRelease=true release:clean release:prepare 
+ 	$> mvn -DperformRelease=true release:perform
  	
  	Release:
  	Login to: https://oss.sonatype.org
@@ -35,7 +35,7 @@
 	<groupId>ch.mimo</groupId>
 	<artifactId>netty-icap</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0.RC3-SNAPSHOT</version>
+	<version>1.0.0.RC2-SNAPSHOT</version>
 
 	<name>The Netty ICAP Protocol Codec Project</name>
 	<url>http://icap.mimo.ch/</url>
