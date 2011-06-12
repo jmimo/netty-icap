@@ -28,5 +28,6 @@
   <toc/>
 
   <xi:include href="module/preface.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  <xi:include href="module/release-notes.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
   <xi:include href="module/usage.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 </book>
