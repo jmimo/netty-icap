@@ -35,7 +35,7 @@
 	<groupId>ch.mimo</groupId>
 	<artifactId>netty-icap</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0.RC2-SNAPSHOT</version>
+	<version>1.0.0.RC2</version>
 
 	<name>The Netty ICAP Protocol Codec Project</name>
 	<url>http://icap.mimo.ch/</url>
