@@ -61,7 +61,7 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createOPTIONSRequestWithBodyLastChunkIcapChunk());
 		IcapResponse response = (IcapResponse)embedder.poll();
 		assertNotNull("response was null",response);
-		assertEquals("wrong body value in response",IcapMessageElementEnum.OPTBODY,response.getBody());
+		assertEquals("wrong body value in response",IcapMessageElementEnum.OPTBODY,response.getBodyType());
 		assertNotNull("no body in options response",response.getContent());
 		ChannelBuffer buffer = response.getContent();
 		assertEquals("body was wrong","This is a options body chunk.",buffer.toString(Charset.defaultCharset()));

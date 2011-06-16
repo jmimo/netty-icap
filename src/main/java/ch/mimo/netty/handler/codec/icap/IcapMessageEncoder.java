@@ -64,8 +64,8 @@ public abstract class IcapMessageEncoder extends OneToOneEncoder {
             	httpResponseBuffer.writeBytes(IcapCodecUtil.CRLF);
             	index += httpResponseBuffer.readableBytes();
             }
-            if(message.getBody() != null) {
-            	encapsulated.addEntry(message.getBody(),index);
+            if(message.getBodyType() != null) {
+            	encapsulated.addEntry(message.getBodyType(),index);
             } else {
             	encapsulated.addEntry(IcapMessageElementEnum.NULLBODY,index);
             }

@@ -167,7 +167,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 		return this;
 	}
 
-	public IcapMessageElementEnum getBody() {
+	public IcapMessageElementEnum getBodyType() {
 		if(encapsulated != null) {
 			return encapsulated.containsBodyEntry();
 		} else {

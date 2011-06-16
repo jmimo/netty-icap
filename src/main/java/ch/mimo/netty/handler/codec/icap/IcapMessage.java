@@ -182,5 +182,5 @@ public interface IcapMessage {
 	/**
 	 * @return @see {@link IcapMessageElementEnum} message body indicator.
 	 */
-	IcapMessageElementEnum getBody();
+	IcapMessageElementEnum getBodyType();
 }

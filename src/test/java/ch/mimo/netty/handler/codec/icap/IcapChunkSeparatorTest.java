@@ -49,7 +49,7 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createREQMODWithGetRequestAndDataIcapMessage());
 		IcapMessage message = (IcapMessage)embedder.poll();
 		assertNotNull("message was null",message);
-		assertEquals("message body indicator is wrong",IcapMessageElementEnum.REQBODY,message.getBody());
+		assertEquals("message body indicator is wrong",IcapMessageElementEnum.REQBODY,message.getBodyType());
 		IcapChunk chunk1 = (IcapChunk)embedder.poll();
 		assertNotNull("chunk 1 was null",chunk1);
 		assertEquals("chunk 1 content is wrong","This is data that wa",chunk1.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
@@ -68,7 +68,7 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createREQMODWithDataIcapResponse());
 		IcapMessage message = (IcapMessage)embedder.poll();
 		assertNotNull("message was null",message);
-		assertEquals("message body indicator is wrong",IcapMessageElementEnum.REQBODY,message.getBody());
+		assertEquals("message body indicator is wrong",IcapMessageElementEnum.REQBODY,message.getBodyType());
 		IcapChunk chunk1 = (IcapChunk)embedder.poll();
 		assertNotNull("chunk 1 was null",chunk1);
 		assertEquals("chunk 1 content is wrong","This is data that wa",chunk1.getContent().toString(IcapCodecUtil.ASCII_CHARSET));
@@ -87,7 +87,7 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createRESPMODWithPreviewDataIcapRequest());
 		IcapMessage message = (IcapMessage)embedder.poll();
 		assertNotNull("message was null",message);
-		assertEquals("message body indicator is wrong",IcapMessageElementEnum.RESBODY,message.getBody());
+		assertEquals("message body indicator is wrong",IcapMessageElementEnum.RESBODY,message.getBodyType());
 		IcapChunk chunk1 = (IcapChunk)embedder.poll();
 		assertNotNull("chunk 1 was null",chunk1);
 		assertTrue("chunk 1 is not marked as preview",chunk1.isPreviewChunk());
@@ -110,7 +110,7 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createRESPMODWithPreviewDataAndEarlyTerminationIcapRequest());
 		IcapMessage message = (IcapMessage)embedder.poll();
 		assertNotNull("message was null",message);
-		assertEquals("message body indicator is wrong",IcapMessageElementEnum.RESBODY,message.getBody());
+		assertEquals("message body indicator is wrong",IcapMessageElementEnum.RESBODY,message.getBodyType());
 		IcapChunk chunk1 = (IcapChunk)embedder.poll();
 		assertNotNull("chunk 1 was null",chunk1);
 		assertTrue("chunk 1 is not marked as preview",chunk1.isPreviewChunk());
@@ -134,7 +134,7 @@ public class IcapChunkSeparatorTest extends AbstractIcapTest {
 		embedder.offer(DataMockery.createOPTIONSResponseWithBodyInIcapResponse());
 		IcapMessage message = (IcapMessage)embedder.poll();
 		assertNotNull("message was null",message);
-		assertEquals("message body indicator is wrong",IcapMessageElementEnum.OPTBODY,message.getBody());
+		assertEquals("message body indicator is wrong",IcapMessageElementEnum.OPTBODY,message.getBodyType());
 		IcapChunk chunk1 = (IcapChunk)embedder.poll();
 		assertNotNull("chunk 1 was null",chunk1);
 		assertEquals("chunk 1 content is wrong","This is data that wa",chunk1.getContent().toString(IcapCodecUtil.ASCII_CHARSET));

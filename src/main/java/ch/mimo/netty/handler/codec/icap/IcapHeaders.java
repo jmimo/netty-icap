@@ -13,7 +13,11 @@
  *******************************************************************************/
 package ch.mimo.netty.handler.codec.icap;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,11 +29,12 @@ import java.util.Set;
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
  */
-// TODO add setDateheader format: "Fri, 20 May 2011 15:36:30 GMT"
 public final class IcapHeaders {
 	
 	private Entry base;
 	private Entry head;
+	
+	private static final String DATE_FORMAT = "E, dd MMM yyyy HH:mm:ss z";
 	
 	/**
 	 * The most common Icap Header names.
@@ -103,6 +108,51 @@ public final class IcapHeaders {
 		 * {@code "ISTag"}
 		 */
 		public static final String ISTAG = "ISTag";
+		
+		/**
+		 * {@code "Methods"}
+		 */
+		public static final String METHODS = "Methods";
+		
+		/**
+		 * {@code "Service"}
+		 */
+		public static final String SERVICE = "Service";
+		
+		/**
+		 * {@code "Opt-body-type"}
+		 */
+		public static final String OPT_BODY_TYPE = "Opt-body-type";
+		
+		/**
+		 * {@code "Max-connections"}
+		 */
+		public static final String MAX_CONNECTIONS = "Max-connections";
+		
+		/**
+		 * {@code "Options-TTL"}
+		 */
+		public static final String OPTIONS_TTL = "Options-TTL";
+		
+		/**
+		 * {@code "Service-ID"}
+		 */
+		public static final String SERVICE_ID = "Service-ID";
+		
+		/**
+		 * {@code "Transfer-Preview"}
+		 */
+		public static final String TRANSFER_PREVIEW = "Transfer-Preview";
+		
+		/**
+		 * {@code "Transfer-Ignore"}
+		 */
+		public static final String TRANSFER_IGNORE = "Transfer-Ignore";
+		
+		/**
+		 * {@code "Transfer-Complete"}
+		 */
+		public static final String TRANSFER_COMPLETE = "Transfer-Complete";
 	}
 	
 	public IcapHeaders() {
@@ -132,6 +182,11 @@ public final class IcapHeaders {
 			entry.before = currentHead;
 			currentHead.after = entry;
 		}
+	}
+	
+	public void addDateHeader(String name, Date value) {
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT,Locale.ENGLISH);
+		addHeader(name,format.format(value));
 	}
 	
 	/**
@@ -179,6 +234,29 @@ public final class IcapHeaders {
 			entry = entry.after;
 		}
 		return null;
+	}
+	
+	/**
+	 * retrieves a date header value as @see {@link Date}
+	 * If the header does not exist null is returned. 
+	 * If the date cannot be parsed a parsing exception is thrown.
+	 * 
+	 * @param name Icap message header name
+	 * @return if possible a valid @see {@link Date} instance or null
+	 * @throws IllegalArgumentException if the date string value cannot be parsed.
+	 */
+	public Date getDateHeader(String name) {
+		Date date = null;
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT,Locale.ENGLISH);
+		String value = getHeader(name);
+		if(value != null) {
+			try {
+				date = format.parse(value);
+			} catch (ParseException e) {
+				throw new IllegalArgumentException("The header value [" + value + "] is not a valid date",e);
+			}
+		}
+		return date;
 	}
 	
 	/**

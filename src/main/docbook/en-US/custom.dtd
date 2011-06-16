@@ -18,6 +18,7 @@
 <!ENTITY API		"http://icapdoc.mimo.ch/">
 <!ENTITY Version	"${project.version}/">
 
+<!ENTITY IcapMessage  "<ulink url='&API;&Version;api/ch/mimo/netty/handler/codec/icap/IcapMessage.html'><classname>IcapMessage</classname></ulink>">
 <!ENTITY IcapRequest  "<ulink url='&API;&Version;api/ch/mimo/netty/handler/codec/icap/IcapRequest.html'><classname>IcapRequest</classname></ulink>">
 <!ENTITY IcapResponse  "<ulink url='&API;&Version;api/ch/mimo/netty/handler/codec/icap/IcapResponse.html'><classname>IcapResponse</classname></ulink>">
 <!ENTITY IcapChunk  "<ulink url='&API;&Version;api/ch/mimo/netty/handler/codec/icap/IcapChunk.html'><classname>IcapChunk</classname></ulink>">
@@ -29,3 +30,5 @@
 
 <!ENTITY IcapChunkAggregator  "<ulink url='&API;&Version;api/ch/mimo/netty/handler/codec/icap/IcapChunkAggregator.html'><classname>IcapChunkAggregator</classname></ulink>">
 <!ENTITY IcapChunkSeparator   "<ulink url='&API;&Version;api/ch/mimo/netty/handler/codec/icap/IcapChunkSeparator.html'><classname>IcapChunkSeparator</classname></ulink>">
+
+<!ENTITY IcapHeaders   "<ulink url='&API;&Version;api/ch/mimo/netty/handler/codec/icap/IcapHeaders.html'><classname>IcapHeaders</classname></ulink>">

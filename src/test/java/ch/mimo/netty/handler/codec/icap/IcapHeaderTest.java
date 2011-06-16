@@ -1,8 +1,11 @@
 package ch.mimo.netty.handler.codec.icap;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -276,5 +279,24 @@ public class IcapHeaderTest extends AbstractIcapTest {
 		message.setHeader(IcapHeaders.Names.PREVIEW,"42");
 		assertEquals("host entry does not match","icap.somehost.com",message.getHeader(IcapHeaders.Names.HOST));
 		assertEquals("host entry does not match","42",message.getHeader(IcapHeaders.Names.PREVIEW));
+	}
+	
+	@Test
+	public void addDateHeader() {
+		IcapHeaders headers = new IcapHeaders();
+		Date date = new Date();
+		headers.addDateHeader(IcapHeaders.Names.DATE,date);
+		String dateValue = headers.getHeader(IcapHeaders.Names.DATE);
+		SimpleDateFormat format = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z",Locale.ENGLISH);
+		assertEquals("Date is not as expected",format.format(date),dateValue);
+	}
+	
+	@Test
+	public void getDateHeader() {
+		IcapHeaders headers = new IcapHeaders();
+		Date date = new Date();
+		headers.addDateHeader(IcapHeaders.Names.DATE,date);
+		Date returnedDate = headers.getDateHeader(IcapHeaders.Names.DATE);
+		assertNotNull("The returned date was null",returnedDate);
 	}
 }

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright (c) 2011 Michael Mimo Moratti.
+ *
+ * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+-->
+<!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.docbook.org/xml/4.5/docbookx.dtd" [
+<!ENTITY % CustomDTD SYSTEM "../custom.dtd">
+%CustomDTD; 
+]>
+<chapter id="release-notes">
+  <title>Release Notes</title>
+  <para>
+  	In this chapter we list all release note in a chronological order. Newest to Oldest.
+  </para>
+  <section>
+  	<title>1.0.0.RC2</title>
+  	<para>
+  	</para>
+	<itemizedlist>
+		<listitem>
+		  <para>
+		    Introduced specified date setter and getter methods in the &IcapHeaders; class. 
+		  </para>
+		</listitem>
+		<listitem>
+		  <para>
+		    renamed the getBody() method to getBodyType() in &IcapMessage; in order to have a more specific
+		    name. The old getBody() was ambiguous. 
+		  </para>
+		</listitem>
+		<listitem>
+		  <para>
+		    fixed possible NBE in the simple icap server / client example.
+		  </para>
+		</listitem>
+	</itemizedlist>
+  </section>
+  <section>
+  	<title>1.0.0.RC1</title>
+  	<para>
+  	</para>
+	<itemizedlist>
+		<listitem>
+		  <para>Initial Release Candidate containing all basic funtionality for the ICAP protocol
+		  codec.</para>
+		</listitem>
+	</itemizedlist>
+  </section>
+</chapter>

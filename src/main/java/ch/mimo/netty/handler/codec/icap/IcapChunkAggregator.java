@@ -49,11 +49,11 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 	 */
 	public static ChannelBuffer extractHttpBodyContentFromIcapMessage(IcapMessage message) {
 		ChannelBuffer buffer = null;
-		if(message.getBody().equals(IcapMessageElementEnum.REQBODY) && message.getHttpRequest() != null) {
+		if(message.getBodyType().equals(IcapMessageElementEnum.REQBODY) && message.getHttpRequest() != null) {
 			buffer = message.getHttpRequest().getContent();
-		} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY) && message.getHttpResponse() != null) {
+		} else if(message.getBodyType().equals(IcapMessageElementEnum.RESBODY) && message.getHttpResponse() != null) {
 			buffer = message.getHttpResponse().getContent();
-		} else if(message instanceof IcapResponse && message.getBody().equals(IcapMessageElementEnum.OPTBODY)) {
+		} else if(message instanceof IcapResponse && message.getBodyType().equals(IcapMessageElementEnum.OPTBODY)) {
 			IcapResponse response = (IcapResponse)message;
 			buffer = response.getContent();
 		}
@@ -124,14 +124,14 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     	
     	public IcapMessageWrapper(IcapMessage message) {
     		this.message = message;
-    		if(message.getBody() != null) {
-	    		if(message.getBody().equals(IcapMessageElementEnum.REQBODY)) {
+    		if(message.getBodyType() != null) {
+	    		if(message.getBodyType().equals(IcapMessageElementEnum.REQBODY)) {
 	    			relevantHttpMessage = message.getHttpRequest();
 	    			messageWithBody = true;
-	    		} else if(message.getBody().equals(IcapMessageElementEnum.RESBODY)) {
+	    		} else if(message.getBodyType().equals(IcapMessageElementEnum.RESBODY)) {
 	    			relevantHttpMessage = message.getHttpResponse();
 	    			messageWithBody = true;
-	    		} else if(message instanceof IcapResponse && message.getBody().equals(IcapMessageElementEnum.OPTBODY)) {
+	    		} else if(message instanceof IcapResponse && message.getBodyType().equals(IcapMessageElementEnum.OPTBODY)) {
 	    			icapResponse = (IcapResponse)message;
 	    			messageWithBody = true;
 	    		}

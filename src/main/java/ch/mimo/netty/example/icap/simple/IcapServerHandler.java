@@ -24,6 +24,7 @@ import org.jboss.netty.handler.codec.http.HttpHeaders;
 import ch.mimo.netty.handler.codec.icap.DefaultIcapResponse;
 import ch.mimo.netty.handler.codec.icap.IcapHeaders;
 import ch.mimo.netty.handler.codec.icap.IcapMessageElementEnum;
+import ch.mimo.netty.handler.codec.icap.IcapMethod;
 import ch.mimo.netty.handler.codec.icap.IcapRequest;
 import ch.mimo.netty.handler.codec.icap.IcapResponse;
 import ch.mimo.netty.handler.codec.icap.IcapResponseStatus;
@@ -38,9 +39,12 @@ public class IcapServerHandler extends SimpleChannelUpstreamHandler {
 		System.out.println(request.toString());
 		
 		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
-		IcapMessageElementEnum bodyType = request.getBody();
+		IcapMessageElementEnum bodyType = request.getBodyType();
+		if(bodyType == null) {
+			bodyType = IcapMessageElementEnum.NULLBODY;
+		}
 		
-		if(request.getHttpRequest() != null) {
+		if(!request.getMethod().equals(IcapMethod.RESPMOD) & request.getHttpRequest() != null) {
 			request.getHttpRequest().addHeader(HttpHeaders.Names.VIA,"icap://my.icap.server");
 			response.setHttpRequest(request.getHttpRequest());
 		}
