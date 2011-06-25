@@ -49,14 +49,17 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 	 */
 	public static ChannelBuffer extractHttpBodyContentFromIcapMessage(IcapMessage message) {
 		ChannelBuffer buffer = null;
-		if(message.getBodyType().equals(IcapMessageElementEnum.REQBODY) && message.getHttpRequest() != null) {
-			buffer = message.getHttpRequest().getContent();
-		} else if(message.getBodyType().equals(IcapMessageElementEnum.RESBODY) && message.getHttpResponse() != null) {
-			buffer = message.getHttpResponse().getContent();
-		} else if(message instanceof IcapResponse && message.getBodyType().equals(IcapMessageElementEnum.OPTBODY)) {
-			IcapResponse response = (IcapResponse)message;
-			buffer = response.getContent();
-		}
+		if(message != null) {
+			if(message.getHttpRequest() != null && message.getHttpRequest().getContent().readableBytes() > 0) {
+				buffer = message.getHttpRequest().getContent();
+			} else if(message.getHttpResponse() != null && message.getHttpResponse().getContent().readableBytes() > 0) {
+				buffer = message.getHttpResponse().getContent();
+			} else if(message instanceof IcapResponse) {
+				if(((IcapResponse) message).getContent().readableBytes() > 0) {
+					buffer = ((IcapResponse) message).getContent();
+				}
+			}
+		}	
 		return buffer;
 	}
 	

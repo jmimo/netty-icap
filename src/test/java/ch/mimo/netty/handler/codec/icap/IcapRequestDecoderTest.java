@@ -15,6 +15,7 @@ package ch.mimo.netty.handler.codec.icap;
 
 import java.io.UnsupportedEncodingException;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
