@@ -1308,6 +1308,14 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}
 	
+	public static final ChannelBuffer create100ResponseWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 100 Continue");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {
 		if(value == null) {
 			buffer.writeBytes(IcapCodecUtil.CRLF);

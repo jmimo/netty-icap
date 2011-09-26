@@ -15,7 +15,6 @@ package ch.mimo.netty.handler.codec.icap;
 
 import java.io.UnsupportedEncodingException;
 
-import org.jboss.netty.handler.codec.embedder.CodecEmbedderException;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
@@ -127,15 +126,24 @@ public class IcapResponseDecoderTest extends AbstractIcapTest {
 		assertEquals("wrong response status code",IcapResponseStatus.CONTINUE,result.getStatus());
 	}
 	
-	// TODO add missing Encapsulation header functionality.
-	@Test(expected=CodecEmbedderException.class)
+	@Test
 	public void decodeREQMODResponseWithHttpResponse() throws UnsupportedEncodingException {
-		embedder.offer(DataMockery.create204ResponseWithoutEncapsulatedHeader());
-		embedder.poll();
+		embedder.offer(DataMockery.createREQMODResponseContainingHttpResponse());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		DataMockery.assertREQMODResponseContainingHttpResponse(response);
 	}
 	
 	@Test
 	public void decode204ResponseWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
-		
+		embedder.offer(DataMockery.create204ResponseWithoutEncapsulatedHeader());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap response instance is null",response);
+	}
+	
+	@Test
+	public void decode100ContinueWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.create100ResponseWithoutEncapsulatedHeader());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap response instance is null",response);
 	}
 }

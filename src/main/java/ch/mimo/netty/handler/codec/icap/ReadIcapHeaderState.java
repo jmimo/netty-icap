@@ -27,6 +27,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public class ReadIcapHeaderState extends State<Object> {
 	
+	private static final String SYNTHETIC_ENCAPSULATED_HEADER_VALUE = "null-body=0";
+	
 	public ReadIcapHeaderState(String name) {
 		super(name);
 	}
@@ -48,7 +50,8 @@ public class ReadIcapHeaderState extends State<Object> {
 		boolean isRequest = icapMessageDecoder.message instanceof IcapRequest;
 		boolean isOptionsRequest = isRequest && ((IcapRequest)icapMessageDecoder.message).getMethod().equals(IcapMethod.OPTIONS);
 		
-		validateMandatoryMessageHeaders(icapMessageDecoder.message,icapMessageDecoder.isDecodingResponse(),isOptionsRequest);
+		handleEncapsulationHeaderVolatility(icapMessageDecoder.message);
+		validateMandatoryMessageHeaders(icapMessageDecoder.message);
 		
 		Encapsulated encapsulated = null;
 		String headerValue = icapMessageDecoder.message.getHeader(IcapHeaders.Names.ENCAPSULATED);
@@ -91,17 +94,46 @@ public class ReadIcapHeaderState extends State<Object> {
 		return null;
 	}
 	
-	private void validateMandatoryMessageHeaders(IcapMessage message, boolean isDecodingResponse, boolean isDecodingOptionsRequest) {
-		if(!isDecodingResponse) {
+	private void validateMandatoryMessageHeaders(IcapMessage message) {
+		if(!(message instanceof IcapResponse)) {
 			if(!message.containsHeader(IcapHeaders.Names.HOST)) {
 				throw new IcapDecodingError("Mandatory ICAP message header [Host] is missing");
 			}
 		}
-		if(!isDecodingOptionsRequest) {
-			if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
-				throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
-			}
+		if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+			throw new IcapDecodingError("Mandatory ICAP message header [Encapsulated] is missing");
 		}
 	}
 
+	/**
+	 * This method handles the volatility problem of the Encapsulation header. In the RFC (3507) in section 4.4.1 is described 
+	 * that the Encapsulated header MUST exist on all messages. This also contains OPTIONS request/response and 100,204 responses.
+	 * 
+	 * In the Errata section "When to send an Encapsulated Header" E1 is the MUST requirement weakened! It is now possible to 
+	 * send OPTIONS requests and 100 Continue, 204 No Content responses without Encapsulated headers.
+	 * 
+	 * This method will create a synthetic Encapsulated header if necessary in order to simplify the downstream logic.
+	 */
+	private void handleEncapsulationHeaderVolatility(IcapMessage message) {
+		// Pseudo code
+		// IF Encapsulated header is missing
+			// IF OPTIONS request OR 100 Continue response OR 204 No Content response
+				// THEN inject synthetic null-body Encapsulated header.
+		boolean requiresSynthecticEncapsulationHeader = false;
+		if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
+			if(message instanceof IcapRequest && ((IcapRequest)message).getMethod().equals(IcapMethod.OPTIONS)) {
+				requiresSynthecticEncapsulationHeader = true;
+			} else if(message instanceof IcapResponse) {
+				IcapResponse response = (IcapResponse)message;
+				IcapResponseStatus status = response.getStatus();
+				if(status.equals(IcapResponseStatus.CONTINUE) | status.equals(IcapResponseStatus.NO_CONTENT)) {
+					requiresSynthecticEncapsulationHeader = true;
+				}
+			}
+		}
+		
+		if(requiresSynthecticEncapsulationHeader) {
+			message.addHeader(IcapHeaders.Names.ENCAPSULATED,SYNTHETIC_ENCAPSULATED_HEADER_VALUE);
+		}
+	}
 }
