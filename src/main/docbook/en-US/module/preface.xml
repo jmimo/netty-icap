@@ -49,13 +49,13 @@
   	<para>
   		<itemizedlist>
   			<listitem>
-  			  <para>Full Java ICAP protocol implementation according to RFC3507.</para>
-  			</listitem>
-  			<listitem>
-  			  <para>JEE and Servlet container implementation capabilities.</para>
+  			  <para>Full Java ICAP protocol implementation according according to RFC3507.</para>
   			</listitem>
   			<listitem>
   			  <para>Server and Client support.</para>
+  			</listitem>
+  			<listitem>
+  			  <para>JEE and Servlet container implementation capabilities.</para>
   			</listitem>
   		</itemizedlist>
   	</para>

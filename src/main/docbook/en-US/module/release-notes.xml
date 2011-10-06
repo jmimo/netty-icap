@@ -22,6 +22,30 @@
   	In this chapter we list all release note in a chronological order. Newest to Oldest.
   </para>
   <section>
+  	<title>1.0.0.RC3</title>
+  	<para>
+  	</para>
+  	<itemizedlist>
+  		<listitem>
+  			<para>
+  				Introduced Handling of missing Encapsulated Header for 100 Continue, 204 No Content responses
+  				and options requests. With this we leave the strict RFC implementation and adhere to the 
+  				ICAP Errata recommendations.
+  			</para>
+  		</listitem>
+		<listitem>
+		  <para>
+		    Added the test server implementation as sample with which Squid integration testing was done.
+		  </para>
+		</listitem>
+		<listitem>
+		  <para>
+		    Extensive load and stress testing is completed.
+		  </para>
+		</listitem>
+  	</itemizedlist>
+  </section>
+  <section>
   	<title>1.0.0.RC2</title>
   	<para>
   	</para>
@@ -39,7 +63,7 @@
 		</listitem>
 		<listitem>
 		  <para>
-		    fixed possible NBE in the simple icap server / client example.
+		    fixed possible NBE in the simple ICAP server / client example.
 		  </para>
 		</listitem>
 	</itemizedlist>
@@ -50,7 +74,7 @@
   	</para>
 	<itemizedlist>
 		<listitem>
-		  <para>Initial Release Candidate containing all basic funtionality for the ICAP protocol
+		  <para>Initial Release Candidate containing all basic functionality for the ICAP protocol
 		  codec.</para>
 		</listitem>
 	</itemizedlist>

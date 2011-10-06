@@ -8,11 +8,10 @@ http://icap.mimo.ch
 Roadmap
 ------------
 
-### Next (Initial Release) 1.0.0.RC1
+### Initial Release 1.0.0.GA
 
-We are currently finishing the first release. 
-Netty ICAP codec is now successfully integration tested with squid 3.1.6
-It's not far now and we will release 1.0.0.RC1
+We have integrated with several products and done extensive load and stress testing.
+Also the productive environment with bugzilla http://bugzilla.mimo.ch is now up and running.
 
 ### Future releases
 

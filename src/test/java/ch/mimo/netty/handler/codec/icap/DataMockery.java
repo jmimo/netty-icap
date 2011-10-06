@@ -1295,6 +1295,27 @@ public final class DataMockery extends Assert {
 		return response;
 	}
 	
+	public static final ChannelBuffer create204ResponseWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 204 No Content");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"ISTag: \"209BC533133B6F323892C3A62DFDBEAC\"");
+		addLine(buffer,"Date: Thu Sep 22 22:37:55 2011 GMT");
+		addLine(buffer,"Service: Symantec Scan Engine/5.2.11.131");
+		addLine(buffer,"Service-ID: Respmod AV Scan");
+		addLine(buffer,"X-Outer-Container-Is-Mime: 0");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
+	public static final ChannelBuffer create100ResponseWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"ICAP/1.0 100 Continue");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {
 		if(value == null) {
 			buffer.writeBytes(IcapCodecUtil.CRLF);

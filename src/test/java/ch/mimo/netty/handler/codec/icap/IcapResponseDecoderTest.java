@@ -132,4 +132,18 @@ public class IcapResponseDecoderTest extends AbstractIcapTest {
 		IcapResponse response = (IcapResponse)embedder.poll();
 		DataMockery.assertREQMODResponseContainingHttpResponse(response);
 	}
+	
+	@Test
+	public void decode204ResponseWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.create204ResponseWithoutEncapsulatedHeader());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap response instance is null",response);
+	}
+	
+	@Test
+	public void decode100ContinueWithoutEncapsulatedHeader() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.create100ResponseWithoutEncapsulatedHeader());
+		IcapResponse response = (IcapResponse)embedder.poll();
+		assertNotNull("The decoded icap response instance is null",response);
+	}
 }
