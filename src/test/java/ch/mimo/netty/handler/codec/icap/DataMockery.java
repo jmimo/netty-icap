@@ -1218,6 +1218,34 @@ public final class DataMockery extends Assert {
 		return request;
 	}
 	
+	public static final ChannelBuffer createREQMODWithGetRequestAndData() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"REQMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"Encapsulated: req-hdr=0, req-body=170");
+		addLine(buffer,null);
+		addLine(buffer,"GET / HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain");
+		addLine(buffer,"Accept-Encoding: compress");
+		addLine(buffer,"Cookie: ff39fk3jur@4ii0e02i");
+		addLine(buffer,"If-None-Match: \"xyzzy\", \"r2d2xxxx\"");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
+	public static final ChannelBuffer createREQMODWithGetRequestAndDataFirstChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addChunk(buffer,"This is data that was returned by an origin server.");
+		return buffer;
+	}
+	
+	public static final ChannelBuffer createREQMODWithGetRequestAndDataLastChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLastChunk(buffer);
+		return buffer;
+	}
+	
 	public static final IcapResponse createREQMODWithDataIcapResponse() {
 		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
 		response.addHeader("Host","icap-server.net");
@@ -1314,6 +1342,69 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"Host: icap-server.net");
 		addLine(buffer,null);
 		return buffer;
+	}
+	
+	public static final IcapRequest createREQMODWithPostRequestAndDataIcapMessage() {
+		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
+		request.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		httpRequest.setContent(buffer);
+		return request;
+	}
+	
+	public static final void assertCreateREQMODWithPostRequestAndDataIcapRequest(IcapRequest message) {
+		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
+		assertHeaderValue("Host","icap-server.net",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=171",message);
+		assertNotNull("http request was null",message.getHttpRequest());
+		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept-Encoding","compress",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Cookie","ff39fk3jur@4ii0e02i",message.getHttpRequest());
+		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",message.getHttpRequest());
+		assertEquals("http request message content was wrong","This is data that was returned by an origin server.",message.getHttpRequest().getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertNull("http response was not null",message.getHttpResponse());
+	}
+	
+	public static final IcapResponse createREQMODWithPostRequestIcapResponse() {
+		IcapResponse response = new DefaultIcapResponse(IcapVersion.ICAP_1_0,IcapResponseStatus.OK);
+		response.addHeader("Host","icap-server.net");
+		response.addHeader("ISTag","Serial-0815");
+		HttpRequest httpRequest = new DefaultHttpRequest(HttpVersion.HTTP_1_1,HttpMethod.POST,"/");
+		response.setHttpRequest(httpRequest);
+		httpRequest.addHeader("Host","www.origin-server.com");
+		httpRequest.addHeader("Accept","text/html, text/plain");
+		httpRequest.addHeader("Accept-Encoding","compress");
+		httpRequest.addHeader("Cookie","ff39fk3jur@4ii0e02i");
+		httpRequest.addHeader("If-None-Match","\"xyzzy\", \"r2d2xxxx\"");
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("This is data that was returned by an origin server.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		httpRequest.setContent(buffer);
+		return response;
+	}
+	
+	public static final void assertCreateREQMODWithPostRequestAndDataIcapResponse(IcapResponse message) {
+		assertEquals("wrong icap version",IcapVersion.ICAP_1_0,message.getProtocolVersion());
+		assertEquals("wrong response status",IcapResponseStatus.OK,message.getStatus());
+		assertHeaderValue("Host","icap-server.net",message);
+		assertHeaderValue("Encapsulated","req-hdr=0, req-body=171",message);
+		assertNotNull("http request was null",message.getHttpRequest());
+		assertEquals("http request method was wrong",HttpMethod.POST,message.getHttpRequest().getMethod());
+		assertHttpMessageHeaderValue("Host","www.origin-server.com",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept","text/html, text/plain",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Accept-Encoding","compress",message.getHttpRequest());
+		assertHttpMessageHeaderValue("Cookie","ff39fk3jur@4ii0e02i",message.getHttpRequest());
+		assertHttpMessageHeaderValue("If-None-Match","\"xyzzy\", \"r2d2xxxx\"",message.getHttpRequest());
+		assertEquals("http request message content was wrong","This is data that was returned by an origin server.",message.getHttpRequest().getContent().toString(IcapCodecUtil.ASCII_CHARSET));
+		assertNull("http response was not null",message.getHttpResponse());
 	}
 	
 	private static final void addLine(ChannelBuffer buffer, String value) throws UnsupportedEncodingException {

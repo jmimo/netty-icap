@@ -459,5 +459,54 @@ public abstract class SocketTests extends AbstractSocketTest {
 	public void aggregatorSeparatorCombinationTest() {
 		runSocketTest(new SendREQMODWithGetRequestAndDataServerHandler(),new SendREQMODWithGetRequestAndDataClientHandler(),new Object[]{DataMockery.createREQMODWithGetRequestAndDataIcapMessage()},PipelineType.SEPARATOR_AGGREGATOR);
 	}
+	
+	private class RepeaterServerHandler extends AbstractHandler {
+
+		private int counter = 0;
+		
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapRequest) {
+				IcapRequest request = (IcapRequest)msg;
+				DataMockery.assertCreateREQMODWithPostRequestAndDataIcapRequest(request);
+				IcapResponse response = DataMockery.createREQMODWithPostRequestIcapResponse();
+				if(counter >= 100) {
+					response.addHeader("TEST","END");
+				}
+				channel.write(response);
+				counter++;
+			}
+			return counter >= 100;
+		}
+		
+	}
+	
+	private class RepeaterClientHandler extends AbstractHandler {
+
+		private boolean end;
+		
+		@Override
+		public boolean doMessageReceived(ChannelHandlerContext context, MessageEvent event, Channel channel) throws Exception {
+			Object msg = event.getMessage();
+			if(msg instanceof IcapResponse) {
+				IcapResponse response = (IcapResponse)msg;
+				DataMockery.assertCreateREQMODWithPostRequestAndDataIcapResponse(response);
+				if(response.containsHeader("TEST")) {
+					end = true;
+				} else {
+					channel.write(DataMockery.createREQMODWithPostRequestAndDataIcapMessage());
+				}
+			}
+			return end;
+		}
+		
+	}
+	
+	@Test
+	public void aggregatorSeparatorCombinationRepeatTest() {
+		runSocketTest(new RepeaterServerHandler(),new RepeaterClientHandler(),new Object[]{DataMockery.createREQMODWithPostRequestAndDataIcapMessage()},PipelineType.SEPARATOR_AGGREGATOR);
+
+	}
 }
 
