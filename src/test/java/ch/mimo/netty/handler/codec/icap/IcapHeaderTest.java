@@ -98,6 +98,14 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void setNewHeader() {
+		IcapHeaders header = new IcapHeaders();
+		header.setHeader("MIMO","JOGGEL");
+		assertTrue("header not found",header.containsHeader("MIMO"));
+		assertEquals("unexpected value for header","JOGGEL",header.getHeader("MIMO"));
+	}
+	
+	@Test
 	public void addAndSetHeader() {
 		IcapHeaders headers = new IcapHeaders();
 		headers.addHeader("FOO1","FOOV1");
