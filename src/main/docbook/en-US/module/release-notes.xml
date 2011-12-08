@@ -22,6 +22,19 @@
   	In this chapter we list all release note in a chronological order. Newest to Oldest.
   </para>
   <section>
+  	<title>1.0.0.GA</title>
+  	<para>
+  	</para>
+  	<itemizedlist>
+  		<listitem>
+  			<para>
+				First Stable Release!
+				Several tests have been added to assure stability of the product.
+  			</para>
+  		</listitem>
+  	</itemizedlist>
+  </section>
+  <section>
   	<title>1.0.0.RC3</title>
   	<para>
   	</para>
