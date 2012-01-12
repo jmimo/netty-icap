@@ -15,6 +15,9 @@ Also the productive environment with bugzilla http://bugzilla.mimo.ch is now up 
 
 ### Future releases
 
+In order to stay in sync with the ongoing efforts with Netty and it's Netty 4 refactoring efforts
+we plan to adapt our project as a version 2.0 stream to the new Netty 4 stream.
+
 We have implemented basic semantic handlers that will aggregate and separate
 messages and bodies for the user. We further plan to build a handler that
 encapsulates preview handling form a client perspective.
