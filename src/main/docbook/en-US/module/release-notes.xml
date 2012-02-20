@@ -22,6 +22,32 @@
   	In this chapter we list all release note in a chronological order. Newest to Oldest.
   </para>
   <section>
+  	<title>1.0.1.GA</title>
+  	<para>
+  		This is a minor bugfix and enhancement release.
+  	</para>
+  	<itemizedlist>
+  		<listitem>
+  			<para>
+				ICAP Header removal NPE
+				This bugfix in the icap header removal area prevents a possible NPE that could appear
+				due to wrong duplication detection.
+  			</para>
+  		</listitem>
+  		<listitem>
+  			<para>
+				ICAP Message aggregation Handler enhancement.
+				This enhancement will change the behavior of the IcapChunkAggregator handler in order
+				to properly handle preview message with an IEOF (early termination) of the message body
+				content.
+				In case a preview message content is ended with an early termination indicator the IcapMessage 
+				will no longer indicate to be of type preview, since all the available message content is
+				already present in the given message due to the early termination. 
+  			</para>
+  		</listitem>
+  	</itemizedlist> 	
+  </section>
+  <section>
   	<title>1.0.0.GA</title>
   	<para>
   	</para>

@@ -325,9 +325,15 @@ public final class IcapHeaders {
 			if(identicalKeys(entry.getKey(),name)) {
 				Entry before = entry.before;
 				Entry after = entry.after;
-				before.after = after;
-				after.before = before;
-				entry = after;
+				if(before != null) {
+					before.after = after;
+				}
+				if(after != null) {
+					after.before = before;
+					entry = after;
+				} else {
+					entry = null;
+				}
 			} else {
 				entry = entry.after;
 			}
@@ -408,6 +414,11 @@ public final class IcapHeaders {
 		@Override
 		public String setValue(String value) {
 			return null;
+		}
+		
+		@Override
+		public String toString() {
+			return "[" + key + "] = [[" + value + "]]";
 		}
 	}
 	

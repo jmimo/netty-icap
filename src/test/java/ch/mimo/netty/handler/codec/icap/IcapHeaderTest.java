@@ -98,6 +98,14 @@ public class IcapHeaderTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void removeHeaderWhenAddedThroughMessageConstructor() {
+			IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
+			request.addHeader("Preview","151");
+			request.removeHeader("Preview");
+			assertFalse("Preview header is still present",request.containsHeader("Preview"));
+	}
+	
+	@Test
 	public void setNewHeader() {
 		IcapHeaders header = new IcapHeaders();
 		header.setHeader("MIMO","JOGGEL");

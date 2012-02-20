@@ -29,6 +29,11 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * the body is the to be found attached to the correct HTTP request or response instance
  * within the ICAP message.
  * 
+ * In case when a Preview IcapRequest is received with an early chunk termination the preview indication
+ * and header are removed entirely from the message. This is done because a preview message with an early
+ * content termination is in essence nothing else than a full message.
+ * 
+ * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  * 
  * @see IcapChunkSeparator
@@ -102,6 +107,9 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     		if(message == null) {
     			ctx.sendUpstream(e);
     		} else if(chunk.isLast()) {
+    			if(chunk.isEarlyTerminated()) {
+    				message.getIcapMessage().removeHeader(IcapHeaders.Names.PREVIEW);
+    			}
     			Channels.fireMessageReceived(ctx,message.getIcapMessage(),e.getRemoteAddress());
     			message = null;
     		} else {

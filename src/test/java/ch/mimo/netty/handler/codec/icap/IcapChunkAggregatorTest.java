@@ -169,5 +169,15 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 		}
 		assertTrue("No Exception was thrown",exception);
 	}
+	
+	@Test
+	public void retrieveREQMODPreviewWithEarlyTermination() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewAnnouncementIcapMessage());
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewIcapChunk());
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewLastIcapChunk());
+		IcapRequest request = (IcapRequest)embedder.poll();
+		assertFalse("The request is marked to be of type preview",request.isPreviewMessage());
+		
+	}
 }
 
