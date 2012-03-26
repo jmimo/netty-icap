@@ -291,6 +291,24 @@ public class IcapDecoderUtilTest extends Assert {
 		Assert.assertEquals("Wrong header value",";:",header2[1]);
 	}
 	
+// TODO ;: header issue from "Michal Przytulski" I could imagine be lenient about it......
+	// But I don't really fancy to solve such an issue since such a header really breaks the protocol. 
+	/*
+< HTTP/1.0 200 OK
+< Server: nginx
+< Date: Mon, 26 Mar 2012 13:42:17 GMT
+< Content-Type: text/javascript; charset=
+< Pragma: no-cache
+< ;: 
+< X-Cache: MISS from chzhuspfw-havp.united-security-providers.ch
+< X-Cache-Lookup: MISS from chzhuspfw-havp.united-security-providers.ch:8081
+< X-Cache: MISS from chzhuspfw01
+< X-Cache-Lookup: MISS from chzhuspfw01:8080
+< Via: 1.0 chzhuspfw-havp.united-security-providers.ch (squid/3.1.18), 1.0 chzhuspfw01 (squid/3.1.18)
+< Connection: close
+< 
+	 */
+	
 	@Test
 	public void testNonSimpleHeader() {
 		StringBuilder builder = new StringBuilder("Encapsulation: req-hdr=50, res-hdr=120, null-body=210");
