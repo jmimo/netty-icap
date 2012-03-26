@@ -192,6 +192,13 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void decodeRESPMODPreviewWithZeroBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODPreviewWithZeroBody());
+		IcapRequest result = (IcapRequest)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
+	}
+	
+	@Test
 	public void decodeREQMODWithGetRequestAndHugeChunk() throws UnsupportedEncodingException {
 		DecoderEmbedder<Object> embedder = new DecoderEmbedder<Object>(new IcapRequestDecoder(4000,4000,4000,10));
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBody());
