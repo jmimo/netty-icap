@@ -274,6 +274,24 @@ public class IcapDecoderUtilTest extends Assert {
 	}
 	
 	@Test
+	public void testHeaderSplitWithSemicolon() throws DecodingException {
+		StringBuilder builder = new StringBuilder("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append("Mimo: ;:");
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
+		ChannelBuffer buffer = ChannelBuffers.copiedBuffer(builder.toString().getBytes());
+		List<String[]> headers = IcapDecoderUtil.readHeaders(buffer,400);
+		Assert.assertEquals("wrong amount of header entries in list",2,headers.size());
+		String[] header1 = headers.get(0);
+		Assert.assertEquals("Wrong header name","Accept",header1[0]);
+		Assert.assertEquals("Wrong header value","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",header1[1]);
+		String[] header2 = headers.get(1);
+		Assert.assertEquals("Wrong header name","Mimo",header2[0]);
+		Assert.assertEquals("Wrong header value",";:",header2[1]);
+	}
+	
+	@Test
 	public void testNonSimpleHeader() {
 		StringBuilder builder = new StringBuilder("Encapsulation: req-hdr=50, res-hdr=120, null-body=210");
 		builder.append((char)IcapCodecUtil.CR).append((char)IcapCodecUtil.LF);
