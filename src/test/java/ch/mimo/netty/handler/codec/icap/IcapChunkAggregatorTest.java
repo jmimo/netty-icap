@@ -133,6 +133,27 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void aggregateRESPMODRequestWithPreviewChunksAndReadInBetween() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIncludingEncapsulationHeaderIcapRequest());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunk());
+		embedder.offer(DataMockery.crateRESPMODWithGetRequestAndPreviewLastIcapChunk());
+		IcapRequest request = (IcapRequest)embedder.poll();
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreview(request);
+		String body = request.getHttpResponse().getContent().toString(IcapCodecUtil.ASCII_CHARSET);
+		StringBuilder builder = new StringBuilder();
+		builder.append("This is data that was returned by an origin server.");
+		assertEquals("The body content was wrong",builder.toString(),body);	
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunkFullMessageChunk());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewChunkTrailer());
+		IcapRequest request1 = (IcapRequest)embedder.poll();
+		String body1 = request1.getHttpResponse().getContent().toString(IcapCodecUtil.ASCII_CHARSET);
+		System.out.println(body1);
+		assertEquals("The body content after another chunk was sent is wrong","This is data that was returned by an origin server.And this the second chunk which contains more information.",body1);
+		Object object = embedder.peek();
+		assertNull("still something there",object);	
+	}
+	
+	@Test
 	public void aggregateREQModRequestWithCunksAndTrailingHeaders() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyAndEncapsulationHeaderIcapMessage());
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());

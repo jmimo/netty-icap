@@ -33,6 +33,10 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * and header are removed entirely from the message. This is done because a preview message with an early
  * content termination is in essence nothing else than a full message.
  * 
+ * The reader index of an HTTP content ChannelBuffer is always reset to 0 in order to handle preview aggregation.
+ * This is done in order to allow server implementations to handle preview messages properly. A preview message
+ * is aggregated with the 100 Continue response from the client and the buffer will be therefore reset to 0 
+ * so that the server handler can read the entire message.
  * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  * 
@@ -119,6 +123,7 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     				throw new TooLongFrameException("ICAP content length exceeded [" + maxContentLength + "] bytes");
     			} else {
     				content.writeBytes(chunkBuffer);
+    				content.readerIndex(0);
     			}
     		}
     	} else {

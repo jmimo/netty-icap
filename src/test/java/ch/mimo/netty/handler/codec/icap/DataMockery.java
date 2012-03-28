@@ -1129,6 +1129,18 @@ public final class DataMockery extends Assert {
 		return trailer;
 	}
 	
+	public static final IcapChunk createRESPMODWithGetRequestAndPreviewIcapChunkFullMessageChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("And this the second chunk which contains more information.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		return chunk;
+	}
+	
+	public static final IcapChunk createRESPMODWithGetRequestAndPreviewChunkTrailer() {
+		IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
+		return trailer;
+	}
+	
 	public static final void assertCreateRESPMODWithGetRequestAndPreview(IcapRequest message) {
 		assertEquals("Uri is wrong","icap://icap.mimo.ch:1344/reqmod",message.getUri());
 		assertHeaderValue("Host","icap-server.net",message);
