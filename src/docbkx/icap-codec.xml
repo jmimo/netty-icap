@@ -21,7 +21,7 @@
     <title>The Java ICAP Project User Guide</title>
     <subtitle/>
     <releaseinfo>
-    ${project.version}
+    	<?eval ${project.version}?>
     </releaseinfo>
   </bookinfo>
 

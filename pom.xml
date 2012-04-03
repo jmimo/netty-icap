@@ -148,12 +148,13 @@
 							<xincludeSupported>true</xincludeSupported>
 							<foCustomization>${basedir}/src/docbkx/customization/pdf.xsl</foCustomization>
 							<!-- htmlStylesheet -->
-							<entities>
-								<entity>
-									<name>version</name>
-									<value>${project.version}</value>
-								</entity>
-							</entities>
+					        <entities>
+					            <entity>
+					              <name>version</name>
+					              <value>${project.version}</value>
+					            </entity>
+					        </entities>
+							<includes>icap-codec.xml</includes>
 						</configuration>
 					</plugin>
 				</plugins>
