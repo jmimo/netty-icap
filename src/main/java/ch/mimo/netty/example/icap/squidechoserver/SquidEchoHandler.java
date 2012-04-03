@@ -27,6 +27,10 @@ import ch.mimo.netty.handler.codec.icap.IcapVersion;
  * 
  * This handler was used to integration test together with squid version 3.1.6
  * 
+ * THIS IS BY NO MEANS A PRODUCTION QUALITY INTEGRATION IT IS TO BE HANDLED LIKE A PROOF OF CONCEPT.
+ * PLEASE IF YOU PLAN TO USE THIS SERVER HANDLER IN YOUR IMPLEMENTATION CONSIDER READING UP ON ICAP,
+ * NETTY AND SOFTWARE INGENEERING IN GENERAL.
+ * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
  */
