@@ -33,7 +33,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
  * and header are removed entirely from the message. This is done because a preview message with an early
  * content termination is in essence nothing else than a full message.
  * 
- * The reader index of an HTTP content ChannelBuffer is always reset to 0 in order to handle preview aggregation.
+ * The reader index of an HTTP content ChannelBuffer can be reset to 0 via a dedicated constructor in order to handle preview aggregation.
  * This is done in order to allow server implementations to handle preview messages properly. A preview message
  * is aggregated with the 100 Continue response from the client and the buffer will be therefore reset to 0 
  * so that the server handler can read the entire message.
@@ -47,8 +47,11 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 
 	private static final InternalLogger LOG = InternalLoggerFactory.getInstance(IcapChunkAggregator.class);
 	
+	private static final int READER_INDEX_RESET_VALUE = 0;
+	
 	private long maxContentLength;
 	private IcapMessageWrapper message;
+	private boolean resetReaderIndex;
 	
 	/**
 	 * Convenience method to retrieve a HTTP request,response or 
@@ -78,6 +81,19 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
 	 */
 	public IcapChunkAggregator(long maxContentLength) {
 		this.maxContentLength = maxContentLength;
+	}
+	
+	/**
+	 * Constructor that allows to change the preview body update behavior to
+	 * reset the HTTP message body channel reader index when receiving the rest
+	 * of the body after a 100 Continue.
+	 * 
+	 * @param maxContentLength defines the maximum length of the body content that is allowed. 
+	 * @param resetReaderIndex defines if the HTTP message reader index should be reset after adding more data to it.
+	 */
+	public IcapChunkAggregator(long maxContentLength, boolean resetReaderIndex) {
+		this(maxContentLength);
+		this.resetReaderIndex = resetReaderIndex;
 	}
 	
     @Override
@@ -123,7 +139,9 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     				throw new TooLongFrameException("ICAP content length exceeded [" + maxContentLength + "] bytes");
     			} else {
     				content.writeBytes(chunkBuffer);
-    				content.readerIndex(0);
+    				if(resetReaderIndex) {
+    					content.readerIndex(READER_INDEX_RESET_VALUE);
+    				}
     			}
     		}
     	} else {
