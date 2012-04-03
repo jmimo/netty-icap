@@ -47,6 +47,16 @@
 				compatible!
   			</para>
   		</listitem>
+  		<listitem>
+  			<para>
+  				Changed to docbkx maven plugin for the documentation generation.
+  			</para>
+  		</listitem>
+  		<listitem>
+  			<para>
+  				Updated Copyright to 2012
+  			</para>
+  		</listitem>
   	</itemizedlist> 	
   </section>
   <section>
