@@ -42,7 +42,9 @@
 				content.
 				In case a preview message content is ended with an early termination indicator the IcapMessage 
 				will no longer indicate to be of type preview, since all the available message content is
-				already present in the given message due to the early termination. 
+				already present in the given message due to the early termination.
+				This feature can be activated by using a designated constructor in order to be fully backwards
+				compatible!
   			</para>
   		</listitem>
   	</itemizedlist> 	
