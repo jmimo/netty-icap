@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Michael Mimo Moratti.
+ * Copyright (c) 2012 Michael Mimo Moratti.
  *
  * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the License.
@@ -1363,7 +1363,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"ICAP/1.0 204 No Content");
 		addLine(buffer,"Host: icap-server.net");
 		addLine(buffer,"ISTag: \"209BC533133B6F323892C3A62DFDBEAC\"");
-		addLine(buffer,"Date: Thu Sep 22 22:37:55 2011 GMT");
+		addLine(buffer,"Date: Thu Sep 22 22:37:55 2012 GMT");
 		addLine(buffer,"Service: Symantec Scan Engine/5.2.11.131");
 		addLine(buffer,"Service-ID: Respmod AV Scan");
 		addLine(buffer,"X-Outer-Container-Is-Mime: 0");

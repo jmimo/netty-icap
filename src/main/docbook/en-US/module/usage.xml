@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- * Copyright (c) 2011 Michael Mimo Moratti.
+ * Copyright (c) 2012 Michael Mimo Moratti.
  *
  * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the License.
