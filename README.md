@@ -8,10 +8,10 @@ http://icap.mimo.ch
 Roadmap
 ------------
 
-### Initial Release 1.0.0.GA
+### Release 2.0.0
 
-We have integrated with several products and done extensive load and stress testing.
-Also the productive environment with bugzilla http://bugzilla.mimo.ch is now up and running.
+In order to keep up to date with the latest changes at Netty we are starting a 2.0.0 stream which will integrate
+with the latest project layout changes at Netty.
 
 ### Future releases
 
