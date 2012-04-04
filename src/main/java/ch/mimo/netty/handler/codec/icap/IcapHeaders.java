@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 - 2012 Michael Mimo Moratti
+ * Copyright 2012 Michael Mimo Moratti
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -327,9 +327,15 @@ public final class IcapHeaders {
 			if(identicalKeys(entry.getKey(),name)) {
 				Entry before = entry.before;
 				Entry after = entry.after;
-				before.after = after;
-				after.before = before;
-				entry = after;
+				if(before != null) {
+					before.after = after;
+				}
+				if(after != null) {
+					after.before = before;
+					entry = after;
+				} else {
+					entry = null;
+				}
 			} else {
 				entry = entry.after;
 			}
@@ -410,6 +416,11 @@ public final class IcapHeaders {
 		@Override
 		public String setValue(String value) {
 			return null;
+		}
+		
+		@Override
+		public String toString() {
+			return "[" + key + "] = [[" + value + "]]";
 		}
 	}
 	

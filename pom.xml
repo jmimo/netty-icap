@@ -35,7 +35,7 @@
 	<groupId>ch.mimo</groupId>
 	<artifactId>netty-icap</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 
 	<name>The Netty ICAP Protocol Codec Project</name>
 	<url>http://icap.mimo.ch/</url>
@@ -109,93 +109,53 @@
 							<inputEncoding>UTF-8</inputEncoding>
 							<outputEncoding>UTF-8</outputEncoding>
 							<linkJavadoc>true</linkJavadoc>
-							<destDir>${project.build.directory}/xref</destDir>
-							<javadocDir>${project.build.directory}/api</javadocDir>
+							<destDir>${project.build.directory}/docbkx/xref</destDir>
+							<javadocDir>${project.build.directory}/docbkx/api</javadocDir>
 							<stylesheet>${basedir}/src/main/xref/stylesheet.css</stylesheet>
 							<docTitle>${project.name} Source Xref (${project.version})</docTitle>
 							<windowTitle>${project.name} Source Xref (${project.version})</windowTitle>
 						</configuration>
 					</plugin>
 					<plugin>
-					    <groupId>org.jboss.maven.plugins</groupId>
-					    <artifactId>maven-jdocbook-plugin</artifactId>
-					    <version>2.3.5</version>
-					    <extensions>true</extensions>
+						<groupId>com.agilejava.docbkx</groupId>
+						<artifactId>docbkx-maven-plugin</artifactId>
+						<version>2.0.13</version>
 						<executions>
 							<execution>
-								<id>generate-docbook</id>
-								<phase>package</phase>
 								<goals>
-									<goal>resources</goal>
-									<goal>generate</goal>
+									<goal>generate-html</goal>
+									<goal>generate-pdf</goal>
 								</goals>
+								<phase>generate-sources</phase>
 							</execution>
 						</executions>
 						<dependencies>
 							<dependency>
-								<groupId>org.jboss</groupId>
-								<artifactId>jbossorg-docbook-xslt</artifactId>
-								<version>1.1.0</version>
-								<exclusions>
-									<exclusion>
-										<groupId>org.eclipse.wst.css</groupId>
-										<artifactId>core</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.eclipse.wst.sse</groupId>
-										<artifactId>core</artifactId>
-									</exclusion>
-								</exclusions>
+								<groupId>net.sf.docbook</groupId>
+								<artifactId>docbook-xml</artifactId>
+								<version>5.0-all</version>
+								<classifier>resources</classifier>
+								<type>zip</type>
+								<scope>runtime</scope>
 							</dependency>
 							<dependency>
-								<groupId>org.jboss</groupId>
-								<artifactId>jbossorg-jdocbook-style</artifactId>
-								<version>1.1.0</version>
-								<type>jdocbook-style</type>
-								<exclusions>
-									<exclusion>
-										<groupId>org.eclipse.wst.css</groupId>
-										<artifactId>core</artifactId>
-									</exclusion>
-									<exclusion>
-										<groupId>org.eclipse.wst.sse</groupId>
-										<artifactId>core</artifactId>
-									</exclusion>
-								</exclusions>
-							</dependency>
-							<dependency>
-								<groupId>org.jboss</groupId>
-								<artifactId>jbossorg-fonts</artifactId>
-								<version>1.0.0</version>
-								<type>jdocbook-style</type>
+								<groupId>net.sf.offo</groupId>
+								<artifactId>fop-hyph</artifactId>
+								<version>1.2</version>
 							</dependency>
 						</dependencies>
-					    <configuration>
-							<sourceDocumentName>master.xml</sourceDocumentName>
-							<sourceDirectory>${basedir}/target/docbook</sourceDirectory>
-					        <formats>
-					            <format>
-					                <formatName>pdf</formatName>
-					                <stylesheetResource>file:///${basedir}/target/docbook/xslt/pdf.xsl</stylesheetResource>
-					                <finalName>icap.pdf</finalName>
-					            </format>
-								<format>
-									<formatName>html_single</formatName>
-									<finalName>index.html</finalName>
-								</format>
-					            <format>
-					                <formatName>html</formatName>
-					                <finalName>index.html</finalName>
-					            </format>
-					        </formats>
-							<options>
-								<xincludeSupported>true</xincludeSupported>
-								<xmlTransformerType>saxon</xmlTransformerType>
-								<docbookVersion>1.72.0</docbookVersion>
-								<localeSeparator>-</localeSeparator>
-								<autoDetectFonts>true</autoDetectFonts>
-							</options>
-					    </configuration>
+						<configuration>
+							<xincludeSupported>true</xincludeSupported>
+							<foCustomization>${basedir}/src/docbkx/customization/pdf.xsl</foCustomization>
+							<!-- htmlStylesheet -->
+					        <entities>
+					            <entity>
+					              <name>version</name>
+					              <value>${project.version}</value>
+					            </entity>
+					        </entities>
+							<includes>icap-codec.xml</includes>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
@@ -320,14 +280,14 @@
 							</resources>
 						</configuration>
 					</execution>
-					<execution>
+					<!-- execution>
 						<id>copy-documentation</id>
 						<phase>validate</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/docbook</outputDirectory>
+							<outputDirectory>${basedir}/target/</outputDirectory>
 							<resources>
 								<resource>
 									<directory>${basedir}/src/main/docbook</directory>
@@ -335,7 +295,7 @@
 								</resource>
 							</resources>
 						</configuration>
-					</execution>
+					</execution -->
 				</executions>
 			</plugin>
 			<plugin>
@@ -421,6 +381,7 @@
 					</execution>
 				</executions>
 				<configuration>
+          			<destDir>${project.build.directory}/docbkx/api</destDir>
 					<excludePackageNames>ch.mimo.netty.example*</excludePackageNames>
 					<javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
 					<stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
@@ -581,6 +542,7 @@
 					<!-- Activate a custom profile called "release" -->
 					<!-- arguments>-PperformRelease=true</arguments -->
 					<mavenExecutorId>forked-path</mavenExecutorId>
+					<arguments>-DperformRelease=true</arguments>
 				</configuration>
 			</plugin>
 		</plugins>

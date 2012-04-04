@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 - 2012 Michael Mimo Moratti
+ * Copyright 2012 Michael Mimo Moratti
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,6 +110,14 @@ public class IcapHeaderTest extends AbstractIcapTest {
 		assertEquals("unexpected value for header","JOGGEL",headers.getHeader("MIMO"));
 		headers.setHeader("MIMO","JOGGEL1");
 		assertEquals("unexpected value for header","JOGGEL1",headers.getHeader("MIMO"));
+	}
+	
+	@Test
+	public void removeHeaderWhenAddedThroughMessageConstructor() {
+			IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.REQMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
+			request.addHeader("Preview","151");
+			request.removeHeader("Preview");
+			assertFalse("Preview header is still present",request.containsHeader("Preview"));
 	}
 	
 	@Test

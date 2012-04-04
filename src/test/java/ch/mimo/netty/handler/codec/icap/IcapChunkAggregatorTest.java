@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 - 2012 Michael Mimo Moratti
+ * Copyright 2012 Michael Mimo Moratti
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package ch.mimo.netty.handler.codec.icap;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+
+import junit.framework.Assert;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
@@ -135,6 +137,31 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 	}
 	
 	@Test
+	public void aggregateRESPMODRequestWithPreviewChunksAndReadInBetween() throws UnsupportedEncodingException {
+		DecoderEmbedder<Object> embedder = new DecoderEmbedder<Object>(new IcapChunkAggregator(4012,true));
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIncludingEncapsulationHeaderIcapRequest());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunk());
+		embedder.offer(DataMockery.crateRESPMODWithGetRequestAndPreviewLastIcapChunk());
+		IcapRequest request = (IcapRequest)embedder.poll();
+		DataMockery.assertCreateRESPMODWithGetRequestAndPreview(request);
+		ChannelBuffer buffer = request.getHttpResponse().getContent();
+		Assert.assertEquals("wrong reader index",0,buffer.readerIndex());
+		String body = destructiveRead(buffer);
+		StringBuilder builder = new StringBuilder();
+		builder.append("This is data that was returned by an origin server.");
+		assertEquals("The body content was wrong",builder.toString(),body);	
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewIcapChunkFullMessageChunk());
+		embedder.offer(DataMockery.createRESPMODWithGetRequestAndPreviewChunkTrailer());
+		IcapRequest request1 = (IcapRequest)embedder.poll();
+		buffer = request1.getHttpResponse().getContent();
+		Assert.assertEquals("wrong reader index",0,buffer.readerIndex());
+		String body1 = destructiveRead(buffer);
+		assertEquals("The body content after another chunk was sent is wrong","This is data that was returned by an origin server.And this the second chunk which contains more information.",body1);
+		Object object = embedder.peek();
+		assertNull("still something there",object);	
+	}
+	
+	@Test
 	public void aggregateREQModRequestWithCunksAndTrailingHeaders() throws UnsupportedEncodingException {
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyAndEncapsulationHeaderIcapMessage());
 		embedder.offer(DataMockery.createREQMODWithTwoChunkBodyIcapChunkOne());
@@ -170,6 +197,22 @@ public class IcapChunkAggregatorTest extends AbstractIcapTest {
 			exception = true;
 		}
 		assertTrue("No Exception was thrown",exception);
+	}
+	
+	@Test
+	public void retrieveREQMODPreviewWithEarlyTermination() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewAnnouncementIcapMessage());
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewIcapChunk());
+		embedder.offer(DataMockery.createREQMODWithEarlyTerminatedPreviewLastIcapChunk());
+		IcapRequest request = (IcapRequest)embedder.poll();
+		assertFalse("The request is marked to be of type preview",request.isPreviewMessage());
+		
+	}
+	
+	private String destructiveRead(ChannelBuffer buffer) {
+		byte[] data = new byte[buffer.readableBytes()];
+		buffer.readBytes(data);
+		return new String(data,IcapCodecUtil.ASCII_CHARSET);
 	}
 }
 

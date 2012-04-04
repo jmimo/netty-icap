@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
- * Copyright (c) 2011 Michael Mimo Moratti.
+ * Copyright (c) 2012 Michael Mimo Moratti.
  *
  * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the License.
@@ -17,13 +17,23 @@
 %CustomDTD;
 ]>
 <book lang="en">
-  <bookinfo>
-    <title>The Java ICAP Project User Guide</title>
-    <subtitle/>
-    <releaseinfo>
-    ${project.version}
-    </releaseinfo>
-  </bookinfo>
+	<title>The Java ICAP Project User Guide</title>
+	<bookinfo>
+		<author>
+			<firstname>Michael Mimo</firstname>
+			<surname>Moratti</surname>
+		</author>
+		<releaseinfo>
+			<?eval ${project.version}?>
+		</releaseinfo>
+		<copyright>
+		  <year>2012</year>
+		  <holder>Michael Mimo Moratti</holder>
+		</copyright>
+		<revision>
+			<?eval ${project.version}?>
+		</revision>
+	</bookinfo>
 
   <toc/>
 

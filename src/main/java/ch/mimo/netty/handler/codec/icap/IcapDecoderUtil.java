@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 - 2012 Michael Mimo Moratti
+ * Copyright 2012 Michael Mimo Moratti
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public final class IcapDecoderUtil {
     
     /**
      * previews a line until CR / LF / CRLF
-     * this will not increas the buffers readerIndex!
+     * this will not increase the buffers readerIndex!
      * @param buffer
      * @param maxLineLength
      * @return the first line found in the buffer

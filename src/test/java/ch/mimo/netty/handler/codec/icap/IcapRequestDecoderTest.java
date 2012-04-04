@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 - 2012 Michael Mimo Moratti
+ * Copyright 2012 Michael Mimo Moratti
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,6 +191,13 @@ public class IcapRequestDecoderTest extends AbstractIcapTest {
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreview(result);
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewChunk((IcapChunk)embedder.poll());
 		DataMockery.assertCreateRESPMODWithGetRequestAndPreviewLastChunk((IcapChunk)embedder.poll());
+	}
+	
+	@Test
+	public void decodeRESPMODPreviewWithZeroBody() throws UnsupportedEncodingException {
+		embedder.offer(DataMockery.createRESPMODPreviewWithZeroBody());
+		IcapRequest result = (IcapRequest)embedder.poll();
+		assertNotNull("The decoded icap request instance is null",result);
 	}
 	
 	@Test

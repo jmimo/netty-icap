@@ -13,23 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package ch.mimo.netty.handler.codec.icap.socket;
 
-import java.util.concurrent.Executor;
-
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.channel.socket.oio.OioClientSocketChannelFactory;
-
-public class OioNioSocketTest extends SocketTests {
-
-	@Override
-	protected ChannelFactory newClientSocketChannelFactory(Executor executor) {
-		 return new OioClientSocketChannelFactory(executor);
-	}
-	
-	@Override
-	protected ChannelFactory newServerSocketChannelFactory(Executor executor) {
-		return new NioServerSocketChannelFactory(executor, executor);
-	}
-}
+/**
+ * JBoss Netty ICAP Codec Squid Proof of Concept integration example implementation.
+ *
+ */
+package ch.mimo.netty.example.icap.squidechoserver;

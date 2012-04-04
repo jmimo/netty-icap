@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- * Copyright (c) 2011 Michael Mimo Moratti.
+ * Copyright (c) 2012 Michael Mimo Moratti.
  *
  * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the License.
@@ -24,6 +24,17 @@
   	to abstract from protocol details like the chunked transfer of all message bodies. We recommend to
   	read up on <ulink url="http://www.jboss.org/netty"><literal>JBoss Netty</literal></ulink> 
   	in order to successfully use this codec.
+  </para>
+  <para>
+  	It is important to understand that this is a pure codec implementation which always builds upon Netty! It is by no means
+  	a ICAP Server implementation!
+  	If you plan to build a java based ICAP Server then you still are at the right address. combined with Netty you have a working
+  	ICAP Server up and running in no time at all.
+  </para>
+  <para>
+  	In the examples section you will find several example pipelines and also server and client bootstraps delivered by Netty.
+  	Please be aware that the Squid integration example is a simple proof of concept to show that the integration can work. It
+  	is by no means a production ready code quality or stategie to write such server handlers...
   </para>
 
   <section>
@@ -194,6 +205,13 @@
 	  The best way to handler preview requests is configuring a &IcapChunkAggregator; into your pipeline. This will guarantee that
 	  once you have sent the <code>100 Continue</code> response you will get the same &IcapRequest; instance containing the rest
 	  of the body that was not sent in the preview mode.
+	</para>
+	<para>
+		It is further possible to reset the HTTP message body channel reader index for the <code>100 Continue</code> followup 
+		body chunk transfer from the client.
+		In other words, You can destructively read the preview from the channel and once the entier body is present restart reading from 
+		reader index 0! This has the advantage of processing a preview and not having to remeber the last reader index before the 
+		<code>100 Continue</code> response.
 	</para>
   </section>
   <section>

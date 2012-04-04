@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 - 2012 Michael Mimo Moratti
+ * Copyright 2012 Michael Mimo Moratti
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,10 @@ import ch.mimo.netty.handler.codec.icap.IcapVersion;
  * - Preview: always responds with 204 No Content. 
  * 
  * This handler was used to integration test together with squid version 3.1.6
+ * 
+ * THIS IS BY NO MEANS A PRODUCTION QUALITY INTEGRATION IT IS TO BE HANDLED LIKE A PROOF OF CONCEPT.
+ * PLEASE IF YOU PLAN TO USE THIS SERVER HANDLER IN YOUR IMPLEMENTATION CONSIDER READING UP ON ICAP,
+ * NETTY AND SOFTWARE INGENEERING IN GENERAL.
  * 
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *

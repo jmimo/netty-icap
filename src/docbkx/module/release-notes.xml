@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- * Copyright (c) 2011 Michael Mimo Moratti.
+ * Copyright (c) 2012 Michael Mimo Moratti.
  *
  * Michael Mimo Moratti licenses this file to you under the Apache License, version 2.0
  * (the "License"); you may not use this file except in compliance with the License.
@@ -21,6 +21,44 @@
   <para>
   	In this chapter we list all release note in a chronological order. Newest to Oldest.
   </para>
+  <section>
+  	<title>1.0.1.GA</title>
+  	<para>
+  		This is a minor bugfix and enhancement release.
+  	</para>
+  	<itemizedlist>
+  		<listitem>
+  			<para>
+				ICAP Header removal NPE
+				This bugfix in the icap header removal area prevents a possible NPE that could appear
+				due to wrong duplication detection.
+  			</para>
+  		</listitem>
+  		<listitem>
+  			<para>
+				ICAP Message aggregation Handler enhancement.
+				This enhancement will change the behavior of the IcapChunkAggregator handler in order
+				to properly handle preview message with an IEOF (early termination) of the message body
+				content.
+				In case a preview message content is ended with an early termination indicator the IcapMessage 
+				will no longer indicate to be of type preview, since all the available message content is
+				already present in the given message due to the early termination.
+				This feature can be activated by using a designated constructor in order to be fully backwards
+				compatible!
+  			</para>
+  		</listitem>
+  		<listitem>
+  			<para>
+  				Changed to docbkx maven plugin for the documentation generation.
+  			</para>
+  		</listitem>
+  		<listitem>
+  			<para>
+  				Updated Copyright to 2012
+  			</para>
+  		</listitem>
+  	</itemizedlist> 	
+  </section>
   <section>
   	<title>1.0.0.GA</title>
   	<para>

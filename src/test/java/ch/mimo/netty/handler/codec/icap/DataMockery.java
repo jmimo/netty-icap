@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011 - 2012 Michael Mimo Moratti
+ * Copyright 2012 Michael Mimo Moratti
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1074,6 +1074,29 @@ public final class DataMockery extends Assert {
 		return buffer;
 	}	
 	
+	public static final ChannelBuffer createRESPMODPreviewWithZeroBody() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		addLine(buffer,"RESPMOD icap://icap.mimo.ch:1344/reqmod ICAP/1.0");
+		addLine(buffer,"Host: icap-server.net");
+		addLine(buffer,"Encapsulated: req-hdr=0, res-hdr=137, res-body=296");
+		addLine(buffer,"Preview: 0");
+		addLine(buffer,"Allow: 204");
+		addLine(buffer,null);
+		addLine(buffer,"GET /origin-resource HTTP/1.1");
+		addLine(buffer,"Host: www.origin-server.com");
+		addLine(buffer,"Accept: text/html, text/plain, image/gif");
+		addLine(buffer,"Accept-Encoding: gzip, compress");
+		addLine(buffer,null);
+		addLine(buffer,"HTTP/1.1 200 OK");
+		addLine(buffer,"Date: Mon, 10 Jan 2000 09:52:22 GMT");
+		addLine(buffer,"Server: Apache/1.3.6 (Unix)");
+		addLine(buffer,"ETag: \"63840-1ab7-378d415b\"");
+		addLine(buffer,"Content-Type: text/html");
+		addLine(buffer,"Content-Length: 151");
+		addLine(buffer,null);
+		return buffer;
+	}
+	
 	public static final IcapRequest createRESPMODWithGetRequestAndPreviewIncludingEncapsulationHeaderIcapRequest() {
 		IcapRequest request = new DefaultIcapRequest(IcapVersion.ICAP_1_0,IcapMethod.RESPMOD,"icap://icap.mimo.ch:1344/reqmod","icap-server.net");
 		request.addHeader("Encapsulated","req-hdr=0, res-hdr=137, res-body=296");
@@ -1105,6 +1128,18 @@ public final class DataMockery extends Assert {
 	public static final IcapChunk crateRESPMODWithGetRequestAndPreviewLastIcapChunk() {
 		IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
 		trailer.setPreviewChunk(true);
+		return trailer;
+	}
+	
+	public static final IcapChunk createRESPMODWithGetRequestAndPreviewIcapChunkFullMessageChunk() throws UnsupportedEncodingException {
+		ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+		buffer.writeBytes("And this the second chunk which contains more information.".getBytes(IcapCodecUtil.ASCII_CHARSET));
+		IcapChunk chunk = new DefaultIcapChunk(buffer);
+		return chunk;
+	}
+	
+	public static final IcapChunk createRESPMODWithGetRequestAndPreviewChunkTrailer() {
+		IcapChunkTrailer trailer = new DefaultIcapChunkTrailer();
 		return trailer;
 	}
 	
@@ -1330,7 +1365,7 @@ public final class DataMockery extends Assert {
 		addLine(buffer,"ICAP/1.0 204 No Content");
 		addLine(buffer,"Host: icap-server.net");
 		addLine(buffer,"ISTag: \"209BC533133B6F323892C3A62DFDBEAC\"");
-		addLine(buffer,"Date: Thu Sep 22 22:37:55 2011 GMT");
+		addLine(buffer,"Date: Thu Sep 22 22:37:55 2012 GMT");
 		addLine(buffer,"Service: Symantec Scan Engine/5.2.11.131");
 		addLine(buffer,"Service-ID: Respmod AV Scan");
 		addLine(buffer,"X-Outer-Container-Is-Mime: 0");
