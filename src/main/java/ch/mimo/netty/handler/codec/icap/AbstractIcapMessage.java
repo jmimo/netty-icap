@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2012 Michael Mimo Moratti
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,12 +21,11 @@ import java.util.Set;
 
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.util.internal.StringUtil;
 
 /**
- * This is the main Icap message implementation where 
+ * This is the main Icap message implementation where
  * all common @see {@link DefaultIcapRequest} and @see {@link DefaultIcapResponse} member are present.
- * 
+ *
  * @author Michael Mimo Moratti (mimo@mimo.ch)
  *
  */
@@ -35,12 +34,12 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	private IcapHeaders icapHeader;
 	private IcapVersion version;
 	private Encapsulated encapsulated;
-	
+
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
-	
+
 	private IcapMessageElementEnum body;
-	
+
 	public AbstractIcapMessage(IcapVersion version) {
 		this.version = version;
 		icapHeader = new IcapHeaders();
@@ -94,7 +93,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 		icapHeader.removeHeader(name);
 		return this;
 	}
-	
+
 	@Override
 	public int getPreviewAmount() {
 		return icapHeader.getPreviewHeaderValue();
@@ -126,7 +125,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	public HttpRequest getHttpRequest() {
 		return httpRequest;
 	}
-	
+
 	@Override
 	public IcapMessage setHttpRequest(HttpRequest httpRequest) {
 		this.httpRequest = httpRequest;
@@ -142,7 +141,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	public HttpResponse getHttpResponse() {
 		return httpResponse;
 	}
-	
+
 	public IcapMessage setHttpResponse(HttpResponse response) {
 		this.httpResponse = response;
 		return this;
@@ -158,12 +157,12 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 	public Encapsulated getEncapsulatedHeader() {
 		return encapsulated;
 	}
-	
+
 	@Override
 	public boolean isPreviewMessage() {
 		return icapHeader.getPreviewHeaderValue() > 0;
 	}
-	
+
 	public IcapMessage setBody(IcapMessageElementEnum body) {
 		this.body = body;
 		return this;
@@ -176,7 +175,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 			return body;
 		}
 	}
-	
+
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
@@ -194,7 +193,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
         		buf.append(StringUtil.NEWLINE).append("--> HTTP Request contains [" + httpRequest.getContent().readableBytes() + "] bytes of data").append(StringUtil.NEWLINE);
         	}
         }
-        
+
         if(httpResponse != null) {
         	buf.append("--- encapsulated HTTP Response ---").append(StringUtil.NEWLINE);
         	buf.append(httpResponse.toString());
@@ -202,15 +201,15 @@ public abstract class AbstractIcapMessage implements IcapMessage {
         		buf.append(StringUtil.NEWLINE).append("--> HTTP Response contains [" + httpResponse.getContent().readableBytes() + "] bytes of data").append(StringUtil.NEWLINE);;
         	}
         }
-        
+
         if(isPreviewMessage()) {
         	buf.append("--- Preview ---").append(StringUtil.NEWLINE);
         	buf.append("Preview size: " + icapHeader.getPreviewHeaderValue());
         }
-        
+
         return buf.toString();
     }
-    
+
     private void appendHeaders(StringBuilder buf) {
         for (Map.Entry<String, String> e: getHeaders()) {
             buf.append(e.getKey());
