@@ -106,6 +106,8 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     		IcapMessage currentMessage = (IcapMessage)msg;
     		message = new IcapMessageWrapper(currentMessage);
     		if(!message.hasBody()) {
+                LOG.debug("message has no body, removing PREVIEW header");
+                message.getIcapMessage().removeHeader(IcapHeaders.Names.PREVIEW);
     			Channels.fireMessageReceived(ctx,message.getIcapMessage(),e.getRemoteAddress());
     			message = null;
     			return;

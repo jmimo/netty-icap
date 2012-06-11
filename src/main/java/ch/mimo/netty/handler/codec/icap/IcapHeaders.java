@@ -364,14 +364,14 @@ public final class IcapHeaders {
 	
 	/**
 	 * Convenience method to retrieve the @see {@link Integer} value from a Icap Preview header.
-	 * If the header does not exist the value 0 is returned.
+	 * If the header does not exist the value -1 is returned.
 	 * If the header value cannot be parsed into a valid integer a @see {@link IcapDecodingError} is thrown.
 	 * 
 	 * @return int value of preview header.
 	 */
 	public int getPreviewHeaderValue() {
 		String value = getHeader(Names.PREVIEW);
-		int result = 0;
+		int result = -1;
 		try {
 			if(value != null) {
 				result = Integer.parseInt(value);

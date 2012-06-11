@@ -160,7 +160,7 @@ public abstract class AbstractIcapMessage implements IcapMessage {
 
 	@Override
 	public boolean isPreviewMessage() {
-		return icapHeader.getPreviewHeaderValue() > 0;
+		return icapHeader.getPreviewHeaderValue() >= 0;
 	}
 
 	public IcapMessage setBody(IcapMessageElementEnum body) {
