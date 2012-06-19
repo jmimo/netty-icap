@@ -26,6 +26,8 @@ import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.logging.InternalLogger;
 import org.jboss.netty.logging.InternalLoggerFactory;
 
+import java.net.SocketAddress;
+
 /**
  * This ICAP chunk aggregator will combine an received ICAP message with all body chunks.
  * the body is the to be found attached to the correct HTTP request or response instance
@@ -106,8 +108,8 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
             message = new IcapMessageWrapper(currentMessage);
             if (!message.hasBody()) {
                 LOG.debug("message has no body, removing PREVIEW header");
-                message.getIcapMessage().removeHeader(IcapHeaders.Names.PREVIEW);
-                Channels.fireMessageReceived(ctx, message.getIcapMessage(), e.getRemoteAddress());
+                message.clearPreview();
+                message.sendToHandler(ctx,e.getRemoteAddress());
                 message = null;
                 return;
             }
@@ -119,15 +121,15 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
                 IcapChunkTrailer trailer = (IcapChunkTrailer) msg;
                 if (trailer.isEarlyTerminated()) {
                     LOG.debug("chunk trailer is early terminated, removing PREVIEW header");
-                    message.getIcapMessage().removeHeader(IcapHeaders.Names.PREVIEW);
-
+                    message.clearPreview();
                 }
                 if (trailer.getHeaderNames().size() > 0) {
                     for (String name : trailer.getHeaderNames()) {
                         message.addHeader(name, trailer.getHeader(name));
                     }
                 }
-                Channels.fireMessageReceived(ctx, message.getIcapMessage(), e.getRemoteAddress());
+
+                message.sendToHandler(ctx, e.getRemoteAddress());
             }
         } else if (msg instanceof IcapChunk) {
             LOG.debug("Aggregation of chunk [" + msg.getClass().getName() + "] ");
@@ -137,9 +139,9 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
             } else if (chunk.isLast()) {
                 if (chunk.isEarlyTerminated()) {
                     LOG.debug("chunk is early terminated, removing PREVIEW header");
-                    message.getIcapMessage().removeHeader(IcapHeaders.Names.PREVIEW);
+                    message.clearPreview();
                 }
-                Channels.fireMessageReceived(ctx, message.getIcapMessage(), e.getRemoteAddress());
+                message.sendToHandler(ctx, e.getRemoteAddress());
                 message = null;
             } else {
                 ChannelBuffer chunkBuffer = chunk.getContent();
@@ -164,6 +166,7 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
         private HttpMessage relevantHttpMessage;
         private IcapResponse icapResponse;
         private boolean messageWithBody;
+        private boolean previewMessage;
 
         public IcapMessageWrapper(IcapMessage message) {
             this.message = message;
@@ -190,6 +193,18 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
                     }
                 }
             }
+            previewMessage =true;
+        }
+
+        public void sendToHandler(ChannelHandlerContext ctx, SocketAddress remoteAddress) {
+            if (!previewMessage) message.removeHeader(IcapHeaders.Names.PREVIEW);
+            Channels.fireMessageReceived(ctx, message, remoteAddress);
+            previewMessage = false;
+        }
+
+        public void clearPreview() {
+            message.removeHeader(IcapHeaders.Names.PREVIEW);
+            previewMessage = false;
         }
 
         public boolean hasBody() {
