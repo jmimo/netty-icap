@@ -334,6 +334,9 @@ public final class IcapHeaders {
 					after.before = before;
 					entry = after;
 				} else {
+					if (head == entry) {
+						head = entry.before;
+					}
 					entry = null;
 				}
 			} else {

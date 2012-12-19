@@ -330,4 +330,17 @@ public class IcapHeaderTest extends AbstractIcapTest {
 		Date returnedDate = headers.getDateHeader(IcapHeaders.Names.DATE);
 		assertNotNull("The returned date was null",returnedDate);
 	}
+
+	@Test
+	public void removeAddHead() {
+		IcapHeaders headers = new IcapHeaders();
+		headers.addHeader("fuz", "buz");
+		headers.addHeader("foo", "bar");
+		assertTrue("Header 'FOO' should exist (1)", headers.containsHeader("foo"));
+		assertEquals("Header 'FOO' should be 'bar'", "bar", headers.getHeader("foo"));
+		headers.removeHeader("foo");
+		headers.addHeader("foo", "baz");
+		assertTrue("Header 'FOO' should exist (2)", headers.containsHeader("foo"));
+		assertEquals("Header 'FOO' should be 'baz'", "baz", headers.getHeader("foo"));
+	}
 }
