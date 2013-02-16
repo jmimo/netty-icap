@@ -39,7 +39,14 @@ public class ReadIcapInitialState extends State<Object> {
 	@Override
 	public StateReturnValue execute(ChannelBuffer buffer, IcapMessageDecoder icapMessageDecoder) throws DecodingException {
 		String[] initialLine = IcapDecoderUtil.splitInitialLine(IcapDecoderUtil.readLine(buffer,icapMessageDecoder.maxInitialLineLength));
-		icapMessageDecoder.message = icapMessageDecoder.createMessage(initialLine);
+		if (initialLine.length >= 3) {
+			try {
+				icapMessageDecoder.message = icapMessageDecoder.createMessage(initialLine);
+			}
+			catch (IllegalArgumentException e) {
+				icapMessageDecoder.message = null;
+			}
+		}
 		return StateReturnValue.createIrrelevantResult();
 	}
 
