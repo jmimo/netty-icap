@@ -116,6 +116,10 @@ public class IcapChunkAggregator extends SimpleChannelUpstreamHandler {
     			ctx.sendUpstream(e);
     		} else {
     			IcapChunkTrailer trailer = (IcapChunkTrailer)msg;
+    			if (trailer.isEarlyTerminated()) {
+    				LOG.debug("chunk trailer is early terminated, removing PREVIEW header");
+    				message.getIcapMessage().removeHeader(IcapHeaders.Names.PREVIEW);
+    			}
     			if(trailer.getHeaderNames().size() > 0) {		
     				for(String name : trailer.getHeaderNames()) {
     					message.addHeader(name,trailer.getHeader(name));
