@@ -63,7 +63,7 @@ public class ReadIcapHeaderState extends State<Object> {
 		}
 		if(isOptionsRequest) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
-		} else if(encapsulated != null && !encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
+		} else if(encapsulated != null && !encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) && !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		}
 		return StateReturnValue.createIrrelevantResult();
@@ -119,7 +119,7 @@ public class ReadIcapHeaderState extends State<Object> {
 	private void handleEncapsulationHeaderVolatility(IcapMessage message) {
 		// Pseudo code
 		// IF Encapsulated header is missing
-			// IF OPTIONS request OR 100 Continue response OR 204 No Content response
+			// IF OPTIONS request OR 100 Continue response OR 204 No Content response OR is a server error
 				// THEN inject synthetic null-body Encapsulated header.
 		boolean requiresSynthecticEncapsulationHeader = false;
 		if(!message.containsHeader(IcapHeaders.Names.ENCAPSULATED)) {
@@ -128,7 +128,9 @@ public class ReadIcapHeaderState extends State<Object> {
 			} else if(message instanceof IcapResponse) {
 				IcapResponse response = (IcapResponse)message;
 				IcapResponseStatus status = response.getStatus();
-				if(status.equals(IcapResponseStatus.CONTINUE) | status.equals(IcapResponseStatus.NO_CONTENT)) {
+				if(status.equals(IcapResponseStatus.CONTINUE) ||
+					status.equals(IcapResponseStatus.NO_CONTENT) ||
+					(status.getCode() >= 500)) {
 					requiresSynthecticEncapsulationHeader = true;
 				}
 			}

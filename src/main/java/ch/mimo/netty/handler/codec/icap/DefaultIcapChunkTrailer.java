@@ -63,6 +63,6 @@ public class DefaultIcapChunkTrailer extends DefaultHttpChunkTrailer implements 
 	}
 	
 	public String toString() {
-		return "DeafultIcapChunkTrailer: [isPreviewChunk=" + preview + "] [wasEarlyTerminated=" + earlyTerminated + "]";
+		return "DefaultIcapChunkTrailer: [isPreviewChunk=" + preview + "] [wasEarlyTerminated=" + earlyTerminated + "]";
 	}
 }

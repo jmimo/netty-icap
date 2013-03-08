@@ -51,6 +51,6 @@ public class DefaultIcapChunk extends DefaultHttpChunk implements IcapChunk {
 	}
 	
 	public String toString() {
-		return "DeafultIcapChunk: [isPreviewChunk=" + preview + "] [wasEarlyTerminated=" + earlyTerminated + "] [data=" + getContent().readableBytes() + "]";
+		return "DefaultIcapChunk: [isPreviewChunk=" + preview + "] [wasEarlyTerminated=" + earlyTerminated + "] [data=" + getContent().readableBytes() + "]";
 	}
 }
