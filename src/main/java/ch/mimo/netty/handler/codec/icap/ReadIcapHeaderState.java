@@ -63,7 +63,7 @@ public class ReadIcapHeaderState extends State<Object> {
 		}
 		if(isOptionsRequest) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
-		} else if(encapsulated != null && !encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) & !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
+		} else if(encapsulated != null && !encapsulated.containsEntry(IcapMessageElementEnum.REQHDR) && !encapsulated.containsEntry(IcapMessageElementEnum.RESHDR)) {
 			return StateReturnValue.createRelevantResult(icapMessageDecoder.message);
 		}
 		return StateReturnValue.createIrrelevantResult();
